@@ -1,0 +1,799 @@
+<script>window.HWM_STATIC=true;window.HWM_LOCAL_ONLY=true;</script><!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>HeroesWM — Database</title>
+<base href="/Heroes/">
+<link rel="manifest" href="/Heroes/manifest.json">
+<meta name="theme-color" content="#c9a84c">
+<!-- Тема у страницы своя — браузеру не нужно затемнять её самому.
+     Мета работает ДО загрузки CSS, дальше точную схему задаёт base.css. -->
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="/Heroes/icons/icon-192.svg" sizes="192x192">
+<link rel="apple-touch-icon" href="/Heroes/icons/icon-192.svg">
+<link rel="stylesheet" href="/Heroes/base.css?v=391a50d7">
+<link rel="stylesheet" href="/Heroes/catalog.css?v=7ba93f45">
+<link rel="stylesheet" href="/Heroes/artifacts.css?v=330108df">
+<link rel="stylesheet" href="/Heroes/battle.css?v=fcf92d4c">
+<script>if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light')}</script>
+<script src="/Heroes/sw-register.js?v=3fbce989"></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚔ Heroes∞</h1>
+  <span class="subtitle">Database & Reference</span>
+  <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Переключить тему">🌙</button>
+  <button id="menu-toggle" class="menu-btn" onclick="toggleMenu()" title="Меню">☰</button>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="creatures">Существа</div>
+  <div class="tab" data-tab="factions">Фракции</div>
+  <div class="tab" data-tab="artifacts">Артефакты</div>
+  <div class="tab" data-tab="abilities">Способности</div>
+  <div class="tab" data-tab="magic">Магия</div>
+  <div class="tab" data-tab="battle">Бой</div>
+  <div class="tab" data-tab="skillwheels">Колёса навыков</div>
+</div>
+
+<div class="content">
+  <!-- Creatures -->
+  <div class="tab-content active" id="tab-creatures">
+    <div class="search-bar" id="creature-search-bar">
+      <input type="text" id="creature-search" placeholder="Поиск существа..." oninput="filterCreatures()">
+      <select id="faction-filter" onchange="filterCreatures()">
+        <option value="">Все фракции</option>
+      </select>
+      <select id="tier-filter" onchange="filterCreatures()">
+        <option value="">Все тиры</option>
+        <option value="1">T1</option>
+        <option value="2">T2</option>
+        <option value="3">T3</option>
+        <option value="4">T4</option>
+        <option value="5">T5</option>
+        <option value="6">T6</option>
+        <option value="7">T7</option>
+      </select>
+      <span class="count" id="creature-count">0 существ</span>
+    </div>
+    <div class="creature-grid" id="creature-grid"></div>
+  </div>
+
+  <!-- Factions -->
+  <div class="tab-content" id="tab-factions">
+    <div id="faction-detail"></div>
+    <div id="faction-playable"></div>
+    <div id="faction-neutral"></div>
+  </div>
+
+  <!-- Artifacts -->
+  <!-- Артефакты и комплекты — один раздел: поиск идёт по обоим, и комплект
+       ищется вместе со своими артефактами. -->
+  <div class="tab-content" id="tab-artifacts">
+    <div class="search-bar">
+      <input type="text" id="artifact-search" placeholder="Поиск артефакта или комплекта..." oninput="filterArtifacts()">
+      <select id="slot-filter" onchange="filterArtifacts()">
+        <option value="">Все слоты</option>
+      </select>
+      <!-- Только те виды, которых нет среди слотов: слот и «категория» в данных
+           почти дублировали друг друга (weapon/ring/helm/boots...). -->
+      <select id="category-filter" onchange="filterArtifacts()">
+        <option value="">Любой вид</option>
+      </select>
+      <select id="level-filter" onchange="filterArtifacts()">
+        <option value="">Все уровни</option>
+      </select>
+      <button type="button" class="hwm-btn art-fitting-btn" onclick="navigateTo('/fitting')"
+              title="Примерочная: собрать комплект на герое и посмотреть суммарные бонусы">🎒 Примерочная</button>
+      <span class="count" id="artifact-count">0 артефактов</span>
+    </div>
+    <!-- Комплекты свёрнуты: их 54, и раскрытыми они занимают весь первый экран,
+         оттесняя сами артефакты. Поиск раскрывает блок сам. -->
+    <div class="sets-head" id="sets-head" onclick="toggleSetsBlock()">
+      <span>📦 Комплекты</span>
+      <span class="count" id="sets-count"></span>
+      <span id="sets-toggle">▸</span>
+    </div>
+    <div id="sets-grid" class="sets-grid" style="display:none"></div>
+    <div id="set-detail" style="display:none"></div>
+    <div class="artifact-grid" id="artifact-grid"></div>
+  </div>
+
+  <!-- Abilities -->
+  <div class="tab-content" id="tab-abilities">
+    <div class="search-bar">
+      <input type="text" id="ability-search" placeholder="Поиск способности..." oninput="filterAbilities()">
+      <span class="count" id="ability-count">0 способностей</span>
+    </div>
+    <div class="ability-grid" id="ability-grid"></div>
+    <div id="ability-detail" style="display:none"></div>
+  </div>
+
+  <!-- Заглушки: способности реестра, за которыми нет кода -->
+  <div class="tab-content" id="tab-stubs">
+    <div id="stub-summary" class="stub-summary"></div>
+    <div class="search-bar">
+      <input type="text" id="stub-search" placeholder="Поиск заглушки..." oninput="filterStubs()">
+      <label class="stub-check"><input type="checkbox" id="stub-untested" onchange="filterStubs()"> только без тестов</label>
+      <span class="count" id="stub-count">0</span>
+    </div>
+    <div id="stub-body"></div>
+  </div>
+
+  <!-- Magic -->
+  <div class="tab-content" id="tab-magic">
+    <div class="search-bar">
+      <input type="text" id="magic-search" placeholder="Поиск заклинания..." oninput="filterMagic()">
+      <select id="school-filter" onchange="filterMagic()">
+        <option value="">Все школы</option>
+      </select>
+      <span class="count" id="magic-count">0 заклинаний</span>
+    </div>
+    <div id="magic-list"></div>
+  </div>
+
+  <!-- Replay -->
+  <div class="tab-content" id="tab-replay">
+    <div style="padding:20px;max-width:600px;margin:40px auto;text-align:center">
+      <h2 style="color:var(--gold);margin-bottom:16px">Просмотр реплея боя</h2>
+      <p style="color:var(--text-dim);margin-bottom:20px;font-size:14px">
+        Введите ID боя (war ID) для просмотра полной анимированной реконструкции сражения.
+        ID можно найти в ссылке на страницу боя: <code style="background:var(--card);padding:2px 6px;border-radius:3px">heroeswm.ru/warlog.php?warid=<b>ID</b></code>
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <input id="replay-warid" type="text" placeholder="ID или ссылка: daily.heroeswm.ru/mt61/war/id/1644923289" oninput="handleReplayInput()" onkeydown="if(event.key==='Enter') startReplay()" style="flex:1;max-width:400px;padding:10px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:16px;font-family:monospace">
+        <button onclick="startReplay()" style="padding:10px 24px;border-radius:6px;border:none;background:linear-gradient(135deg,#c9a84c,#a8872a);color:#000;font-weight:700;font-size:16px;cursor:pointer">⚔ Смотреть</button>
+      </div>
+      <div id="replay-error" style="color:#ff6b6b;margin-top:12px;font-size:14px;display:none"></div>
+      <div id="replay-card-modal" onclick="if(event.target===this) closeReplayCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.68);z-index:1200;justify-content:center;align-items:center;padding:20px">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:980px;width:min(980px,96vw);box-shadow:0 18px 60px rgba(0,0,0,0.45)">
+          <div style="display:flex;justify-content:space-between;align-items:start;gap:16px">
+            <div>
+              <div style="color:var(--text-dim);font-size:13px">Бой #<span id="replay-card-id"></span></div>
+              <h3 style="color:var(--gold);margin:6px 0 8px">Карточка боя</h3>
+            </div>
+            <button onclick="closeReplayCard()" style="background:transparent;border:0;color:var(--text);font-size:28px;line-height:1;cursor:pointer">&times;</button>
+          </div>
+          <div id="replay-card-source" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:13px;color:var(--text);word-break:break-all"></div>
+          <div id="replay-card-content" style="margin-top:14px;max-height:58vh;overflow:auto;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);padding:12px;font-size:13px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+            <button id="replay-card-open" style="padding:11px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,#c9a84c,#a8872a);color:#000;font-weight:700;cursor:pointer">Открыть реплей</button>
+            <button id="replay-card-daily" style="padding:11px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;cursor:pointer">Открыть ссылку</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:30px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-dim);text-align:left">
+        <b style="color:var(--text)">Примеры:</b>
+        <div style="margin-top:8px">
+          <a href="javascript:setReplayId('1658361114')" style="color:var(--gold);font-family:monospace;cursor:pointer">1658361114</a>
+          <span style="color:var(--text-dim);margin-left:8px;font-size:12px">— Атака на Альянс Света</span>
+        </div>
+        <div style="margin-top:6px">
+          <a href="javascript:setReplayId('1657872561')" style="color:var(--gold);font-family:monospace;cursor:pointer">1657872561</a>
+          <span style="color:var(--text-dim);margin-left:8px;font-size:12px">— Бой с участием некромантов</span>
+        </div>
+        <div style="margin-top:6px">
+          <a href="javascript:setReplayId('https://daily.heroeswm.ru/mt61/war/id/1644923289')" style="color:var(--gold);font-family:monospace;cursor:pointer">daily.heroeswm.ru/mt61/war/id/1644923289</a>
+          <span style="color:var(--text-dim);margin-left:8px;font-size:12px">— одиночная ссылка на бой</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Battle / Tactical Pad -->
+  <div class="tab-content" id="tab-battle">
+    <div class="tac-layout">
+<div class="tac-sidebar">
+      <h3 style="color:var(--gold);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <span>Отряды</span>
+        <span onclick="tacToggleSettings()" style="cursor:pointer;font-size:14px;opacity:0.6" title="Что показывать в палитре. Настройки самого боя — кнопка ⚙ в нижнем левом углу">⚙️</span>
+      </h3>
+      <div id="tac-settings-panel" style="display:none;margin-bottom:8px;padding:6px 8px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-dim)">
+          <input type="checkbox" id="tac-show-neutrals" checked onchange="tacRenderUnits()">
+          Показывать нейтральных существ
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-dim);margin-top:4px" title="Ивентовые/шуточные существа без боевых характеристик (например, XakDN) не попадают в палитру">
+          <input type="checkbox" id="tac-hide-noparams" checked onchange="tacRenderUnits()">
+          Убрать существ без параметров
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-dim);margin-top:4px" title="Ёлка, флаги, ямы, булыжник, вагонетка, шаблон: их расставляет карта боя, а не армия, и портрета у них нет даже на сервере игры — в палитре это пустые квадраты">
+          <input type="checkbox" id="tac-hide-mapobjects" checked onchange="tacRenderUnits()">
+          Убрать объекты карты (без портрета)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-dim);margin-top:4px" title="Разрешить ставить отряды на ЛЮБЫЕ клетки поля, а не только в штатные два ряда у краёв. Команда берётся по половине поля: слева — 1/3/5, справа — 2/4/6. Работает на обычных полях боя; особым (ГВ, КШ/ЗС, круговое) не мешает">
+          <input type="checkbox" id="tac-free-placement" onchange="tacCreateGrid(false)">
+          Свободная расстановка
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-dim);margin-top:4px" title="Писать координаты (колонка;ряд) в журнале боя: атак — клетки, по которой пришёлся удар (ближний — фактическая после подхода, выстрел — прицеленная; ответный, зонные добавки, заклинания и удар героя — своя), и движения — «откуда → куда». Выключена — строчки лога короткие, без клеток">
+          <input type="checkbox" id="tac-log-target-cells">
+          Клетки в логе (атаки и движение)
+        </label>
+        <!-- «Вся магия», артефакты и навыки — здесь же, среди настроек: это НЕ
+             параметры конкретного героя, а правила боя (что вообще разрешено
+             брать), и в форме героя они прятались за её раскрытием. -->
+        <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+          <!-- «Вся магия»: снимает серверный запрет NOT_HERO_SPELLS — «Армагеддон»
+               («бьёт по всему полю») и «Веселье» сатиров попадают в книгу героя.
+               Без галочки их каст с клинета отклоняется ещё на сборке книги. -->
+          <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim)" title="Разрешить в книге героя служебные заклинания, которых нет у героя в оригинале (NOT_HERO_SPELLS): «Армагеддон» — урон огнём всем отрядам на поле, «Веселье» сатиров. Остальные фильтры (умения существ) остаются."><input type="checkbox" id="tac-hero-all-magic"> Вся магия</label>
+        </div>
+        <!-- Артефакты берутся из Примерочной: там единственная кукла, поэтому они
+             достаются ТОЛЬКО герою игрока. Флажок нужен, чтобы связь была видимой —
+             иначе бой молча зависел бы от вкладки, куда игрок мог и не заходить. -->
+        <label style="margin-top:6px;display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer">
+          <input type="checkbox" id="tac-hero-use-arts" checked onchange="tacUpdateHeroArtsCount()"> 🎒 Артефакты из Примерочной
+          <span id="tac-hero-arts-count" style="color:var(--gold)"></span>
+        </label>
+        <!-- Навыки берутся из вкладки «Колёса навыков» — там набор один, как и
+             кукла в Примерочной, поэтому достаются ТОЛЬКО герою игрока. Набор
+             чужого класса не подходит: об этом сообщает сама строка. -->
+        <label style="margin-top:4px;display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer">
+          <input type="checkbox" id="tac-hero-use-perks" checked onchange="tacUpdateHeroPerksCount()"> 🎓 Навыки из колеса
+          <span id="tac-hero-perks-count" style="color:var(--gold)"></span>
+        </label>
+        <div id="tac-hero-perks-note" style="font-size:10px;color:var(--text-dim);line-height:1.4"></div>
+        <!-- Размер поля — здесь же, среди настроек палитры: менять его нужно раз в
+             сессию, а отдельной строкой он занимал место над кнопками. -->
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+          <span style="color:var(--text-dim);font-size:13px">Поле:</span>
+          <select id="tac-field-select" class="tac-field-select" style="margin-bottom:0;flex:1" onchange="tacChangeField(this)">
+            <option value="1" data-col="12" data-row="10">1x1 (12×10)</option>
+            <option value="41" data-col="13" data-row="10">1x1 (13×10)</option>
+            <option value="42" data-col="14" data-row="10">1x1 (14×10 — как в оригинале)</option>
+            <option value="7" data-col="12" data-row="12">Арена (12×12)</option>
+            <option value="8" data-col="18" data-row="18">ГВ (18×18)</option>
+            <option value="9" data-col="12" data-row="12">ГВ арена (12×12)</option>
+            <option value="10" data-col="12" data-row="10">2x2 (12×10)</option>
+            <option value="51" data-col="13" data-row="10">2x2 (13×10)</option>
+            <option value="52" data-col="14" data-row="10">2x2 (14×10 — как в оригинале)</option>
+            <option value="11" data-col="12" data-row="12">2x2 (12×12)</option>
+            <option value="12" data-col="12" data-row="14">2x2 (12×14)</option>
+            <option value="13" data-col="12" data-row="16">2x2 (12×16)</option>
+            <option value="14" data-col="12" data-row="18">2x2 (12×18)</option>
+            <option value="15" data-col="12" data-row="20">2x2 (12×20)</option>
+            <option value="20" data-col="12" data-row="15">3x3 (12×15)</option>
+            <option value="21" data-col="12" data-row="18">3x3 (12×18)</option>
+            <option value="22" data-col="12" data-row="21">3x3 (12×21)</option>
+            <option value="23" data-col="12" data-row="24">3x3 (12×24)</option>
+            <option value="24" data-col="12" data-row="27">3x3 (12×27)</option>
+            <option value="30" data-col="12" data-row="12">КЗСЗ 4 (12×12)</option>
+            <option value="31" data-col="18" data-row="18">КЗСЗ 6 (18×18)</option>
+          </select>
+        </div>
+        <!-- Настройки самого боя (числа, звук, грунт) переехали в окно ⚙ в нижнем
+             левом углу — здесь остались фильтры палитры, к бою отношения не имеющие. -->
+      </div>
+      <!-- Исходное место кнопок в разметке: на инициализации они уезжают в столбик
+           у поля (tacDockBattleButtons), и от карточки с рамкой оставалась пустая
+           рамка между «Отряды» и фильтром фракций — поэтому её здесь больше нет.
+           flex-wrap: ряд не должен расти вправо — поле боя наезжает на сайдбар и
+           перехватывает клики по кнопкам, которые выехали за его край. -->
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px;flex-wrap:wrap">
+          <!-- «Очистить поле» и «Книга магии» убраны из ряда: первая рядом со
+               стартовой кнопкой стирала расстановку одним промахом, вторая
+               дублирует книгу героя, которая открывается в самом бою. Обе
+               функции живут (tacClearAll / tacToggleMagicBook), кнопок нет. -->
+          <button class="tac-ibtn tac-ibtn-start" id="tac-simulate-btn" onclick="tacSimulate()" title="Начать бой (симуляция)"><img src="/Heroes/img/combat/btn_startbattle.png" alt="В бой"></button>
+          <!-- Кнопка стоит ПОСЛЕ «В бой» намеренно: ряд переносится по ширине, и всё,
+               что вставлено перед стартовой кнопкой, уезжает под поле и перехватывает
+               по ней клики (см. e2e «battle simulate runs repeatedly»). -->
+          <!-- Иконки из оригинала. У автобоя два состояния, как у книги и умений:
+               `off` — можно включить, `on` — перечёркнутая, то есть «выключить». -->
+          <button class="tac-ibtn tac-ibtn-sm" id="tac-auto-btn" aria-pressed="false" onclick="tacToggleAutoBattle()" title="Автобой: существа сражаются сами"><img id="tac-auto-img" src="/Heroes/img/combat/btn_autobattle_off.png" alt="Автобой"></button>
+          <span id="tac-turn-info" style="color:var(--gold);font-size:12px;display:none"></span>
+      </div>
+      <!-- Фильтр палитры и выбор героя — одной строкой, по половине ширины каждый:
+           оба списка про одно и то же — кем выходим на поле. «Класс» переехал сюда
+           из формы героя: там он был первой строкой развёрнутой панели, а нужен
+           сразу, рядом с плиткой героя. -->
+      <div class="tac-palette-selects">
+      <select id="tac-filter" class="tac-filter" onchange="tacRenderUnits()">
+        <option value="0">Все фракции</option>
+        <option value="1">Рыцари</option>
+        <option value="2">Некроманты</option>
+        <option value="3">Маги</option>
+        <option value="4">Эльфы</option>
+        <option value="5">Варвары</option>
+        <option value="6">Тёмные эльфы</option>
+        <option value="7">Демоны</option>
+        <option value="8">Гномы</option>
+        <option value="9">Степные варвары</option>
+        <option value="10">Фараоны</option>
+      </select>
+      <select id="tac-hero-class" class="tac-filter" onchange="tacHeroClassChange()">
+        <option value="">👤 Без героя</option>
+        <option value="elf">Эльф</option>
+        <option value="knight">Рыцарь</option>
+        <option value="necromance">Некромант</option>
+        <option value="magi">Маг</option>
+        <option value="barbarian">Варвар</option>
+        <option value="telf">Тёмный эльф</option>
+        <option value="demon">Демон</option>
+        <option value="dwarf">Гном</option>
+        <option value="stepbarbarian">Степной варвар</option>
+        <option value="faraon">Фараон</option>
+      </select>
+      </div>
+      <!-- Герой — ПЕРВАЯ карточка палитры, своей шапки у него нет: в списке
+           отрядов он стоит перед существами, как ещё одна плитка. Клик по плитке
+           раскрывает его настройки (класс, параметры, артефакты). -->
+      <div class="tac-hero-panel" id="tac-hero-panel">
+        <div class="tac-hero-tile" id="tac-hero-tile" onclick="tacHeroHeaderClick('player')"
+             title="Герой: класс, параметры, артефакты">
+          <span id="tac-hero-toggle" class="tac-hero-tile-caret">▸</span>
+        </div>
+        <div id="tac-hero-body" style="display:none;padding:8px;font-size:12px">
+          <div id="tac-hero-class-skills" style="display:none;margin-bottom:6px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--gold)"></div>
+          <div style="margin:6px 0;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px" id="tac-hero-faction-ability"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Атака</span><input type="number" id="tac-hero-atk" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Защита</span><input type="number" id="tac-hero-def" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Иниц. %</span><input type="number" id="tac-hero-ini" value="0" min="0" max="100" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Сила магии</span><input type="number" id="tac-hero-sp" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Удача</span><input type="number" id="tac-hero-luck" value="0" min="-5" max="5" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Мораль</span><input type="number" id="tac-hero-morale" value="0" min="-3" max="5" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Макс. мана</span><input type="number" id="tac-hero-mana" value="10" min="0" max="100" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Ур. фракции</span><input type="number" id="tac-hero-flvl" value="1" min="1" max="10" class="tac-hero-input"></label>
+          </div>
+        </div>
+      </div>
+      <ul id="tac-unit-list" class="tac-unit-list"></ul>
+
+      <!-- Ability Test Panel -->
+      <div class="tac-test-panel" id="tac-test-panel">
+        <div class="tac-test-header" onclick="tacToggleTestPanel()">
+          <span>🧪 Тест способностей</span>
+          <span id="tac-test-toggle" style="font-size:12px;color:var(--text-dim)">▾</span>
+        </div>
+        <div id="tac-test-body">
+          <div style="padding:8px;font-size:12px">
+            <p style="color:var(--text-dim);margin:0 0 8px 0">Найдите существо — оно будет выставлено на обе стороны поля для симуляции боя.</p>
+            <input type="text" id="tac-test-search" placeholder="Поиск существа или способности..." oninput="tacTestFilter()" style="width:100%;padding:6px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box">
+            <!-- Тест армий: по сотне каждого существа выбранного класса.
+                 Два списка, а не один: вариантов на фракцию полдюжины, и плоский
+                 список на все двенадцать фракций был бы нечитаем. Оба наполняются
+                 из справочника (tacTestFillFactions / tacTestFillArmies), имена
+                 альт-классов настоящие — «Рыцарь света», «Эльф-заклинатель». -->
+            <div class="tac-test-faction">
+              <select id="tac-test-faction" onchange="tacTestFillArmies(); tacTestArmyChange()"
+                      style="flex:1 1 auto;padding:5px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px"></select>
+            </div>
+            <div class="tac-test-faction">
+              <select id="tac-test-army" onchange="tacTestArmyChange()"
+                      style="flex:1 1 auto;padding:5px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px"></select>
+              <!-- Галочка, а не кнопка: армия на поле — это СОСТОЯНИЕ, а не разовый
+                   жест. Кнопка выставляла и молчала: сменил класс в списке — на поле
+                   осталась прежняя армия, и понять это можно было только по фигурам.
+                   Пока галочка стоит, поле идёт за списками; снятая — очищает поле.
+                   Подпись убрана: галочка стоит вплотную к списку армий, подписью
+                   ей служит он сам. -->
+              <label class="tac-test-army-on" title="Выставить армии по 100 каждого существа. Снять галочку — очистить поле">
+                <input type="checkbox" id="tac-test-army-on" onchange="tacTestToggleArmy(this.checked)">
+              </label>
+            </div>
+            <div id="tac-test-list" style="margin-top:6px;max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:2px"></div>
+            <div id="tac-test-abilities" style="margin-top:8px;display:none"></div>
+            <div id="tac-test-actions" style="margin-top:8px;display:none;flex-wrap:wrap;gap:6px">
+              <button class="tac-btn" onclick="tacTestPlace()" style="font-size:11px;padding:4px 10px">🎯 На поле</button>
+              <button class="tac-btn" onclick="tacTestAllWork(true)" style="font-size:11px;padding:4px 10px;color:#4caf50">📌 Все работают</button>
+              <button class="tac-btn" onclick="tacTestAllWork(false)" style="font-size:11px;padding:4px 10px;color:#f44336">📌 Все не работают</button>
+              <span id="tac-test-save-status" style="font-size:11px;color:var(--text-dim)"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="tac-main">
+        <div style="position:relative">
+
+        <div class="tac-toolbar" id="tac-model-bar" style="margin-top:4px;display:none;align-items:center;gap:8px;font-size:13px">
+          <span style="color:var(--text-dim)">🤖 P1:</span>
+          <select id="tac-model-p1" class="tac-field-select" style="width:auto;font-size:12px;padding:2px 6px" onchange="tacModelChange(this, 'p1')">
+            <option value="">Человек</option>
+            <option value="deepseek/deepseek-chat-v4-03-01-free" selected>DeepSeek V4</option>
+            <option value="google/gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash</option>
+            <option value="openai/gpt-4o-2024-11-20">GPT-4o</option>
+            <option value="anthropic/claude-sonnet-4-20250514">Claude Sonnet 4</option>
+            <option value="qwen/qwq-32b-preview">QwQ 32B</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick</option>
+            <option value="microsoft/phi-4-multimodal-instruct">Phi-4</option>
+            <option value="__custom__">Своя модель...</option>
+          </select>
+          <input id="tac-model-p1-custom" style="display:none;width:180px;font-size:12px;padding:2px 6px" placeholder="model/name">
+          <span style="color:var(--text-dim)">🤖 P2:</span>
+          <select id="tac-model-p2" class="tac-field-select" style="width:auto;font-size:12px;padding:2px 6px" onchange="tacModelChange(this, 'p2')">
+            <option value="">Человек</option>
+            <option value="deepseek/deepseek-chat-v4-03-01-free" selected>DeepSeek V4</option>
+            <option value="google/gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash</option>
+            <option value="openai/gpt-4o-2024-11-20">GPT-4o</option>
+            <option value="anthropic/claude-sonnet-4-20250514">Claude Sonnet 4</option>
+            <option value="qwen/qwq-32b-preview">QwQ 32B</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick</option>
+            <option value="microsoft/phi-4-multimodal-instruct">Phi-4</option>
+            <option value="__custom__">Своя модель...</option>
+          </select>
+          <input id="tac-model-p2-custom" style="display:none;width:180px;font-size:12px;padding:2px 6px" placeholder="model/name">
+        </div>
+        <!-- Книга магии редактора: та же вёрстка разворота, что и в бою
+             (spellBookView.ts), поэтому внутри пусто — рисует tacUpdateMagicBook. -->
+        <div id="tac-magic-book" class="tac-hs-magic" style="display:none"></div>
+          <!-- Кнопка вне #tac-field-wrap: tacCreateGrid перезаписывает его innerHTML. -->
+          <button id="tac-fs-btn" class="tac-fs-btn" onclick="tacToggleFullField()"
+                  title="Во весь экран — арена как в оригинале (F — переключить, Esc — выйти)">⛶</button>
+          <!-- Плавающий столбик боевых кнопок арены: сюда на время полноэкранного боя
+               переезжают скорость/автобой/инфо из ряда редактора (см. tacToggleFullField) —
+               сайдбар с ними спрятан, а управлять боем нужно, как в оригинале. -->
+          <div id="tac-arena-controls" class="tac-arena-controls" style="display:none"></div>
+          <!-- Настройки боя: кнопка в нижнем левом углу, как в оригинале (btn_settings).
+               Вне #tac-field-wrap по той же причине, что и ⛶: tacCreateGrid перезаписывает
+               его innerHTML целиком. -->
+          <button id="tac-battle-settings-btn" class="tac-battle-settings-btn" aria-expanded="false"
+                  onclick="tacToggleBattleSettings()" title="Настройки боя">
+            <img src="/Heroes/img/combat/btn_settings.png" alt="Настройки">
+          </button>
+          <div id="tac-battle-settings" class="hwm-window tac-battle-settings" style="display:none">
+            <div class="tac-bs-title">Настройки</div>
+            <div class="hwm-sep"></div>
+            <label class="tac-bs-row" title="Число отряда рисуется в слое над существами и никогда не прячется за чужим спрайтом (put_number_outside оригинала)">
+              <input type="checkbox" id="tac-numbers-top" checked onchange="tacToggleNumbersTop()">
+              <span class="tac-bs-check"></span>
+              <span>Числа поверх объектов</span>
+            </label>
+            <label class="tac-bs-row" title="Арена во весь экран, без шапки и сайдбаров — как отдельная боевая страница оригинала">
+              <input type="checkbox" id="tac-full-field-box" onchange="tacToggleFullField(this.checked)">
+              <span class="tac-bs-check"></span>
+              <span>Во весь экран</span>
+            </label>
+            <label class="tac-bs-row">
+              <input type="checkbox" id="tac-show-log" checked onchange="tacToggleShowLog()">
+              <span class="tac-bs-check"></span>
+              <span>Показывать лог битвы</span>
+            </label>
+            <label class="tac-bs-row" title="Камни на поле, как в оригинале: непроходимые клетки, которые приходится обходить. Расставляются заново на каждый бой">
+              <input type="checkbox" id="tac-obstacles" checked onchange="tacToggleObstacles()">
+              <span class="tac-bs-check"></span>
+              <span>Препятствия на поле</span>
+            </label>
+            <label class="tac-bs-row" title="Тонкая полоска под отрядом — здоровье верхнего существа. В оригинале её нет: остаток смотрят в карточке отряда">
+              <input type="checkbox" id="tac-show-hp" onchange="tacToggleHpBars()">
+              <span class="tac-bs-check"></span>
+              <span>Полоска здоровья под отрядом</span>
+            </label>
+            <label class="tac-bs-row" title="Крупные портреты занимают всю высоту ленты, как ATB-шкала оригинала; мелкие оставляют больше ходов на виду">
+              <input type="checkbox" id="tac-init-big" checked onchange="tacToggleInitBig()">
+              <span class="tac-bs-check"></span>
+              <span>Крупные портреты в ленте инициативы</span>
+            </label>
+            <label class="tac-bs-row" title="Вращающееся кольцо под ходящим отрядом: золотое у игрока 1, красное у игрока 2 (show_ring оригинала). Кому оно мешает смотреть на доску — снимает галочку">
+              <input type="checkbox" id="tac-show-ring" onchange="tacToggleRing()">
+              <span class="tac-bs-check"></span>
+              <span>Кольцо под ходящим отрядом</span>
+            </label>
+            <label class="tac-bs-row" title="Всплывающие цифры урона над отрядами. Подписи умений и лечения остаются в любом случае">
+              <input type="checkbox" id="tac-show-damage" onchange="tacToggleShowDamage()">
+              <span class="tac-bs-check"></span>
+              <span>Показывать нанесённый урон</span>
+            </label>
+            <label class="tac-bs-row">
+              <input type="checkbox" id="tac-sound-checkbox" checked onchange="tacToggleMute()">
+              <span class="tac-bs-check"></span>
+              <span>Звуки в бою</span>
+            </label>
+            <label class="tac-bs-row" title="Показать текущие вероятности удачи и морали под каждым отрядом (как battleHelper luckMoraleProbability)">
+              <input type="checkbox" id="tac-show-bh-probs" onchange="tacToggleBhProbs()">
+              <span class="tac-bs-check"></span>
+              <span>Вероятности удачи/морали</span>
+            </label>
+            <label class="tac-bs-row" title="Подробный список эффектов у курсора при наведении на отряд. Короткие бейджи эффектов (слепота, замедление…) видны на самих отрядах всегда; эта галка добавляет к ним развёрнутый список с остатком ходов и расшифровкой">
+              <input type="checkbox" id="tac-show-effects-tip" onchange="tacToggleEffectsTip()">
+              <span class="tac-bs-check"></span>
+              <span>Эффекты при наведении курсора</span>
+            </label>
+            <!-- Курсоры оригинала выключены по умолчанию: картинки (меч, лук,
+                 порванная тетива, «не дотянуться») знают не все, а поле и без них
+                 показывает, что можно нажать. Включается без перезагрузки. -->
+            <label class="tac-bs-row" title="Картинки курсора из оригинала: меч, лук, порванная тетива (выстрел вполсилы), перечёркнутый меч (не дотянуться), бегущий (сюда можно пойти). По умолчанию выключено — остаётся системный курсор">
+              <input type="checkbox" id="tac-battle-cursors" onchange="tacToggleBattleCursors()">
+              <span class="tac-bs-check"></span>
+              <span>Курсоры оригинала</span>
+            </label>
+            <div class="tac-bs-slider">
+              <span>Громкость звуков</span>
+              <input type="range" class="tac-bs-range" id="tac-sfx-volume" min="0" max="100" step="1" value="80"
+                     oninput="tacSetSfxVolume(this.value)">
+            </div>
+            <div class="tac-bs-slider">
+              <span>Громкость музыки</span>
+              <input type="range" class="tac-bs-range" id="tac-music-volume" min="0" max="100" step="1" value="50"
+                     oninput="tacSetMusicVolume(this.value)">
+            </div>
+            <!-- Грунт задаёт и текстуру арены, и звуки шагов. По умолчанию «Случайно»:
+                 новое полотно на каждый бой, как в оригинале, где грунт берётся с карты. -->
+            <div class="tac-bs-slider">
+              <span>Грунт арены</span>
+              <select id="tac-terrain-select" class="tac-bs-select"></select>
+            </div>
+            <div class="hwm-sep"></div>
+            <div class="tac-bs-actions">
+              <button type="button" class="hwm-btn" onclick="tacToggleBattleSettings(false)">Закрыть</button>
+            </div>
+          </div>
+          <!-- Журнал лежит В ТОМ ЖЕ контейнере, что и поле: в редакторе он
+               ставится по его верхней кромке (position: absolute), в арене — по
+               окну (fixed). Внутрь #tac-field-wrap его класть нельзя: tacCreateGrid
+               перезаписывает innerHTML обёртки целиком. -->
+          <!-- Журнал боя. Обёртка нужна раскрытому виду: в оригинале это обычное
+          окно (`fullLog_container`) — рамка, прокручиваемый текст, разделитель
+          и кнопка. Вне арены обёртка прозрачна (display:contents), и разметка
+          редактора не меняется. -->
+          <div id="tac-log-window" class="tac-log-window">
+          <!-- Разделитель НАД текстом — как первый info_separator_horizontal внутри
+          области прокрутки оригинала. Виден только у раскрытого свитка. -->
+          <div class="hwm-sep tac-log-sep tac-log-sep-top"></div>
+          <div id="tac-result" style="display:none" onclick="tacToggleLogOpen(true)"
+          title="Журнал боя — клик раскрывает его целиком"></div>
+          <div class="hwm-sep tac-log-sep"></div>
+          <button type="button" id="tac-log-close" class="hwm-btn tac-log-close"
+          onclick="tacToggleLogOpen(false)">Закрыть лог</button>
+          </div>
+          <!-- Окно арены: логическая сцена #tac-field-wrap (1920 единиц оригинала)
+               масштабируется в него одним CSS scale — см. tacFitArenaScale. -->
+          <div id="tac-arena-viewport"><div id="tac-field-wrap"></div></div>
+        </div>
+        <!-- Лента очереди идёт СРАЗУ за полем, до панели хода: она втягивается
+             в поле отрицательным margin (см. .tac-init-bar), и отсчёт идёт от
+             предыдущего элемента. Когда между ними стояла панель хода, лента
+             подтягивалась не в поле, а на панель — и накрывала её кнопки. -->
+        <!-- Лента инициативы с кнопками пролистывания, как в оригинале. Каждая кнопка
+             видна только когда ей есть что делать: ◀ — если лента отмотана вправо,
+             ▶ — пока справа остались ходы (см. tacUpdateInitScroll). -->
+        <div id="tac-init-bar" class="tac-init-bar">
+          <!-- Координаты клетки под курсором — как в оригинале: белые цифры между
+               шестерёнкой настроек и лентой очереди. Пусто, пока курсор не на поле. -->
+          <div id="tac-cell-coords" class="tac-cell-coords"></div>
+          <!-- Стрелка рисуется в CSS (::before по data-dir): в полосе 12px глиф ◀ не
+               помещается, а картинки под эту кнопку в оригинале найти не удалось. -->
+          <button type="button" class="tac-init-scroll" data-dir="prev" onclick="tacInitScroll(-1)" title="Предыдущие ходы" aria-label="Предыдущие ходы"></button>
+          <div id="tac-initiative" class="tac-initiative"></div>
+          <button type="button" class="tac-init-scroll" data-dir="next" onclick="tacInitScroll(1)" title="Следующие ходы" aria-label="Следующие ходы"></button>
+          <!-- Здоровье / мана / выстрелы отряда под курсором — правый угол полосы,
+               как в оригинале. Пусто, пока курсор не на существе. -->
+          <div id="tac-init-vitals" class="tac-init-vitals"></div>
+        </div>
+        <!-- Панель хода хотсита: видна только пока идёт бой двух игроков -->
+        <div id="tac-hotseat-bar" class="tac-hotseat-bar" style="display:none">
+          <span id="tac-hs-turn" class="tac-hs-turn">—</span>
+          <span id="tac-hs-rage" class="tac-hs-spells" style="display:none"></span>
+          <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-pass" style="display:none" onclick="tacHsAct({type:'hero_pass'})" title="Пропустить ход героя"><span style="font-size:15px">⤼</span></button>
+          <!-- Прямая атака героя в его окне: кнопка лишь взводит прицел, сервер
+               считает цели и валидирует удар (state_view.hero_attack_offer). -->
+          <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-hero-attack" style="display:none" onclick="tacHsArmHeroAttack()" title="Атака героя: удар без заклинания (полный ход)">🗡</button>
+          <span id="tac-hs-spells" class="tac-hs-spells" style="display:none"></span>
+          <!-- Свиток рун гнома: раскрывается кнопкой, руна ложится на активный отряд. -->
+          <span id="tac-hs-runes" class="tac-hs-spells tac-hs-runes" style="display:none"></span>
+          <span class="tac-hs-actions" id="tac-hs-actions">
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-runes-btn" style="display:none" onclick="tacHsToggleRunes()" title="Рунная магия (R)"><span class="tac-rune-glyph">ᚱ</span></button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-magic-btn" style="display:none" onclick="tacHsToggleHeroBook()" title="Книга магии героя (B): появляется в ход героя — у него своя шкала ATB. Esc — отмена."><img id="tac-hs-magic-img" src="/Heroes/img/combat/btn_book_off.png" alt="Книга магии"></button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-unitbook-btn" style="display:none" onclick="tacHsToggleUnitBook()" title="Книга магии отряда: свои заклинания существа. Каст тратит ход отряда."><img id="tac-hs-unitbook-img" src="/Heroes/img/combat/btn_book_off.png" alt="Книга магии отряда"></button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-book" style="display:none" onclick="tacHsToggleBook()" title="Заклинание/Умение — применить заклинание героя или активируемое умение отряда. Повторное нажатие отменяет выбор."><img id="tac-hs-book-img" src="/Heroes/img/combat/btn_skills_off.png" alt="Заклинание/Умение"></button>
+            <!-- Режим Shift оригинала: стрелок вместо выстрела подходит и бьёт
+                 врукопашную, носитель «Удара и возврата» бьёт и остаётся у цели.
+                 То же даёт клик по врагу с зажатым Shift; подпись ставится по отряду. -->
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-shift" style="display:none" onclick="tacHsToggleShift()" title="Режим Shift">⇥</button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-defend" onclick="tacHsDefend()" title="Оборона (D): +30% защиты до следующего хода отряда"><img src="/Heroes/img/combat/btn_defence.png" alt="Защита"></button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-wait" onclick="tacHsWait()" title="Ожидание (W): походить позже в этом раунде"><img src="/Heroes/img/combat/btn_wait.png" alt="Ожидание"></button>
+            <!-- «Прервать бой» (красный крест) из столбика убран: он стоял вплотную
+                 к кнопкам хода и ронял весь бой одним промахом. Выход из боя —
+                 Esc или выход из арены; сама tacHsSurrender осталась. -->
+          </span>
+        </div>
+        <!-- Книга магии героя в бою: раскрывается кнопкой на панели хода. -->
+        <div id="tac-hs-magic" class="tac-hs-magic" style="display:none"></div>
+        <div id="tac-hs-unitbook" class="tac-hs-magic" style="display:none"></div>
+        <div id="tac-status" style="margin-top:8px;color:var(--text-dim);font-size:14px"></div>
+        <div id="tac-debug" style="margin-top:4px;background:#1a1a2e;border:1px solid #333;border-radius:4px;padding:8px;max-height:200px;overflow-y:auto;font-size:12px;font-family:monospace;color:#aaa;display:none"></div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="tac-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;min-width:320px;display:flex;gap:16px">
+        <div id="tac-show-army" style="width:120px;height:120px;flex-shrink:0;overflow:hidden;position:relative;background:rgba(0,0,0,0.2);border-radius:8px"></div>
+        <div style="flex:1">
+          <h4 style="color:var(--gold);margin-bottom:12px" id="tac-modal-title">Настройка отряда</h4>
+          <label style="display:block;margin-bottom:6px;font-size:14px">Количество:</label>
+          <input id="tac-cnt" type="number" value="1" min="1" oninput="tacSyncSplitRow()" style="width:100%;margin-bottom:12px;padding:8px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px">
+          <!-- Разделение отряда (оригинал: кнопка «Разделить» и ползунок на сумму,
+               show_polep.js prepare_separate). Отделённая часть встаёт на ближайшую
+               свободную клетку своей зоны; обратная операция — перенести отряд на
+               такой же, они сольются. -->
+          <div id="tac-split-row" style="display:none;margin-bottom:12px">
+            <label style="display:block;margin-bottom:6px;font-size:14px">Разделить:</label>
+            <input id="tac-split-n" type="range" min="1" max="1" value="1" oninput="tacSplitPreview()" style="width:100%">
+            <div style="display:flex;gap:8px;align-items:center">
+              <span id="tac-split-info" style="flex:1;font-size:12px;color:var(--text-dim)"></span>
+              <button class="tac-btn" onclick="tacSplitUnit()" title="Отделить часть отряда на свободную клетку">✂ Разделить</button>
+            </div>
+          </div>
+          <label style="display:block;margin-bottom:6px;font-size:14px">Команда:</label>
+          <select id="tac-team" style="width:100%;margin-bottom:16px;padding:8px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px">
+            <option value="1">Команда 1</option>
+            <option value="2">Команда 2</option>
+            <option value="3">Команда 3</option>
+            <option value="4">Команда 4</option>
+            <option value="5">Команда 5</option>
+            <option value="6">Команда 6</option>
+          </select>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="tac-btn" onclick="tacApplyModal()" style="flex:1">Применить</button>
+            <button class="tac-btn" onclick="tacRemoveCurrentUnit()" style="flex:1;background:rgba(255,60,60,0.2);color:#ff6b6b">Удалить</button>
+            <button class="tac-btn" id="tac-creature-info-btn" onclick="tacOpenCreatureInfo()" style="flex:1;background:rgba(107,92,231,0.2);color:var(--gold);display:none">Инфо</button>
+          </div>
+          <button class="tac-btn" onclick="tacCloseModal()" style="width:100%;margin-top:8px">Отмена</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Fitting Room -->
+  <div class="tab-content" id="tab-fitting"></div>
+
+  <!-- Skill Wheels -->
+  <div class="tab-content" id="tab-skillwheels">
+    <div id="skillwheel-controls">
+      <div class="sw-control-group">
+        <label for="sw-faction">Фракция:</label>
+        <select id="sw-faction" onchange="swOnFactionChange()"></select>
+      </div>
+      <div class="sw-control-group" id="sw-class-group" style="display:none">
+        <label for="sw-class">Класс:</label>
+        <select id="sw-class" onchange="swRenderWheel()"></select>
+      </div>
+    </div>
+    <div id="skillwheel-error" style="display:none;padding:20px;color:var(--text-dim);text-align:center"></div>
+    <div id="skillwheel-title"></div>
+    <div id="skillwheel-layout">
+      <div id="skillwheel-side"><div id="sw-build"></div></div>
+      <div id="skillwheel-visual"></div>
+      <div id="skillwheel-detail">
+        <div id="sw-detail-empty" style="color:var(--text-dim);font-size:14px;text-align:center;padding:40px 20px">Наведите или нажмите на навык, чтобы увидеть описание</div>
+        <div id="sw-detail-content" style="display:none"></div>
+      </div>
+    </div>
+    <div id="skillwheel-table"></div>
+    <div id="skillwheel-error" style="display:none;padding:20px;color:var(--text-dim);text-align:center"></div>
+  </div>
+  <div class="tab-content" id="tab-error">
+    <div id="error-page" style="padding:60px 20px;text-align:center">
+      <div style="font-size:48px;color:var(--text-dim);margin-bottom:16px">404</div>
+      <div style="font-size:18px;color:var(--text-dim);margin-bottom:8px">Страница не найдена</div>
+      <div style="font-size:14px;color:var(--text-dim);margin-bottom:24px" id="error-path"></div>
+      <a href="/" style="color:var(--gold);font-size:14px;text-decoration:none" onclick="event.preventDefault();navigateTo('/')">← На главную</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Creature Animation Modal -->
+<div id="creature-modal" style="display:none">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeCreatureModal()">&times;</button>
+    <div class="modal-preview">
+      <div id="show_army"></div>
+      <!-- Начальное состояние кнопки восстанавливает applyAnimSoundState() при
+           открытии карточки (звук включён по умолчанию). -->
+      <div class="anim-controls" id="anim-controls" style="display:none">
+        <button onclick="doAnimAction('attack')" data-label="Атака">⚔️</button>
+        <button onclick="doAnimAction('shoot')" data-label="Стрельба">🏹</button>
+        <button onclick="doAnimAction('cast')" data-label="Заклинание">🔮</button>
+        <button onclick="doAnimAction('walk')" data-label="Ходьба">🚶</button>
+        <button onclick="doAnimAction('free1')" data-label="Жест 1">🎭</button>
+        <button onclick="doAnimAction('free2')" data-label="Жест 2">🎪</button>
+        <button type="button" onclick="unitAnimAction('die')" title="Смерть" aria-label="Смерть">☠️</button>
+        <button type="button" id="animSoundToggle" class="anim-sound-toggle" onclick="toggleAnimationSound()" title="Выключить звук анимаций" aria-label="Выключить звук анимаций" aria-pressed="true">🔊</button>
+      </div>
+      <div id="show_army_nano" class="nano-controls" style="display:none">
+        <div class="nano-row" data-nano-row="naa">
+          <span class="nano-label"><img src="/Heroes/api/img?url=https://daily-help.ru/img/stats-new/attr_attack.png" width="20" height="20" alt="Нападение" title="Нападение"> Нападение:</span>
+          <button type="button" class="nano-btn nano-btn-naa active" data-type="naa" data-value="0" onclick="setNanoLevel('naa',0)">0</button>
+          <button type="button" class="nano-btn nano-btn-naa" data-type="naa" data-value="1" onclick="setNanoLevel('naa',1)">1</button>
+          <button type="button" class="nano-btn nano-btn-naa" data-type="naa" data-value="2" onclick="setNanoLevel('naa',2)">2</button>
+        </div>
+        <div class="nano-row" data-nano-row="nad">
+          <span class="nano-label"><img src="/Heroes/api/img?url=https://daily-help.ru/img/stats-new/attr_defense.png" width="20" height="20" alt="Защита" title="Защита"> Защита:</span>
+          <button type="button" class="nano-btn nano-btn-nad active" data-type="nad" data-value="0" onclick="setNanoLevel('nad',0)">0</button>
+          <button type="button" class="nano-btn nano-btn-nad" data-type="nad" data-value="1" onclick="setNanoLevel('nad',1)">1</button>
+          <button type="button" class="nano-btn nano-btn-nad" data-type="nad" data-value="2" onclick="setNanoLevel('nad',2)">2</button>
+        </div>
+        <div class="nano-row" data-nano-row="nai">
+          <span class="nano-label"><img src="/Heroes/api/img?url=https://daily-help.ru/img/stats-new/attr_initiative2.png" width="20" height="20" alt="Инициатива" title="Инициатива"> Инициатива:</span>
+          <button type="button" class="nano-btn nano-btn-nai active" data-type="nai" data-value="0" onclick="setNanoLevel('nai',0)">0</button>
+          <button type="button" class="nano-btn nano-btn-nai" data-type="nai" data-value="1" onclick="setNanoLevel('nai',1)">1</button>
+          <button type="button" class="nano-btn nano-btn-nai" data-type="nai" data-value="2" onclick="setNanoLevel('nai',2)">2</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-name"><span class="nav-arrow nav-prev" id="creature-nav-prev" onclick="navigateCreature(-1)" title="Предыдущее (←)">◀</span><span id="creature-modal-name"></span><span class="nav-arrow nav-next" id="creature-nav-next" onclick="navigateCreature(1)" title="Следующее (→)">▶</span></div>
+      <div class="modal-sub" id="creature-modal-sub"></div>
+      <div class="modal-nav"><input id="creature-nav-input" type="text" placeholder="Поиск существа..." list="creature-nav-datalist" onchange="navigateTo('/units/'+this.value)" style="width:100%;padding:6px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px"><datalist id="creature-nav-datalist"></datalist></div>
+      <div class="modal-stats" id="creature-modal-stats"></div>
+      <div class="modal-skills" id="creature-modal-skills"></div>
+      <div class="modal-spells-wrap" id="creature-modal-spells-wrap" style="display:none">
+        <div class="modal-spells-title">Заклинания</div>
+        <div class="modal-spells" id="creature-modal-spells"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Artifact Modal -->
+<div id="artifact-modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeArtifactModal(); if(location.pathname.startsWith('/artifacts/')) history.pushState(null, '', '/artifacts');">&times;</button>
+    <div class="modal-header">
+      <div id="artifact-modal-icon"></div>
+      <div class="info">
+        <div class="name" id="artifact-modal-name"></div>
+        <div class="sub" id="artifact-modal-sub"></div>
+      </div>
+    </div>
+    <div class="meta-row" id="artifact-modal-meta"></div>
+    <div class="mods-grid" id="artifact-modal-mods"></div>
+    <div class="specials" id="artifact-modal-specials" hidden></div>
+      <div id="artifact-modal-set-link" style="display:none;margin-top:12px"></div>
+      <div id="artifact-modal-set" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"></div>
+    <div class="desc" id="artifact-modal-desc" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Magic Modal -->
+<div id="magic-modal" style="display:none">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeMagicModal(); if(location.pathname.startsWith('/magics/')) history.pushState(null, '', '/book_of_magic');">&times;</button>
+    <div class="modal-header">
+      <div id="magic-modal-icon"></div>
+      <div class="info">
+        <div class="name" id="magic-modal-name"></div>
+        <div class="sub" id="magic-modal-sub"></div>
+      </div>
+    </div>
+    <div class="meta-row" id="magic-modal-meta"></div>
+    <!-- Анимация заклинания из боевого движка: у части заклинаний своего atlas'а
+         нет, тогда блок остаётся скрытым (см. spellPreview.ts). -->
+    <div id="magic-modal-anim" class="magic-anim" style="display:none"></div>
+    <div id="magic-modal-desc" style="margin-top:12px;padding:12px;background:var(--panel);border-radius:6px;font-size:13px;line-height:1.6;color:var(--text)"></div>
+    <div id="magic-modal-levels" style="margin-top:12px"></div>
+    <div id="magic-modal-info" style="margin-top:8px;padding:10px;background:var(--panel);border-radius:6px;font-size:12px;color:var(--text-dim);line-height:1.5;display:none"></div>
+  </div>
+</div>
+
+<script src="/Heroes/vendor/howler.core.js?v=957fdcb5"></script>
+<script src="/Heroes/js/konva.js?v=12460adb"></script>
+<!-- /Heroes/js/anim-init.js tag removed: the compiled file no longer exists (source became
+     anim-init.ts, bundled nowhere) — the URL resolves to the SPA index.html fallback, and
+     the tag only "worked" while a stale copy lived in the service worker cache. enginep.js
+     defines all of the globals (image_obj/loading_stack/loadImage_url) itself. -->
+
+<script>
+try {
+  var _s = document.createElement('script');
+  _s.src = '/Heroes/enginep.js?v=e67fa392';
+  _s.async = false;
+  _s.onerror = function() { console.warn('enginep.js failed, animation fallback'); };
+  document.head.appendChild(_s);
+} catch(e) { console.warn('enginep.js error:', e); }
+</script>
+<script src="/anim_effects.js?v=2a7ddebb"></script>
+<script src="/Heroes/show_info.js?v=f086f57d"></script>
+<script type="module" src="/Heroes/dist/bundle.js?v=3fbce989"></script>
+
+</body>
+</html>

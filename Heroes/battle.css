@@ -1,0 +1,2905 @@
+/* Стили боевой арены: поле, отряды, лента инициативы, наложения, панели.
+ *
+ * Отделено от styles.css по цене чтения: правка боевого интерфейса тянула за
+ * собой 26 000 токенов чужих правил — карточки существ, артефакты, колесо
+ * умений, вкладку сетов. Здесь только то, что начинается с .tac-/#tac-.
+ *
+ * Подключается вторым тегом link после styles.css, поэтому специфичность и
+ * порядок каскада сохранены: боевые правила по-прежнему идут последними.
+ */
+
+[data-theme="light"] .tac-unit-list li { border-color: #ccc; }
+
+/* Battle / Tactical Pad */
+.tac-layout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  /* #tab-battle сам flex-контейнер (слева .tac-layout, справа панель противника):
+     без flex:1 центральная часть не растягивалась, и панель противника прилипала
+     к полю, оставляя пустоту у правого края экрана. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tac-sidebar {
+  width: 236px;
+  flex-shrink: 0;
+}
+.tac-filter, .tac-field-select, .tac-code-input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size:14px;
+  margin-bottom: 8px;
+}
+/* Плитки — сеткой auto-fill, а не flex-wrap: у flex-wrap плитки фиксированной
+   ширины оставляли справа остаток до колонки (при 849px и 12 плитках по 66 —
+   61px пустоты), сетка растягивает столбцы на всю ширину. */
+.tac-unit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 4px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.tac-unit-list.tac-unit-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--tac-cols, 3), 1fr);
+  gap: 4px;
+}
+.tac-unit-list li {
+  cursor: grab;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+  background: var(--card);
+}
+.tac-unit-list li:hover { border-color: var(--gold-dim); }
+.tac-unit-list li img {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.tac-unit-grid li img {
+  width: 100%;
+  max-width: 56px;
+  height: auto;
+  aspect-ratio: 1;
+}
+.tac-main {
+  flex: 1;
+  min-width: 0;
+  /* Якорь для кнопки «во весь экран»: она стоит в верхнем правом углу БОЯ,
+     а не страницы (см. .tac-fs-btn). */
+  position: relative;
+}
+.tac-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.tac-toolbar .tac-field-select { width: auto; margin-bottom: 0; }
+.tac-toolbar .tac-code-input { flex: 1; margin-bottom: 0; }
+.tac-btn {
+  padding: 6px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  cursor: pointer;
+  font-size:14px;
+  white-space: nowrap;
+}
+.tac-btn:hover { background: var(--card-hover); border-color: var(--gold-dim); }
+
+/* Фильтр палитры и выбор героя стоят в один ряд по половине ширины: раньше
+   фильтр тянулся на всю строку, а класс героя прятался внутри развёрнутой формы. */
+.tac-palette-selects {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.tac-palette-selects > select { flex: 1 1 0; min-width: 0; }
+
+/* Герой живёт В ПАЛИТРЕ, перед существами: своей шапки и своей карточки-панели
+   у него больше нет — есть плитка того же размера, что и у отрядов, а под ней
+   раскрываются настройки. Отдельная секция «Герой» над «Отрядами» занимала
+   строку заголовка ради одного переключателя. */
+.tac-hero-panel {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+/* Плитка героя — один в один с плиткой отряда (.tac-unit-list li), только
+   золотая: в палитре она читается как «ещё одно существо», а цвет говорит, что
+   это герой. */
+.tac-hero-tile {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  box-sizing: border-box;
+  padding: 2px;
+  border: 1px solid var(--gold-dim, var(--border));
+  border-radius: 4px;
+  background: var(--card);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--gold);
+}
+.tac-hero-tile:hover { border-color: var(--gold); }
+/* В сетке по фракциям колонки размечены по тирам — плитка героя туда не
+   вписывается и занимает свою строку целиком. */
+.tac-unit-grid .tac-hero-tile { grid-column: 1 / -1; }
+/* В общей сетке плитка героя — квадрат в свой столбец, как плитки отрядов. */
+.tac-unit-list:not(.tac-unit-grid) .tac-hero-tile { width: auto; height: auto; aspect-ratio: 1; }
+.tac-hero-tile img {
+  width: 100%;
+  max-width: 56px;
+  aspect-ratio: 1;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+/* Уголок раскрытия — в углу плитки, а не отдельной строкой. */
+.tac-hero-tile-caret {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  pointer-events: none;
+}
+/* Шапки «👤 Герой» больше нет — вместо неё плитка в палитре (.tac-hero-tile). */
+.tac-hero-input {
+  width: 50px;
+  padding: 2px 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 11px;
+  text-align: center;
+}
+.tac-hero-input:focus { outline: none; border-color: var(--gold); }
+
+/* ===== Режим «во весь экран»: арена как в оригинале =====
+   В оригинальном клиенте бой занимает всё окно — нет ни шапки сайта, ни вкладок, ни
+   боковых палитр. У нас они съедали 484px по горизонтали и 140px по вертикали, и поле
+   упиралось именно в них (потолок масштаба при 1080p даже не достигался). Этот режим
+   их убирает, освобождая место полю; tacFitField читает геометрию вживую и сам
+   пересчитывает масштаб. Кнопка — position:fixed, поэтому переживает innerHTML-replace
+   обёртки в tacCreateGrid и видна в обоих режимах. */
+.tac-fs-btn {
+  /* Угол БОЯ, а не страницы: в расстановке кнопка висела в правом верхнем углу
+     окна — поверх шапки сайта, рядом с кнопкой темы, и к полю отношения не
+     имела. Место ей у правого верхнего угла самой доски: там же, где в арене,
+     только внутри редактора. Якорь — .tac-main (position: relative). */
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 300;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--gold, #c9a84c);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--gold, #c9a84c);
+  border-radius: 6px;
+}
+.tac-fs-btn:hover { background: rgba(0,0,0,0.7); }
+/* Кнопка нужна только на вкладке боя. */
+body:not(.tac-on-battle) .tac-fs-btn { display: none; }
+/* В арене сайдбаров нет, .tac-main растянут на весь экран, но угол доски — не
+   угол экрана: сверху и с боков у оригинала поля (pole_top / pole_left). Кнопка
+   встаёт в ПРАВЫЙ ВЕРХНИЙ угол доски — зеркально шестерёнке настроек в левом
+   нижнем. Fixed, потому что .tac-main в арене не обёртка доски. */
+body.tac-full-field .tac-fs-btn {
+  position: fixed;
+  right: calc(var(--arena-x) + var(--pole-side, 20px) + 4px);
+  top: calc(var(--arena-y) + (var(--pole-top, 88px) - 32px) / 2);
+}
+
+/* Настройки боя — кнопка с оригинальной иконкой в НИЖНЕМ ЛЕВОМ углу, как в бою
+   heroeswm. Fixed, а не в потоке: в полноэкранной арене вокруг поля нет ни одного
+   контейнера, к которому её можно было бы привязать. Значок мельче боевых кнопок
+   (38px) — в оригинале настройки тоже мельче кнопок действий. */
+.tac-battle-settings-btn {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  z-index: 300;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  line-height: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+.tac-battle-settings-btn img { width: 100%; height: 100%; display: block; }
+.tac-battle-settings-btn:hover img { filter: brightness(1.5) drop-shadow(0 0 5px #ffe4b3); }
+
+/* Тултип эффектов под курсором (battleHelper hover): лёгкая плашка у мыши со
+   списком бафов/дебафов, пока карточка не открыта. Тёмный фон как у карточки,
+   но компактнее — его место по краю курсора, а не поверх всего поля. */
+.tac-effect-tooltip {
+  position: fixed;
+  z-index: 500;
+  max-width: 260px;
+  padding: 6px 9px;
+  background: rgba(16, 18, 24, 0.95);
+  border: 1px solid var(--gold-dim, rgba(201, 168, 76, 0.5));
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  line-height: 1.35;
+  color: #e8e4d8;
+  pointer-events: none;
+}
+.tac-effect-tooltip b { color: var(--gold, #d8c38a); font-size: 12px; }
+.tac-effect-line { margin-top: 3px; word-break: break-word; }
+.tac-effect-what { color: var(--text-dim, #9aa0a6); font-size: 11px; }
+
+/* Шансы умений под курсором (battleHelper hover): та же лёгкая плашка, что
+   у эффектов, но рядом с прогнозом урона — «умение → %». Показывается под
+   галкой tacShowBhProbs вместе с обычной табличкой урона. */
+.tac-skill-tooltip {
+  position: fixed;
+  z-index: 500;
+  max-width: 220px;
+  padding: 6px 9px;
+  background: rgba(16, 18, 24, 0.95);
+  border: 1px solid var(--gold-dim, rgba(201, 168, 76, 0.5));
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #e8e4d8;
+  pointer-events: none;
+}
+.tac-skill-tooltip b { color: var(--gold, #d8c38a); }
+.tac-skill-line { margin-top: 3px; display: flex; justify-content: space-between; gap: 10px; }
+.tac-skill-line .tac-info-bhprob { color: #7ee787; }
+/* В редакторе шестерёнка стоит в нижнем левом углу САМОГО поля — там же, где в
+   арене и в оригинале. Раньше она была спрятана: `position: fixed` вешал её в
+   угол ОКНА, то есть поверх палитры существ, к бою отношения не имеющей. Теперь
+   привязка к контейнеру поля (у него `position: relative`), и прятать нечего. */
+body:not(.tac-full-field) .tac-battle-settings-btn { position: absolute; }
+/* В арене шестерёнка стоит в нижнем левом углу ДОСКИ, а не страницы: у оригинала
+   она внутри боевого поля, а у нас лежала в нижнем поле рядом со шкалой ATB и
+   читалась как часть шкалы. Обе величины ставит tacFitField по формулам
+   оригинала (pole_left / pole_bottom). */
+body.tac-on-battle .tac-battle-settings-btn {
+  /* Шестерёнка стоит СБОКУ от шкалы ATB, в самом углу нижнего поля, и заметно
+     мельче кнопок боя — так она в оригинале. Над шкалой она загораживала нижний
+     ряд доски, а размером спорила с круглыми кнопками слева. В арене к поясам
+     прибавляется letterbox-смещение сцены (в редакторе оно 0). */
+  left: calc(var(--arena-x) + var(--pole-side, 20px) + 4px);
+  bottom: calc(var(--arena-y) + (var(--pole-bottom, 90px) - 22px) / 2);
+  width: 22px;
+  height: 22px;
+}
+/* Запаса снизу под кнопку в сайдбаре больше не нужно: в расстановке её нет. */
+/* В арене страница прокручивается, и под кнопкой по очереди оказываются панель
+   хода, лента очереди и строка подсказки — то есть всё, что лежит НИЖЕ поля.
+   Отступ слева ровно на её колонку: сдвигать всю арену нельзя, ширина там на счету. */
+/* Нижнее поле оригинала (pole_bottom) целиком отдано шкале ATB, а строка хода и
+   подсказка ложатся тонкой полосой прямо над ней — как встроенные подписи боя. */
+body.tac-full-field .tac-init-bar {
+  position: fixed;
+  left: var(--arena-x);
+  right: var(--arena-x);
+  bottom: var(--arena-y);
+  height: var(--pole-bottom, 90px);
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  /* Лента короче поля с ОБЕИХ сторон — как в оригинале, где шкала ATB не
+     доходит до краёв экрана: слева в отступе стоит шестерёнка, справа поле
+     остаётся пустым, и полоса читается как отдельный элемент, а не как кромка
+     экрана. Отступ считается от бокового поля доски (pole_left). */
+  padding: 4px calc(var(--pole-side, 20px) + 34px);
+  box-sizing: border-box;
+  z-index: 55;
+}
+body.tac-full-field .tac-init-bar .tac-initiative {
+  height: 100%;
+  /* Лента лежит на нижнем поле арены и своей рамки не имеет: в оригинале ATB —
+     ряд портретов прямо на полосе, без окна вокруг. */
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 0;
+}
+/* Кнопка листания ровно в рост фишки — не выше портретов. `align-items: center`
+   у полосы обжимал её до квадратика по размеру треугольника, а `stretch` тянул
+   на всю высоту нижнего поля, и полоска торчала над лентой. */
+/* Стрелка — ТОНКАЯ ЛИНИЯ в рост фишки и мельчает вместе с ней. Мерка из
+   оригинала: полоса ATB высотой `120 * atb_scaling`, ячейка в ней 144×120, а
+   кнопка листания — 8×120 (`atb_but_width`, `show_atb_next_button`). То есть
+   высота стрелки совпадает с фишкой, а ширина — доля её ширины.
+   Доля взята 9%, а не буквальные 8/144 = 5.6%: у оригинала стрелка рисуется
+   картинкой на плотном экране, а у нас на обычном из 5.6% выходила нитка в
+   три-четыре пикселя, которую не видно и в которую не попасть мышью. Высота
+   при этом осталась ровно оригинальной.
+   Было `--pole-bottom - 24px` по высоте при фиксированных 8px по ширине: на
+   мелкой ленте вычитание съедало почти всю высоту, ширина не уменьшалась вовсе,
+   и от линии оставался золотой квадратик. */
+body.tac-full-field .tac-init-bar .tac-init-scroll {
+  align-self: center;
+  width: max(3px, calc(var(--pole-bottom, 90px) * 1.059 * 0.09));
+  height: calc(var(--pole-bottom, 90px) * 0.882);
+}
+body.tac-init-small.tac-full-field .tac-init-bar .tac-init-scroll {
+  width: max(3px, calc(var(--pole-bottom, 90px) * 0.699 * 0.09));
+  height: calc(var(--pole-bottom, 90px) * 0.582);
+}
+/* Фишка занимает шкалу почти целиком, как в оригинале: там полоса ATB высотой
+   `120 * atb_scaling` (show_atb_next_button), и портрет в ней — квадрат в
+   полосу минус отступы. Фиксированные 46px делали шкалу рядом мелких значков. */
+body.tac-full-field .tac-init-bar .tac-init-unit {
+  /* Кайма в арене НЕ растёт: остаётся те же 3px, что и в редакторе (правило
+     `.tac-init-unit`). Раньше здесь стояло `border-width: max(3px,
+     --pole-bottom * 0.064)` — «как в оригинале кайма занимает шестую часть
+     ширины фишки», и в арене (--pole-bottom ≈ 136px) рамка выходила 8.7px
+     против 3px вне её: при переключении полного экрана цветные кадры вокруг
+     существ в ленте инициативы на глаз жирели. Теперь размер фишки в двух видах
+     разный, а толщина каймы — одна и та же, и переключение экрана её не трогает. */
+  /* В арене мерка фишки своя и тоже из оригинала: полоса ленты pole_bottom = 136,
+     ячейка в ней 120 высотой и 144 шириной. Считаем ДОЛЯМИ, а не вычитанием
+     фикса: --pole-bottom масштабируется вместе с полем (в редакторе это ~53px,
+     а не 136), и «минус 16» съедал бы у маленькой полосы треть. */
+  height: calc(var(--pole-bottom, 90px) * 0.882);
+  width: calc(var(--pole-bottom, 90px) * 1.059);
+}
+/* Мелкие фишки (настройка «Крупные портреты в ленте инициативы» снята): в ленту
+   влезает вдвое больше ходов, вся очередь видна без прокрутки. */
+body.tac-init-small.tac-full-field .tac-init-bar .tac-init-unit {
+  height: calc(var(--pole-bottom, 90px) * 0.582);
+  width: calc(var(--pole-bottom, 90px) * 0.699);
+}
+/* Фишка меряется поясом ATB в обоих видах: пояс один и тот же (pole_bottom). */
+body.tac-on-battle:not(.tac-full-field) .tac-init-bar .tac-init-unit {
+  height: calc(var(--pole-bottom, 90px) * 0.882);
+  width: calc(var(--pole-bottom, 90px) * 1.059);
+}
+body.tac-init-small.tac-on-battle:not(.tac-full-field) .tac-init-bar .tac-init-unit {
+  height: calc(var(--pole-bottom, 90px) * 0.582);
+  width: calc(var(--pole-bottom, 90px) * 0.699);
+}
+body.tac-init-small .tac-init-unit {
+  width: calc(var(--tac-init-w, 56px) * 0.66);
+  height: calc(var(--tac-init-h, 47px) * 0.66);
+}
+body.tac-init-small .tac-init-scroll {
+  width: max(3px, calc(var(--tac-init-w, 56px) * 0.66 * 0.09));
+  height: calc(var(--tac-init-h, 47px) * 0.66);
+}
+body.tac-init-small .tac-init-cnt { font-size: 10px; }
+/* Журнал боя вне арены — окно под доской в редакторе. Стиль переехал сюда из
+   инлайнового `style=` в index.html: в арене он должен выглядеть иначе, а
+   инлайновые свойства перебивали любое правило отсюда, кроме !important. */
+#tac-result {
+  margin-top: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  font-size: 14px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Верх арены занимает ЖУРНАЛ — как в оригинале (`.log_short_container_Desktop`
+   в i/combat/styles.css): полоса по центру верхнего поля шириной 40vw, высотой
+   в несколько строк, текст по центру, последние строки внизу.
+   Строки хода и подсказки здесь больше нет: чья очередь, видно по кольцу под
+   отрядом и по ленте инициативы, а перечень действий — на кнопках слева. Панель
+   висела ровно над серединой доски и закрывала верхний ряд. */
+body.tac-full-field { --arena-log-w: 40vw; }
+/* В редакторе полоса меряется от КОНТЕЙНЕРА поля, а не от окна: там доска уже
+   экрана, и 40vw вылезали бы за её края. Доля та же — 0.4. */
+body.tac-on-battle:not(.tac-full-field) { --arena-log-w: 40%; }
+/* Подпись хода и строка-подсказка убраны В ОБОИХ видах: чья очередь, видно по
+   кольцу под отрядом и по ленте очереди, а перечень действий — на круглых
+   кнопках. В редакторе они занимали две строки под доской, которых в бою нет. */
+body.tac-on-battle #tac-hs-turn,
+body.tac-on-battle #tac-status { display: none !important; }
+/* Сама панель хода остаётся: в ней живут кнопки хода героя (пропуск, руны,
+   заклинания), которые появляются по ходу боя. Без своих надписей она пустая —
+   значит и подложки у неё быть не должно НИ В ОДНОМ виде: в редакторе от неё
+   оставалась золотая плашка во всю ширину с одной подписью внутри. */
+body.tac-on-battle .tac-hotseat-bar {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+body.tac-full-field .tac-hotseat-bar {
+  position: fixed;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+  bottom: auto;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  background: none;
+  /* Выше столбика кнопок (#tac-arena-controls, z-index 60): из этой панели
+     раскрываются свиток рун и книги, и без своего слоя они уезжали ПОД кнопку
+     автобоя — та перехватывала клики по рунам (ловится e2e «dwarf runes»). */
+  z-index: 65;
+}
+
+/* Обёртка журнала вне арены не существует для разметки: редактор рисует отчёт
+   ровно так же, как рисовал до неё. */
+.tac-log-window { display: contents; }
+.tac-log-window .tac-log-sep,
+.tac-log-window .tac-log-close { display: none; }
+
+/* ── Свиток журнала ──────────────────────────────────────────────────────
+   В оригинале журнал — не окно, а СВИТОК: полоса бумаги с валиками сверху и
+   снизу (у валиков золотые навершия) и прошивкой по бокам. Свёрнутый вид — тот
+   же свиток, раскатанный на пару строк: видна бумага и нижний валик.
+   Готовых картинок для него на CDN найти не удалось (в разметке это
+   `fullLog_container`, а его стили лежат вне боевого styles.css), поэтому
+   бумага и валики собраны градиентами — по присланному кадру оригинала. */
+:root {
+  --log-paper: #e9e6dc;
+  --log-ink: #242627;
+  --log-gold: #a8862c;
+}
+
+/* Общая бумага и валик — у свёрнутого и раскрытого вида один материал. */
+body.tac-on-battle .tac-log-window {
+  display: block;
+  /* В редакторе — по верхней кромке КОНТЕЙНЕРА поля (у него position: relative),
+     в арене (правило следом) — по окну. Внутрь #tac-field-wrap свиток класть
+     нельзя: tacCreateGrid переписывает его innerHTML целиком. */
+  position: absolute;
+  /* От ВЕРХНЕЙ кромки грунта, как `log_panel` оригинала (`top: 0`): отступ
+     оставлял над свитком полоску земли. Контейнер свитка (обёртка в
+     `.tac-main`) начинается там же, где окно арены — его отрицательный
+     margin-top схлопывается с обёрткой. */
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Ширина ПОСТОЯННАЯ — 40vw, как `.log_short_container_Desktop` оригинала.
+     Полоса по содержимому сжималась до пары слов на короткой строке и прыгала
+     в ширине на каждой новой записи. */
+  width: var(--arena-log-w);
+  max-width: 92vw;
+  padding-bottom: 5px;      /* место под нижний валик (высота cap_bottom) */
+  color: var(--log-ink);
+  background:
+    linear-gradient(90deg,
+      rgba(233, 230, 220, 0) 0%,
+      rgba(233, 230, 220, 0.94) 6%,
+      rgba(238, 235, 226, 0.96) 50%,
+      rgba(233, 230, 220, 0.94) 94%,
+      rgba(233, 230, 220, 0) 100%);
+  z-index: 54;
+}
+body.tac-full-field .tac-log-window { position: fixed; top: 0; }
+/* Планка под полосой — картинка оригинала (`log_short_container_cap_bottom`,
+   scroll_small_cap_bottom2.png, 1024×5): тонкая кромка свитка. */
+body.tac-on-battle .tac-log-window::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: url('/Heroes/api/cache/i/combat/scroll_small_cap_bottom2.png') center / 100% 5px no-repeat;
+}
+body.tac-on-battle #tac-result {
+  position: static;
+  width: auto;
+  /* Высота и кегль — по формулам оригинала (`show_polep.js`, ветка расчёта
+     `log_panel`): `log_height = pole_top * scaling * 0.6`, полоса текста
+     `win_ShortLog` на 5px ниже (там снизу картинка валика), кегль
+     `max(11, round(log_height / 5))`. Раньше свиток занимал почти весь верхний
+     пояс (pole_top - 16px) и печатал 14px через 1.15 — на экране помещалось
+     две строки вместо оригинальных пяти, и бумага лезла на доску.
+     Высота ФИКСИРОВАННАЯ, а не «по содержимому»: у оригинала свиток всегда
+     раскатан на `log_height` (win_ShortLog.style.height = log_height - 5),
+     даже когда в нём одна строка; по содержимому он сжимался в полоску. */
+  height: calc(var(--pole-top, 88px) * 0.6 - 5px);
+  margin: 0 !important;
+  padding: 0 3vw;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--log-ink);
+  /* Шрифт и плотность строк — из оригинала. */
+  font-family: 'PT Sans', 'Segoe UI', sans-serif;
+  font-size: max(11px, calc(var(--pole-top, 88px) * 0.12));
+  line-height: 0.9;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  cursor: pointer;
+  scrollbar-width: none;
+}
+body.tac-on-battle #tac-result::-webkit-scrollbar { display: none; }
+/* Пустого журнала не видно вовсе: бумага висела бы над серединой доски ещё до
+   первого хода. */
+body.tac-on-battle .tac-log-window:has(#tac-result:empty) { display: none; }
+body.tac-no-log .tac-log-window { display: none !important; }
+
+/* ── Раскрытый свиток ───────────────────────────────────────────────────── */
+body.tac-log-open .tac-log-window {
+  top: 4vh;
+  bottom: calc(var(--arena-y) + var(--pole-bottom, 90px) + 8px);
+  /* Ширина оригинала: `.log_full` тянется до 870px, вокруг поля в 4em. Третьим
+     ограничителем — сам контейнер: вне арены свиток лежит В поле (absolute), и
+     900px вылезали на список отрядов слева. В арене обёртка фиксированная, там
+     100% и так равны ширине окна. */
+  width: min(900px, 90vw, 100%);
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  /* Поля считаны с картинки: сверху и с боков бумага начинается почти сразу, а
+     снизу под текстом остаётся подвёрнутый край свитка. */
+  padding: 6% 7% 15%;
+  /* Настоящий свиток оригинала. Растягивается по контейнеру — тем же приёмом,
+     что книга магии (`background-size: 100% 95%` у .book_bg). */
+  background: url('/Heroes/api/cache/i/combat/scroll_big_bg.png') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.5));
+  z-index: 70;
+}
+/* У раскрытого свитка своей планки нет — она нарисована на самой бумаге. */
+body.tac-log-open .tac-log-window::after { content: none; }
+body.tac-log-open #tac-result {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  max-width: 870px;
+  margin: 0 auto !important;
+  padding: 6px 10px;
+  font-size: 15px;
+  line-height: 1.3;
+  cursor: default;
+  scrollbar-width: thin;
+}
+body.tac-log-open #tac-result::-webkit-scrollbar { display: block; width: 8px; }
+body.tac-log-open .tac-log-window .tac-log-sep { display: block; width: 92%; margin: 4px auto; }
+body.tac-log-open .tac-log-window .tac-log-sep-top { margin-bottom: 10px; }
+body.tac-log-open .tac-log-window .tac-log-close {
+  display: inline-block;
+  align-self: center;
+  min-width: 170px;
+  margin-top: 8px;
+}
+/* Строки журнала пишутся с инлайновым `color: var(--text-dim)` — по бумаге такой
+   серый не читается. Перебиваем цветом оригинала, а имена отрядов (свой
+   инлайновый цвет команды) не трогаем. */
+body.tac-on-battle #tac-result > div {
+  color: var(--log-ink) !important;
+  font-size: inherit !important;
+  /* Отбивки строк журнал пишет инлайном (`padding: 2px 0`), и без !important
+     они переживали любое правило отсюда: строка выходила 13.9px вместо 9.9px и
+     в полосу влезали две записи вместо четырёх. */
+  padding: 0 !important;
+}
+body.tac-on-battle #tac-result .tac-log-alert { padding: 0 !important; }
+body.tac-on-battle #tac-result b,
+body.tac-on-battle #tac-result strong { font-weight: 700; }
+#tac-result .tac-log-alert { color: #b32020 !important; font-weight: 600; padding: 2px 0; }
+/* Числа в журнале. В редакторе (тёмная тема) — красные, как были; в арене по
+   бумаге оригинал пишет их ЖИРНЫМ ЧЁРНЫМ, и красный там теряется. */
+.tac-log-num { color: #ff6b6b; font-weight: 600; }
+body.tac-on-battle .tac-log-num { color: var(--log-ink); font-weight: 700; }
+/* Имена отрядов — как в разметке оригинала: <font color="#FF0000"> и
+   <font color="#0000FF">, обычным начертанием. Полужирное там только у чисел. */
+body.tac-on-battle #tac-result .tac-log-name { font-weight: 400 !important; }
+body.tac-on-battle #tac-result .tac-log-name.tm1,
+body.tac-on-battle #tac-result .tac-log-name.tm3 { color: #ff0000 !important; }
+body.tac-on-battle #tac-result .tac-log-name.tm2,
+body.tac-on-battle #tac-result .tac-log-name.tm4 { color: #0000ff !important; }
+
+body.tac-full-field #tac-debug { display: none !important; }
+/* «Прервать бой» в оригинале в бою нет вовсе: выход из арены — Esc, и кнопка
+   остаётся в ряду редактора. В столбике она стояла последней и читалась как
+   «отменить действие», хотя роняла весь бой. */
+body.tac-full-field #tac-hs-surrender { display: none !important; }
+
+/* Окно настроек боя — на общей рамке `.hwm-window`; здесь только его размеры,
+   место на экране и начинка. */
+.tac-battle-settings {
+  position: fixed;
+  left: 10px;
+  bottom: 48px;
+  z-index: 300;
+  width: 300px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
+  padding: 12px 10px;
+  font-size: 14px;
+}
+body:not(.tac-on-battle) .tac-battle-settings { display: none !important; }
+.tac-bs-title {
+  padding: 2px 0 6px;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #976d2b;
+  background: linear-gradient(#dbbd6a, #947640);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(76,62,35,0.2);
+}
+.tac-bs-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 8px;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+.tac-bs-row:hover { background: rgba(0,0,0,0.05); }
+/* Родная галка спрятана, но остаётся кликабельной и доступной с клавиатуры —
+   приём оригинала (.checkbox_container input): opacity 0, а не display:none.
+   Растянута на всю строку, а нарисованная коробочка щелчков не ловит: иначе
+   клик по самой коробочке (и `input.click()` из кода) упирался бы в неё. */
+.tac-bs-row input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.tac-bs-check {
+  pointer-events: none;
+  position: relative;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #e7b257;
+  border-radius: 6px;
+  background:
+    url('/Heroes/api/cache/i/combat/formFieldCorner_lt.png') top left no-repeat,
+    url('/Heroes/api/cache/i/combat/formFieldCorner_rt.png') top right no-repeat,
+    url('/Heroes/api/cache/i/combat/formFieldCorner_lb.png') bottom left no-repeat,
+    url('/Heroes/api/cache/i/combat/formFieldCorner_rb.png') bottom right no-repeat,
+    #371901;
+  background-size: contain, contain, contain, contain;
+}
+/* Птичка — повёрнутый уголок рамки, как в оригинале, а не глиф шрифта. */
+.tac-bs-check::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 50%;
+  top: 35%;
+  width: 5px;
+  height: 9px;
+  border: solid #efca7f;
+  border-width: 0 3px 3px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.tac-bs-row input:checked ~ .tac-bs-check::after { display: block; }
+.tac-bs-row input:focus-visible ~ .tac-bs-check { box-shadow: 0 0 0 2px #ffe4b3; }
+/* Ползунки: подпись по центру над полосой — как «Громкость звуков» в оригинале. */
+.tac-bs-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 8px 2px;
+  color: #3d3f40;
+}
+.tac-bs-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 26px;
+  background: transparent;
+  cursor: pointer;
+}
+/* Полоса и рукоять — картинки оригинала (rangeslider.css). Правила для webkit и
+   gecko приходится писать врозь: общего селектора у этих псевдоэлементов нет, а
+   объединение в один список браузеры отбрасывают целиком. */
+.tac-bs-range::-webkit-slider-runnable-track {
+  height: 26px;
+  background:
+    url('/Heroes/api/cache/i/combat/sliderH_bg_L.png') center left no-repeat,
+    url('/Heroes/api/cache/i/combat/sliderH_bg_R.png') center right no-repeat,
+    url('/Heroes/api/cache/i/combat/sliderH_bg.png') center left repeat-x;
+  background-size: auto 100%, auto 100%, auto 100%;
+}
+.tac-bs-range::-moz-range-track {
+  height: 26px;
+  background:
+    url('/Heroes/api/cache/i/combat/sliderH_bg_L.png') center left no-repeat,
+    url('/Heroes/api/cache/i/combat/sliderH_bg_R.png') center right no-repeat,
+    url('/Heroes/api/cache/i/combat/sliderH_bg.png') center left repeat-x;
+  background-size: auto 100%, auto 100%, auto 100%;
+}
+.tac-bs-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: url('/Heroes/api/cache/i/combat/btn_sliderHandle.png') center/contain no-repeat;
+}
+.tac-bs-range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: url('/Heroes/api/cache/i/combat/btn_sliderHandle.png') center/contain no-repeat;
+}
+/* Грунта в окне оригинала нет — это наша строка; одета под его же поля ввода. */
+.tac-bs-select {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid #e7b257;
+  border-radius: 4px;
+  background: #371901;
+  color: #efca7f;
+  font-size: 13px;
+}
+.tac-bs-actions { padding: 4px 8px 2px; }
+.tac-bs-actions .hwm-btn { min-width: 150px; }
+
+/* Настройки «показывать …» гасят своё через класс на <body>: и журнал, и цифры
+   урона показываются из десятка мест по ходу боя (инлайновым display), и перебить
+   их можно только правилом с !important. */
+body.tac-no-log #tac-result { display: none !important; }
+/* Полоска здоровья выключена настройкой: гасим классом на <body>, а не правкой
+   узлов — рисуется она из tacApplyStackState на каждом ходу. */
+body.tac-no-hp .tac-hp-bar { display: none !important; }
+body.tac-no-dmg .tac-dmg-float.tac-dmg-num { display: none !important; }
+
+body.tac-full-field .header,
+body.tac-full-field .tabs,
+body.tac-full-field .tac-sidebar {
+  display: none !important;
+}
+/* ── Арена: одна страница-окно, как боевая страница оригинала ──
+ * Доска, столбик кнопок и шкала ATB рассчитаны от размера ОКНА (tacFitField
+ * повторяет set_pole_data), поэтому арена не прокручивается: всё, что должно
+ * быть видно, лежит в трёх полосах — pole_top сверху, доска, pole_bottom снизу.
+ * Переменные --pole-top/--pole-bottom ставит tacFitField. */
+body.tac-full-field { overflow: hidden; }
+body.tac-full-field #tac-arena-viewport {
+  position: fixed;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+/* Доска ставится абсолютно: её место (верхняя кромка на pole_top, центр по окну)
+   и ширина считаются в tacFitField по формулам оригинала. */
+/* Доска лежит В СЦЕНЕ (обёртке поля) абсолютом — одинаково в обоих видах:
+   расстановка и бой это один вид, разница только в размере сцены. */
+body.tac-on-battle #tac-field {
+  position: absolute;
+  left: 50%;
+  margin-right: 0;
+  padding: 0;
+  border: none;
+}
+/* Высота ряда — из порядной раскладки (она же в редакторе), с откатом на клетку. */
+#tac-field td { height: var(--rowh, var(--cellh)); }
+/* Клетки под существом 2×2 не сливаются: сетка под ним сплошная, как в
+   оригинале, — существо просто стоит на четырёх клетках. Хвостовые клетки
+   помечены `tac-big-tail` (занятость), якорная — `tac-big-anchor` (по ней
+   sceneCellAnchor считает якорь по всему футпринту). Своего вида у пометок нет:
+   клетки должны выглядеть обычными. */
+/* Номера рядов и столбцов из потока вон: в оригинале их нет, а нулевая ширина
+   всё равно оставляла бы клетку в разметке и смещала доску. */
+/* Номеров рядов и столбцов нет НИГДЕ — как в оригинале. Раньше они оставались в
+   редакторе, но порядная раскладка сжимает каждый ряд по X (дальний — до 0.65),
+   и цифры ехали бы вместе с ним, разной ширины на каждом ряду. Клетку под
+   курсором показывают координаты в нижней полосе. */
+#tac-field > tbody > tr:first-child,
+#tac-field > tr:first-child,
+#tac-field td.tac-cr { display: none; }
+/* Столбик боевых кнопок у левого края арены — как круглые кнопки оригинала.
+   Наполняется только в полноэкранном режиме (tacToggleFullField переносит сюда
+   скорость/автобой/инфо), поэтому вне боя невидим. */
+/* Столбик боевых кнопок в ЛЕВОМ ВЕРХНЕМ углу — как в оригинале, где все круглые
+   кнопки боя стоят одним столбиком. В редакторе он абсолютный и считается от
+   контейнера поля, в арене (правило ниже) — фиксированный по окну. Раньше кнопки
+   хода жили в панели под доской у правого края: в бою их там нет. */
+.tac-arena-controls {
+  position: absolute;
+  left: 10px;
+  /* Не впритык к кромке: в оригинале кнопки отпущены от верхнего края примерно
+     на двадцатую часть высоты поля и не выглядят приклеенными. */
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 60;
+}
+body.tac-full-field .tac-arena-controls {
+  position: fixed;
+  left: calc(var(--arena-x) + 10px);
+  top: calc(var(--arena-y) + 18px);
+}
+/* В редакторе круглые кнопки боя — того же калибра, что остальные кнопки
+   поля (⛶ 32px, ⚙ 30px): 46/56px рядом с уменьшенной сценой выглядели
+   великанами. Крупный размер остаётся арене, где сцена во весь экран. */
+body:not(.tac-full-field) .tac-arena-controls { top: 10px; gap: 6px; }
+body:not(.tac-full-field) .tac-arena-controls .tac-ibtn { width: 32px; height: 32px; }
+/* Кнопки хода (защита/ожидание/книга/прервать) переезжают сюда же: в оригинале
+   ВСЕ круглые кнопки боя стоят одним столбиком в левом верхнем углу, а не
+   расползаются по нижнему краю. */
+.tac-arena-controls .tac-hs-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 0;
+}
+/* Список умений раскрывается ПОД своей кнопкой, в том же столбике. Пока он жил
+   в панели хода под лентой очереди, нажатие круглой кнопки открывало его на
+   другом конце страницы: игрок нажимал «Умение отряда», не находил глазами
+   ничего нового у поля и считал, что умение уже выбрано. Колонка, а не строка:
+   столбик узкий, а названия умений длинные. */
+.tac-arena-controls .tac-hs-spells {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 15em;
+  /* Своя подложка: список лежит на поле боя, и без неё названия умений тонут в
+     траве. Тот же тёмный тон, что у круглых кнопок. */
+  padding: 4px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.45);
+}
+/* Кнопки в столбике — во всю его ширину, чтобы список читался колонкой. */
+.tac-arena-controls .tac-hs-spells .tac-hs-btn { width: 100%; text-align: left; }
+/* Грунт на весь экран — как ground-полотно оригинала: плоская текстура под всем
+   окном (переменную ставит tacApplyLand), трапеция сетки лежит поверх. Свойства
+   по отдельности, не шорткатом: шорткат сбросил бы background-color темы. */
+body.tac-full-field {
+  background-image: var(--tac-land, none);
+  /* Полотно кладётся ТАК ЖЕ, как в оригинале (`set_ground_size` в show_polep.js):
+     берётся ВСЯ ширина картинки от её ВЕРХНЕГО края, высотой в
+     `min(1, высота_экрана/ширина_экрана)` от ширины, и растягивается на экран:
+         crop {x: 0, y: 0, width: W, height: W * min(1, stageH/stageW)}
+     Полотна квадратные (замер: land_grass3.jpg — 1536×1536), поэтому в CSS это
+     ровно `100vw × max(100vw, 100vh)` от левого верхнего угла: на широком экране
+     картинка ложится квадратом со стороной в ширину окна и видна её верхняя
+     полоса, на узком и длинном — растягивается по высоте целиком.
+
+     Было `cover` + `center`, и на длинном экране это срезало и бока, и —
+     главное — верхнюю и нижнюю полосы картинки. А вся растительность нарисована
+     именно там: у полотна расчищена середина под доску, а деревья, кусты и трава
+     идут по краям. Отсюда «за полем боя голый фон, особенно на длинных экранах». */
+  background-size: 100vw max(100vw, 100vh);
+  background-position: left top;
+  background-repeat: no-repeat;
+  /* Привязка к ВЬЮПОРТУ, а не к документу. С `scroll` область позиционирования
+     фона — весь документ, а он растёт на каждое действие: журнал боя под полем
+     дописывает строку, тело прибавляет ~23px, и `cover` пересчитывает масштаб и
+     смещение грунта. Поле стояло на месте, а полотно под ним дёргалось при
+     КАЖДОМ действии существ — то самое «экран трясётся». Арене документная
+     привязка и не нужна: грунт там задник, а не часть прокручиваемой страницы. */
+  background-attachment: fixed;
+}
+/* Растительность вокруг доски: спрайты из атласа грунта (`i/png30/land_<грунт>.png`),
+   разложенные по краям экрана — см. battleDecor.ts. В самом полотне земли их нет,
+   это отдельный слой оригинала (`kusts` в show_polep.js). Слой лежит ПОД доской и
+   сценой (он первый потомок обёртки) и кликов не ловит. Живёт в обоих видах:
+   в редакторе вокруг доски теперь тот же грунт, что и в бою. */
+#tac-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tac-decor-item {
+  position: absolute;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* Доска — не отдельный объект на подложке, а сама земля: в оригинале поле и фон
+   это одно полотно. Своей текстуры, рамки и тени у неё нет ни в арене, ни в
+   редакторе — см. правила #tac-field ниже. */
+/* В бою арена без номеров строк/столбцов — их нет и в оригинале; освободившаяся
+   колонка и рамочные отступы отдаются клеткам (см. EXTRA_W/H в tacFitField). */
+
+/* Полотно земли — ВО ВСЮ ширину окна и без светлой полосы сверху. Отступы
+   страницы (`.content` 20px + `#tab-battle` 12px по бокам и 20+10 сверху)
+   оставляли по краям грунта белые полоски, которых в бою нет. Снимаются те из
+   них, что не заняты интерфейсом: правая и верхняя. */
+body.tac-on-battle:not(.tac-full-field) #tac-arena-viewport {
+  /* Только ВПРАВО и вверх. Полный full-bleed (`width: 100vw` + отрицательные
+     поля по обе стороны) центрировал полотно по ОКНУ, а обёртка лежит в правой
+     колонке — левый край грунта уезжал на половину сайдбара и накрывал палитру
+     «Отряды» вместе с её кликами. Вправо расширяться безопасно: там до края
+     окна только боковой отступ `#tab-battle` (12px, base.css) — сама вкладка
+     уже full-bleed (`width: 100vw; margin-left: calc(50% - 50vw)`), и 20px
+     `.content` по горизонтали не действуют. Раньше стояло -32px «за оба
+     отступа»: окно арены вылезало на 20px за край страницы, `overflow-x: clip`
+     у body резал правую кромку доски — нижний правый угол поля не был виден.
+     Сверху `.content` 20px действует, поэтому там 20 + 10. */
+  margin-right: -12px;
+  margin-top: -30px;
+}
+/* Снизу эти 30px НЕ возвращаются. Раньше `.tac-init-bar { margin-bottom: 30px }`
+   компенсировал их, потому что обёртка поля без явной высоты свешивалась на
+   заголовок «Отряды»; теперь окно арены — коробка фиксированной высоты H·k с
+   `overflow: hidden`, свешиваться нечему, а возврат давал пустую полосу 30 + 10
+   (gap раскладки) между грунтом и «Отрядами». Остаётся один gap. */
+/* Грунт вокруг доски и в РЕДАКТОРЕ: расстановка должна выглядеть так же, как
+   бой, — кнопки боя его только начинают. Полотно стелила одна арена, и вокруг
+   трапеции в редакторе оставался фон страницы: пустые углы сверху и по бокам.
+   Кладётся так же, как в арене (`set_ground_size` оригинала): вся ширина от
+   ВЕРХНЕГО края, квадратом со стороной в ширину — только мерка не окно, а сама
+   окно арены. `repeat-y` держит запас на случай, когда окно окажется выше
+   своей ширины (узкое окно): растянуть высоту, как в арене, тут нечем.
+   Стелет ОКНО (#tac-arena-viewport), а не сцена: когда сцена по остатку окна
+   выходит уже колонки (tacArenaFit → letterbox по бокам), земля всё равно идёт
+   от края до края, а не обрывается пустотой справа. */
+body:not(.tac-full-field) #tac-arena-viewport {
+  background-image: var(--tac-land, none);
+  background-size: 100% auto;
+  background-position: left top;
+  background-repeat: repeat-y;
+}
+/* ── Окно арены и логическая сцена ──
+   `#tac-arena-viewport` — «окно»: в редакторе стоит в потоке высотой H·k (ставит
+   tacFitArenaScale), в арене — во весь экран (правило выше). `#tac-field-wrap` —
+   ЛОГИЧЕСКАЯ сцена 1920×947 единиц оригинала (tacLayoutArena): всё внутри —
+   доска, канвас спрайтов, числа, фигуры героев, препятствия, мувер — считается в
+   этих единицах и на экран попадает через один `scale(var(--arena-k))`.
+   Переменные `--arena-k/-x/-y` ставит tacFitArenaScale; в редакторе смещение 0.
+   Overflow у сцены открыт: макушки спрайтов верхнего ряда и мувер выходят в пояс
+   журнала, как в оригинале; режет их только окно арены. */
+:root { --arena-k: 1; --arena-x: 0px; --arena-y: 0px; }
+#tac-arena-viewport {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  box-sizing: border-box;
+}
+#tac-field-wrap {
+  position: absolute;
+  left: var(--arena-x);
+  top: var(--arena-y);
+  transform-origin: 0 0;
+  transform: scale(var(--arena-k));
+  padding: 0;
+  box-sizing: border-box;
+  overflow: visible;
+}
+/* ── Герой на поле боя ──
+ * Фигура героя по краю своей армии (слева — игрок, справа — враг), как в
+ * оригинале, где герой виден весь бой рядом со свитком и книгой. Рисуется
+ * КУКЛОЙ из оригинала (i/kukla_png — её же показывает Примерочная), а не
+ * гербом фракции: герб — эмблема стороны, а на поле стоит человек.
+ *
+ * Рамки у фигуры нет намеренно: кукла вырезана по контуру, и коробка вокруг
+ * неё выглядела бы наклейкой поверх арены. Поэтому и готовность шкалы ATB
+ * подсвечивается свечением по самому контуру (drop-shadow), а не рамкой. */
+.tac-hero-figure {
+  position: absolute;
+  /* left/top и --hero-fig-h ставит tacPlaceHeroFigure: место — у верхнего угла
+     своей половины, рост — от клетки поля. Значения ниже нужны до первой
+     раскладки (сетка ещё не построена) и как страховка. */
+  --hero-fig-h: 80px;
+  top: 8px;
+  width: calc(var(--hero-fig-h) * 0.72);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: pointer;
+  transition: filter 0.25s ease;
+}
+.tac-hero-figure--player { left: 2px; }
+.tac-hero-figure--enemy { right: 2px; }
+.tac-hero-figure img {
+  width: 100%;
+  height: var(--hero-fig-h);
+  /* Кукла нарисована на холсте 460x410, но сама фигура занимает левые ~2/3 —
+     правая треть у всех кукол пустая. `contain` вписал бы вместе с пустотой, и
+     герой стал бы вдвое мельче, поэтому холст обрезается по фигуре: при
+     отношении 0.72 самая широкая из десяти кукол (демон) укладывается в окно
+     целиком, и ни у кого не срезает край плаща. */
+  object-fit: cover;
+  object-position: left center;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55));
+}
+/* Куклы нарисованы фронтально и все смотрят в одну сторону — влево. Значит
+   разворачивать надо ЛЕВОГО героя: в оригинале каждый стоит лицом к полю, а не
+   спиной к чужой армии. Тем же приёмом (scaleX(-1)) оригинал разворачивает
+   куклу в окне героя. */
+.tac-hero-figure--player img { transform: scaleX(-1); }
+/* Герб вместо куклы (класс без куклы или картинка не дошла) — мельче и в
+   рамке, иначе эмблема растягивалась бы на весь рост фигуры. */
+.tac-hero-figure img.tac-hero-figure-fallback {
+  height: calc(var(--hero-fig-h) * 0.72);
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  background: rgba(20, 18, 14, 0.85);
+  padding: 3px;
+}
+.tac-hero-figure-name {
+  font-size: 9px;
+  line-height: 1.1;
+  color: var(--text-dim);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+}
+.tac-hero-figure--ready img {
+  filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.95))
+          drop-shadow(0 0 12px rgba(201, 168, 76, 0.6));
+}
+.tac-hero-figure--ready .tac-hero-figure-name { color: var(--gold); }
+/* Живой спрайт героя нарисован на общем канвасе поля — кукла под ним прячется,
+   а сама фигура остаётся: она ловит клик, держит подпись и свечение шкалы. */
+.tac-hero-figure--live img { visibility: hidden; }
+.tac-hero-figure--live { pointer-events: auto; }
+/* Жест на действии героя. Кадров у куклы нет — в игре это одна статичная
+   картинка, — поэтому «замах» собран из наклона вперёд и вспышки по контуру.
+   Наклон висит на САМОЙ фигуре, а вспышка на картинке: у картинки свой
+   transform (разворот левого героя лицом к полю), и анимация его бы стёрла. */
+@keyframes tac-hero-cast {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-7px) scale(1.07); }
+  60%  { transform: translateY(-2px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes tac-hero-cast-flash {
+  0%, 100% { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55)); }
+  35% {
+    filter: drop-shadow(0 0 10px rgba(201, 168, 76, 1))
+            drop-shadow(0 0 22px rgba(201, 168, 76, 0.7));
+  }
+}
+.tac-hero-figure--cast { animation: tac-hero-cast 620ms ease-out; }
+.tac-hero-figure--cast img { animation: tac-hero-cast-flash 620ms ease-out; }
+/* Прямой удар героя: не подскок, а выпад в поле. Знак X зависит от стороны —
+   герой стоит у внешнего края своей половины (--player слева, --enemy справа),
+   поэтому удар всегда идёт к центру поля. В оригинале у атакующего героя
+   включается анимация атаки (donow='a', calccomsp.js:1648). */
+@keyframes tac-hero-attack {
+  0%   { transform: translateX(0) scale(1); }
+  35%  { transform: translateX(var(--tac-hero-strike, 0px)) scale(1.06); }
+  100% { transform: translateX(0) scale(1); }
+}
+.tac-hero-figure--player { --tac-hero-strike: 22px; }
+.tac-hero-figure--enemy { --tac-hero-strike: -22px; }
+.tac-hero-figure--attack { animation: tac-hero-attack 460ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .tac-hero-figure--cast,
+  .tac-hero-figure--cast img { animation: none; }
+  .tac-hero-figure--attack { animation: none; }
+}
+.tac-moving-unit {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+}
+/* Fallback portrait while the walking sprite isn't ready. No box-shadow ring: the bright
+   rectangle around the whole (mostly transparent) mover box read as a glitchy "white frame"
+   flashing on every move, not as a highlight. */
+.tac-moving-unit.tac-fallback-icon {
+  background-size: contain !important;
+  background-repeat: no-repeat;
+  background-position: center bottom !important;
+}
+/* Единый канвас поля (fieldScene.ts) — единственный режим рендера: один Konva-стейдж поверх
+   всей таблицы, как war_scr-стейдж оригинала. Клики/днд проходят сквозь на таблицу.
+   z-index 5 — над фонами-портретами клеток, под DOM-бейджами количества (z-index 10),
+   плашками урона и HP-барами. */
+.tac-scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+/* NB: движущийся спрайт НЕ подсвечивается. Был drop-shadow(жёлтый) на canvas — из-за
+   полупрозрачных пикселей по всей площади кадра тень читалась как полупрозрачный
+   прямоугольник вокруг существа на каждом шаге. Оригинальный клиент никак не
+   подсвечивает идущее существо — само движение и есть сигнал. */
+/* Бейдж количества внутри mover'а. :not(...) обязательны: с появлением carry-переноса
+   (tacWalkStack) прямым ребёнком mover'а стала и обёртка живого спрайта .tac-cell-sprite —
+   голое `> div` красило её белой полупрозрачной плашкой бейджа на всю коробку 71×71
+   («полупрозрачный прямоугольник» вокруг идущего существа). Та же ловушка, что у
+   td-правила ниже (см. коммент у #tac-field td div:not(...)). */
+.tac-moving-unit > div:not(.tac-cell-sprite):not(.tac-sprite-anim):not(.konvajs-content) {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  /* Те же экранные 13px, что у стоячего бейджа (#tac-numbers .tac-num и бейдж в
+     клетке): сцена масштабирована scale(--arena-k), без деления на k число на
+     ходу съёживалось (11px логических → ~5px на экране при k≈0.45). */
+  padding: calc(1px / var(--arena-k)) calc(4px / var(--arena-k));
+  font-size: calc(13px / var(--arena-k));
+  font-weight: 700;
+  color: #000;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.7);
+  white-space: nowrap;
+}
+/* Цвет команды — с !important, как у бейджей в клетках (см. ниже #tac-field td
+   div.tN). Иначе их перебивает базовое правило выше: четыре `:not(...)` в нём
+   стоят четырьмя классами специфичности против двух здесь, и число идущего
+   отряда рисовалось на БЕЛОЙ плашке — цвет команды возвращался, только когда
+   отряд вставал на клетку. */
+.tac-moving-unit > div.t0 { background: rgba(155,155,155,0.7) !important; }
+.tac-moving-unit > div.t1 { background: rgba(255,0,0,0.7) !important; color: white !important; }
+.tac-moving-unit > div.t2 { background: rgba(0,0,255,0.7) !important; color: white !important; }
+.tac-moving-unit > div.t3 { background: rgba(144,0,0,0.7) !important; color: white !important; }
+.tac-moving-unit > div.t4 { background: rgba(0,144,255,0.7) !important; }
+.tac-moving-unit > div.t5 { background: rgba(244,123,2,0.7) !important; color: white !important; }
+.tac-moving-unit > div.t6 { background: rgba(187,36,253,0.7) !important; color: white !important; }
+#tac-field {
+  margin: 0 auto;
+  /* Рамки у доски нет НИГДЕ: грунт лежит под ней сплошным полотном (в арене под
+     окном, в редакторе под обёрткой поля), и двойная серая рамка резала это
+     полотно надвое — доска читалась картинкой в раме, а не куском земли.
+     Слева зазор от края даёт колонка номеров строк (~28px) — справа делаем
+     зеркальный, чтобы существа крайней колонки не упирались в край. */
+  padding: 4px 28px 10px 4px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+#tac-field {
+  /* Базовые 104x86 (x2 от исходных 52x43); tacFitField() уменьшает переменные так,
+     чтобы всё поле влезало в экран без прокрутки — как в оригинальном клиенте. */
+  --cellw: 104px;
+  --cellh: 86px;
+}
+#tac-field td {
+  width: var(--cellw);
+  /* Высота ряда — `--rowh` от tacLayoutRows (высота в потоке ДО проекции),
+     а не `--cellh`: перспектива ряда подобрана под --rowh, и с --cellh верх
+     каждого ряда выходил шире низа соседнего — боковые кромки шли лесенкой,
+     а доска была на ~10% ниже оригинала. Правило выше (`height: var(--rowh…)`)
+     это же и задаёт, но здесь оно перебивалось. */
+  height: var(--rowh, var(--cellh));
+  text-align: right;
+  vertical-align: bottom;
+  /* Курсор клетки — тот же, что у сцены: `inherit`, а не своё значение.
+     Оригинал держит на боевом экране ОДИН курсор и меняет его сам
+     (`set_cursor(n)`, onmousemovep.js :3555), поэтому клетке достаётся
+     ровно то, что выбрал клиент. У нас его выбирает `battleCursor.ts` и пишет
+     в `#tac-field-wrap`, а `cursor: pointer` на самой клетке перебивал
+     унаследованное значение: поле всегда показывало руку, и НИ ОДИН из
+     курсоров оригинала (меч, лук, порванная тетива, «не дотянуться»,
+     «подойти и ударить») не появлялся. Собственное значение у клетки
+     всегда побеждает унаследованное — важнее любой специфичности, — поэтому
+     здесь нужно именно `inherit`. */
+  cursor: inherit;
+  background-size: cover !important;
+  background-position: center !important;
+  position: relative;
+}
+#tac-field td.tac-cr {
+  width: 28px;
+  height: 24px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: default;
+  border: none;
+  background: transparent !important;
+  padding: 0;
+}
+#tac-field.tac-small td {
+  width: calc(var(--cellw) * 0.68);
+  height: calc(var(--cellh) * 0.68);
+}
+#tac-field.tac-small td.tac-cr {
+  width: 20px;
+  height: 16px;
+  font-size: 8px;
+}
+/* :not(...) exclusions: this is a *descendant* selector (any div anywhere inside a td), which
+   was also matching the sprite wrapper divs we insert (.tac-cell-sprite, its inner
+   .tac-sprite-anim, and Konva's own .konvajs-content div) — giving them this same opaque white
+   pill background/padding/sizing meant only for the stack-count badge, which is what made a
+   standing creature's mostly-transparent canvas look like a solid white box. */
+#tac-field td div:not(.tac-cell-sprite):not(.tac-sprite-anim):not(.konvajs-content):not(.tac-hp-bar) {
+  display: inline-block;
+  /* Сцена масштабирована (`scale(--arena-k)`): бейдж держит экранные 13px. */
+  padding: calc(1px / var(--arena-k)) calc(4px / var(--arena-k));
+  font-size: calc(13px / var(--arena-k));
+  font-weight: 700;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 104px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+  /* Keep the stack-count badge readable above the animated sprite overlay (.tac-cell-sprite,
+     z-index: 3), which otherwise paints over it since positioned content stacks above
+     non-positioned in-flow content. */
+  position: relative;
+  z-index: 10;
+}
+#tac-field.tac-small td div {
+  font-size: 10px;
+  max-width: 35px;
+}
+#tac-field td.tac-over:not(.tac-cr) { border: 2px solid var(--gold) !important; background: rgba(200,168,76,0.15) !important; }
+/* След 2x2 не помещается (край поля или занятые клетки). Раньше отказ был молчаливым:
+   подсветка выглядела одинаково, и понять, почему существо не встаёт, было нельзя. */
+#tac-field td.tac-over-bad:not(.tac-cr) { border-color: #ff6b6b !important; background: rgba(255,107,107,0.18) !important; cursor: not-allowed !important; }
+/* NB: клетки атакующего/защитника НЕ обводятся. Были зелёная/красная outline-рамки —
+   на каждом ударе они дёргались по всему полю; оригинальный клиент роли участников
+   показывает самими анимациями (замах, отшат), без рамок. Классы .tac-attacker /
+   .tac-defender остаются как маркеры состояния (их читает код/тесты). */
+#tac-field td.tac-morale-good { outline: 3px solid #4caf50; outline-offset: -1px; }
+#tac-field td.tac-morale-bad { outline: 3px solid #ff9800; outline-offset: -1px; }
+#tac-field td.tac-crit { outline: 4px solid #ffd700; outline-offset: -1px; box-shadow: inset 0 0 20px rgba(255,215,0,0.3); }
+#tac-field td.tac-graze { outline: 4px solid #64b5f6; outline-offset: -1px; box-shadow: inset 0 0 20px rgba(100,181,246,0.2); }
+#tac-field td.tac-elf-crit { outline: 4px solid #ce93d8; outline-offset: -1px; box-shadow: inset 0 0 20px rgba(206,147,216,0.3), 0 0 15px rgba(206,147,216,0.2); }
+/* Координаты ставит `tacFloatOverCell` — подпись висит НАД страницей, а не
+   внутри клетки: потомок клетки у правого столбца наполовину вылезал за таблицу,
+   обёртка поля считала это своим содержимым, и её scrollWidth рос на каждую
+   всплывающую цифру. Полоса прокрутки появлялась и исчезала, а с ней дёргалось
+   поле. Тот же приём, что у таблички прогноза (.tac-forecast). */
+.tac-dmg-float {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff6b6b;
+  text-shadow: 0 0 6px rgba(0,0,0,0.9);
+  pointer-events: none;
+  z-index: 62;
+  animation: tacDmgFade 0.7s ease-out forwards;
+  white-space: nowrap;
+}
+.tac-fly-unit {
+  filter: drop-shadow(0 0 10px rgba(200,168,76,0.6));
+  border-radius: 4px;
+}
+/* Занятая камнем клетка не кликается, но и НЕ ПОДКРАШИВАЕТСЯ: серая заливка
+   выдавала «служебную» клетку, какой в оригинале не видно — там просто лежит
+   камень на земле. Раньше подкраска оставалась в редакторе; теперь редактор —
+   тот же бой, и разметке взяться неоткуда. Курсора своего у клетки нет:
+   камень на линии выстрела — укрытие, и курсор над ним обязан оставаться
+   боевым (курсор 4, «порванная тетива»), как в оригинале. */
+#tac-field td.stone { cursor: inherit; }
+
+/* Walls and terrain */
+/* Клетка с препятствием — БЕЗ подложки: камень и ёлка стоят прямо на земле, а
+   коричневая заливка выдавала «служебную» клетку, какой в оригинале не видно.
+   Заливка держалась в редакторе как разметка поля; теперь редактор — тот же бой,
+   и размечать нечего. Курсор — наследуемый боевой: по стене в оригинале
+   стреляют (камень на линии даёт вдвое меньший урон и курсор 4), и по самой
+   стене бьют осадные существа — молчаливый системный курсор врал бы, что
+   клетка не кликается. */
+#tac-field td.tac-wall { cursor: inherit; position: relative; }
+#tac-field td.tac-wall::after { content: '🧱'; position: absolute; font-size: 18px; left: 50%; top: 50%; transform: translate(-50%,-50%); opacity: 0.8; }
+/* Эмодзи — только фолбэк: при живом спрайте он лишний. */
+#tac-field td.tac-wall:has(img.tac-wall-sprite)::after { content: none; }
+/* Большое препятствие 2×2 — картинка над квадратом клеток, низом на его нижней
+   грани (`tacSyncBigObstacles` считает место по самим клеткам). Ниже сцены
+   спрайтов, как и камень 1×1: отряды рисуются поверх. */
+.tac-obstacle {
+  position: absolute;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  z-index: 3;
+}
+/* Клетка под большим препятствием (2×2): её накрывает общий спрайт булыжника
+   или ёлки, своей картинки и подписи у неё нет. */
+#tac-field td.tac-wall.tac-wall-big::after { content: none; }
+/* Спрайт камня из оригинала (статик юнита rock1, «Препятствие»). Якорь — низ
+   клетки, как у существ: камень стоит НА земле, а не висит по центру ромба. */
+#tac-field td.tac-wall img.tac-wall-sprite {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 104%;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Индикатор ярости степных варваров (иконка attr_blood из оригинала). */
+.tac-rage-side { display: inline-flex; align-items: center; gap: 3px; margin-right: 10px; color: var(--text-dim); }
+.tac-rage-side img { width: 16px; height: 16px; vertical-align: middle; }
+#tac-field td.tac-fire { background: rgba(255,80,0,0.3) !important; }
+#tac-field td.tac-fire::after { content: '🔥'; position: absolute; font-size: 14px; left: 50%; top: 50%; transform: translate(-50%,-50%); opacity: 0.7; }
+#tac-field td.tac-ash { background: rgba(60,60,60,0.6) !important; }
+
+/* Step mode / hotseat highlights */
+#tac-field td.tac-active { outline: 4px solid #4fc3f7 !important; outline-offset: -2px; }
+
+/* ── Кольцо под ходящим отрядом (оригинал: show_ring/scale_ring, show_polep.js
+   :12129 и :11969) ──
+   Спрайты настоящие: `ring1` (золотое, свой ход) и `ring2` (красное, чужой) —
+   куски атласа `war_images` игры, он же идёт через наш кэш-прокси. Атлас 542x320,
+   оба кольца 130x120: ring2 при x=227, ring1 при x=358 (разметка
+   `anim_data40/war_images.js`).
+
+   Вырезать кусок атласа фоном можно только пропорциональным масштабом всего
+   полотна, поэтому размер и смещение считаются от ширины кольца: k = --ring-w/130.
+   Ширина — 95% клетки, как `xs = 95*k_width/...` в оригинале; у 2x2 вдвое (`xs*=2`).
+
+   Псевдоэлемент клетки лежит НИЖЕ канваса сцены (тот перекрывает таблицу целиком,
+   z-index 5) — кольцо оказывается под существом, как `ring.z` в оригинале. И оно
+   НЕ разворачивается обратно из перспективы поля (в отличие от чисел): кольцо
+   лежит на земле. */
+#tac-field td.tac-ring-own,
+#tac-field td.tac-ring-foe { --ring-w: calc(var(--cellw, 104px) * 0.95); }
+#tac-field td.tac-ring-big { --ring-w: calc(var(--cellw, 104px) * 1.9); }
+#tac-field td.tac-ring-own::before,
+#tac-field td.tac-ring-foe::before {
+  content: '';
+  position: absolute;
+  /* Центр кольца — в центре клетки (оригинал: `set_X/set_Y` в `a.xc/a.yc`, а у
+     2x2 — среднее с центром клетки +1/+1, то есть центр следа). Наклон поля даёт
+     перспективное сжатие сам: отдельного `scaleY`, как в плоской проекции
+     оригинала, тут не нужно. */
+  left: 50%;
+  top: 50%;
+  width: var(--ring-w);
+  height: calc(var(--ring-w) * 120 / 130);
+  margin-left: calc(var(--ring-w) / -2);
+  margin-top: calc(var(--ring-w) * 120 / 130 / -2);
+  background-image: url('/Heroes/api/cache/i/png40/war_images.png');
+  background-repeat: no-repeat;
+  background-size: calc(var(--ring-w) * 542 / 130) calc(var(--ring-w) * 320 / 130);
+  pointer-events: none;
+  /* 4 градуса за кадр при 25 fps (`rotation_ring_speed = 4`) — полный оборот за 3.6 с. */
+  animation: tac-ring-spin 3.6s linear infinite;
+}
+#tac-field td.tac-ring-own::before {
+  background-position: calc(var(--ring-w) * -358 / 130) 0;
+}
+#tac-field td.tac-ring-foe::before {
+  background-position: calc(var(--ring-w) * -227 / 130) 0;
+}
+/* У 2×2 кольцо стоит по центру СЛЕДА, а не по центру якорной клетки: след
+   растёт вправо-вниз (`big_cells` = [r,c+1], [r+1,c], [r+1,c+1]), и его середина
+   приходится ровно на правый нижний угол якоря. Ширину кольца мы уже удваивали,
+   а центр оставляли на месте — кольцо съезжало на полклетки вверх-влево. */
+#tac-field td.tac-ring-big::before { left: 100%; top: 100%; }
+@keyframes tac-ring-spin { to { transform: rotate(360deg); } }
+/* Настройка «Кольцо под ходящим отрядом» снята: чей ход, видно по ленте очереди
+   и по подсветке клетки, а на мелкой доске кольцо заметно лезет на соседей. */
+body.tac-no-ring #tac-field td.tac-ring-own::before,
+body.tac-no-ring #tac-field td.tac-ring-foe::before { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  #tac-field td.tac-ring-own::before,
+  #tac-field td.tac-ring-foe::before { animation: none; }
+}
+/* Враги, по которым можно ударить, РАМКОЙ не обводятся: в оригинале в свой ход
+   поле не расчерчено красным по каждому противнику — какие цели достижимы,
+   игрок видит по курсору (меч над врагом) и по подсказке урона при наведении.
+   Курсора у клетки нет: какой именно — решает `battleCursor.ts` (меч, лук,
+   порванная тетива, «подойти и ударить»), и любое своё значение здесь эти
+   картинки бы перекрыло. Остаётся подсветка клетки под мышью. */
+
+/* Пометка на СЛЕДЕ 2×2 (класс `tac-fp` ставит markStack): рамку рисовать нельзя —
+   четыре клетки дали бы по рамке каждая, то есть крест посреди отряда. Красим
+   заливкой со свечением внутрь: у соседних клеток заливки смыкаются без шва, и
+   след читается одним пятном, как и было со слитой клеткой. */
+#tac-field td.tac-fp.tac-active,
+#tac-field td.tac-fp.tac-spell-target,
+#tac-field td.tac-fp.tac-spell-source {
+  outline: none !important;
+}
+#tac-field td.tac-fp.tac-active {
+  background-color: rgba(79, 195, 247, 0.20) !important;
+  box-shadow: inset 0 0 14px rgba(79, 195, 247, 0.30);
+}
+#tac-field td.tac-fp.tac-spell-target,
+#tac-field td.tac-fp.tac-spell-source {
+  background-color: rgba(206, 147, 216, 0.20) !important;
+  box-shadow: inset 0 0 14px rgba(206, 147, 216, 0.30);
+}
+#tac-field td.tac-targetable:hover { background: rgba(255,60,60,0.2) !important; }
+/* Хотсит: куда активный отряд может дойти в этот ход (скорость, ЗК, полёт — считает
+   сервер). Заливка, а не рамка: рамок на поле и так много (стены, цели, активный). */
+/* Куда можно походить. Как в оригинале — НЕБОЛЬШОЕ ЗАТЕМНЕНИЕ клетки, а не
+   цветная заливка: голубое пятно перекрашивало траву и спорило с ландшафтом, а
+   тень одинаково честно ложится на любой грунт — от травы до лавы. Клетка под
+   курсором темнее остальных: так видно, куда именно шагнёт отряд. Курсор здесь
+   не задаём: по клетке хода клиент ставит бегущего (1, onmousemovep.js :2568). */
+#tac-field td.tac-reach {
+  /* 0.20 терялось на светлом грунте (трава, снег, песок): зона хода читалась
+     только если всматриваться. 0.30 — уже видно с первого взгляда, но это
+     по-прежнему ТЕНЬ, а не заливка: цвет земли под ней остаётся своим. */
+  background: rgba(0, 0, 0, 0.30) !important;
+}
+#tac-field td.tac-reach:hover {
+  background: rgba(0, 0, 0, 0.45) !important;
+}
+/* Предпросмотр посадки 2x2: у большого существа подсвечена вся доступная зона, и без
+   этого не видно, какие ЧЕТЫРЕ клетки оно займёт. Ярче обычной заливки и перебивает
+   :hover, который красит только одну клетку под курсором. */
+#tac-field td.tac-reach-preview,
+#tac-field td.tac-reach.tac-reach-preview,
+#tac-field td.tac-reach.tac-reach-preview:hover { background: rgba(0, 0, 0, 0.45) !important; }
+/* Зона хода отряда под курсором (оригинал: при наведении на существо тёмными
+   становятся клетки, куда оно может походить в свой ход). Отдельный класс, а
+   не tac-reach: та штука кликабельна и уже занята активным отрядом, а это
+   чистая подсказка. Тёмнее обычной зоны и ложится ПОВЕРХ неё — наведение не
+   должно прятать уже видимые клетки хода. */
+#tac-field td.tac-enemy-reach { background: rgba(0, 0, 0, 0.40) !important; }
+/* Сторона подхода к цели (как в оригинале — выбирается положением курсора на цели).
+   Выбранная клетка обведена КРАСНОЙ рамкой без заливки — ровно как в оригинальном
+   клиенте; направление удара показывает повёрнутый меч (см. tacHsShowApproach).
+   `alt` — прочие доступные стороны, бледной рамкой: видно, что выбор есть. */
+#tac-field td.tac-approach-alt { box-shadow: inset 0 0 0 2px rgba(255,80,80,0.30); }
+#tac-field td.tac-approach { box-shadow: inset 0 0 0 3px #e53935; }
+/* Окно характеристик подробного режима. Раньше это был инлайн-стиль на тултипе,
+   который выскакивал по наведению; теперь окно открывается кликом, поэтому ему
+   нужны и события мыши (чтобы текст можно было выделить), и заметная рамка. */
+/* ── Окна оригинала: рамка, разделители, кнопка ──
+   Перенесено из боевого CSS heroeswm (`styles.css`: .window, .info_head,
+   .info_separator_horizontal, .info_column_separator, .btns, .hwm_hint_css)
+   вместе с картинками — они лежат на том же CDN и идут через наш кэширующий
+   прокси /Heroes/api/cache, как полотна грунта. Общая основа у окна настроек и у
+   карточки отряда: в оригинале это одна и та же рамка. */
+.hwm-window {
+  /* Порядок слоёв — из оригинала: четыре угла, четыре тянущиеся кромки, полотно. */
+  background:
+    url('/Heroes/api/cache/i/combat/bg_win_info_corner2_lt.png') top left no-repeat,
+    url('/Heroes/api/cache/i/combat/bg_win_info_corner2_rt.png') top right no-repeat,
+    url('/Heroes/api/cache/i/combat/bg_win_info_corner2_lb.png') bottom left no-repeat,
+    url('/Heroes/api/cache/i/combat/bg_win_info_corner2_rb.png') bottom right no-repeat,
+    url('/Heroes/api/cache/i/combat/win_border_t.png') top left repeat-x,
+    url('/Heroes/api/cache/i/combat/win_border_b.png') bottom left repeat-x,
+    url('/Heroes/api/cache/i/combat/win_border_l.png') top left repeat-y,
+    url('/Heroes/api/cache/i/combat/win_border_r.png') top right repeat-y,
+    url('/Heroes/api/cache/i/combat/bg_win_info.png');
+  background-size: 22px, 22px, 22px, 22px, auto, auto, auto, auto, auto;
+  background-color: #d2d3d5;
+  color: #242627;
+  text-align: center;
+  box-shadow: 0 3px 9px 3px rgba(0,0,0,0.43);
+}
+/* Разделитель = .info_separator_horizontal: полоска высотой в ноль с картинкой. */
+.hwm-sep {
+  height: 0;
+  margin: 4px auto;
+  padding: 0.1em 0;
+  background: url('/Heroes/api/cache/i/combat/separator1.png') repeat-x center center;
+}
+/* Кнопка = .btns оригинала: градиент и тройное внутреннее кольцо вместо рамки. */
+.hwm-btn {
+  padding: 9px 26px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #ac7926 0%, #815c2d 100%);
+  box-shadow: inset 0 0 0 1px #ac7926, inset 0 0 0 2px #dfa84f, inset 0 0 0 3px #ac7926;
+  color: #f0cf88;
+  font: inherit;
+  font-size: 15px;
+}
+.hwm-btn:hover { filter: brightness(1.5) drop-shadow(0 0 5px #ffe4b3); }
+
+/* Подсказка при наведении = .hwm_hint_css оригинала: светлая плашка с двойным
+   внутренним кантом. Своя, а не системный `title`: у системной нельзя ни задать
+   вид, ни показать её сразу — она выжидает секунду и рисуется шрифтом ОС. */
+.hwm-hint {
+  position: fixed;
+  z-index: 2100;
+  max-width: 320px;
+  padding: 0.25em 1em 0.4em;
+  border-radius: 5px;
+  background-color: #d4d2c9;
+  color: #592c08;
+  box-shadow:
+    inset 0 0 0 1px #ebe9e1,
+    inset 0 0 0 2px rgba(89,44,8,0.5),
+    0 1px 5px rgba(0,0,0,0.7);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+  user-select: none;
+  pointer-events: none;   /* подсказка не должна перехватывать наведение у умения */
+}
+
+/* Окно осмотра (карточка отряда и окно героя) — на той же рамке. */
+.tac-info-window {
+  position: fixed; z-index: 2000; min-width: 200px; max-width: 280px;
+  padding: 10px 12px; font-size: 13px; line-height: 1.5;
+}
+.tac-info-window .tac-info-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.tac-info-window .tac-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 12px; text-align: left; color: #4a4c4e; }
+.tac-info-window .tac-info-val { color: #242627; font-weight: 600; text-align: right; }
+.tac-info-window .tac-info-note { color: #4a4c4e; font-size: 12px; }
+/* Строки параметров как в оригинале (cre_info_*): иконка слева, подпись,
+   значение справа, рядом мелкая дельта «(+N)» от бонусов героя. */
+.tac-info-window .tac-info-rows { display: flex; flex-direction: column; gap: 1px; }
+.tac-info-window .tac-info-row { display: flex; align-items: center; gap: 7px; text-align: left; }
+.tac-info-window .tac-info-row img { width: 17px; height: 17px; flex: 0 0 17px; }
+.tac-info-window .tac-info-row > span:nth-child(2) { flex: 1; }
+.tac-info-window .tac-info-row .tac-info-val { white-space: nowrap; }
+.tac-info-window .tac-info-delta { margin-left: 4px; font-size: 11px; font-weight: 400; color: #6d6f71; }
+/* Строки вероятностей battleHelper: чуть ярче, чтобы отличаться от штатных характеристик */
+.tac-info-window .tac-info-bhprob { color: #8bc34a; }
+.tac-info-window .tac-info-bhprob .tac-info-val { font-weight: 700; color: #7cb342; }
+/* Значки в строках «Шанс морали»/«Шанс удачи» слегка полупрозрачны — чтобы не
+   путать с основными строками; подсвечиваются при hover карточки */
+.tac-info-window:hover .tac-info-bhprob img { opacity: 0.85; }
+/* Карточка отряда (оригинал: window window_relative) — заголовок с названием и
+   численностью, два столбца параметров, строка умений и ряд кнопок внизу.
+   Шире общего окна: в два столбца 280px не влезают. */
+.tac-info-card { min-width: 360px; max-width: 460px; padding: 10px; }
+.tac-info-card .tac-info-title {
+  margin: 0; padding: 2px 8px 8px; font-size: 17px; font-weight: 400;
+}
+/* Численность отряда — приглушённой, как «[1]» в оригинале: это не часть имени. */
+.tac-info-card .tac-info-cnt { color: #7f8285; margin-left: 7px; }
+/* Столбцы разделены вертикальной линией оригинала (.info_column_separator). */
+.tac-info-card .tac-info-cols { display: flex; padding: 6px 2px 8px; }
+.tac-info-card .tac-info-col { flex: 1 1 0; min-width: 0; padding: 0 10px; }
+.tac-info-card .tac-info-col + .tac-info-col {
+  background: url('/Heroes/api/cache/i/combat/separator1_v.png') repeat-y left center;
+}
+/* Умения — подписью под параметрами, по центру и через точку, как в оригинале
+   («Летающее существо. Большое существо. Переносчик.»). */
+.tac-info-card .tac-info-abils { padding: 7px 10px 4px; line-height: 1.5; }
+.tac-info-card .tac-info-note { margin: 0; padding: 10px; }
+/* Наложенные эффекты: имя, остаток ходов, расшифровка от сервера. */
+.tac-info-card .tac-info-effects { padding: 4px 10px; text-align: left; }
+.tac-info-card .tac-info-effect { padding: 5px 0; }
+.tac-info-card .tac-info-effect + .tac-info-effect { border-top: 1px solid rgba(89,44,8,0.18); }
+.tac-info-card .tac-info-eff-name { font-weight: 600; }
+.tac-info-card .tac-info-eff-turns { float: right; color: #6d6f71; font-size: 12px; }
+.tac-info-card .tac-info-eff-what { clear: both; color: #4a4c4e; font-size: 12px; }
+.tac-info-card .tac-info-actions {
+  display: flex; gap: 12px; justify-content: center; padding: 8px 10px 4px;
+}
+.tac-info-card .tac-info-actions .hwm-btn { flex: 0 1 150px; }
+/* Умение под курсором подсвечивается золотом — так в оригинале видно, о чём
+   именно подсказка, когда их в строке пять штук. */
+.tac-info-skill { cursor: help; }
+.tac-info-skill:hover { color: #976d2b; }
+
+/* Курсор «осмотреть» там, где клик показывает карточку: в подробном режиме — на
+   поле, а на ленте очереди — всегда (фишка кликабельна и вне режима). */
+
+/* Существо, выбранное в палитре для постановки кликом. Взведённый выбор переживает
+   постановку (чтобы заполнять сторону подряд), поэтому он обязан быть заметным. */
+.tac-unit-item.tac-armed {
+  outline: 2px solid var(--gold); outline-offset: -2px; border-radius: 4px;
+  box-shadow: 0 0 10px rgba(201,168,76,0.6);
+}
+
+/* Прогноз урона у цели (череп — убитые, вспышка — урон), как в оригинале. Крупный
+   белый текст с чёрной обводкой: подпись лежит поверх поля, а не в панели. */
+.tac-forecast {
+  position: fixed; z-index: 61; pointer-events: none;
+  display: flex; flex-direction: column; gap: 2px;
+  font-size: 17px; font-weight: 700; line-height: 1.1; color: #fff; white-space: nowrap;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px #000;
+}
+/* Боковые клетки взмаха («Убийственные брызги»): тот же прогноз, но мельче и
+   приглушённее — это довесок умения, а не выбранная игроком цель. */
+.tac-forecast.tac-forecast-splash { font-size: 14px; opacity: 0.85; }
+/* Курсора у клетки нет: при наведённом заклинании клиент ставит жезл (6). */
+#tac-field td.tac-spell-target { outline: 3px solid #ce93d8 !important; outline-offset: -2px; }
+#tac-field td.tac-spell-target:hover { background: rgba(206,147,216,0.25) !important; }
+/* Область площадного заклинания под курсором: показывает, кого накроет каст,
+   ДО клика — включая собственные отряды рядом с целью. */
+#tac-field td.tac-area-preview {
+  background: rgba(255, 138, 61, 0.52) !important;
+  outline: 2px solid rgba(255, 190, 61, 0.9) !important;
+  outline-offset: -1px;
+}
+/* Взведённая «Стрельба навесом» — свободный прицел, как в оригинале: красная
+   рамка 3х3 следует за курсором по любой валидной клетке (onmousemovep.js:
+   `setshad(-1,-1,1,1)`, красная тень `shado[]`). Заливка области — та же
+   оранжевая семья, что у площадных заклинаний, но вчетверо слабее: главное —
+   красный контур, как тень-прицел оригинала. Рамка одна — под мышью, а не по
+   всем целям сразу: область теперь площадная, и постоянные зоны вокруг целей
+   только спорили бы с ней за одни клетки. */
+#tac-field td.tac-scatter-aim {
+  background: rgba(255, 138, 61, 0.20) !important;
+  outline: 2px solid rgba(255, 60, 40, 0.95) !important;
+  outline-offset: -2px;
+}
+
+/* Линия «Магического выстрела»/«Насквозь» под курсором: клетки луга от стрелка
+   до края поля через прицеленную клетку — как красный лазер оригинала
+   (onmousemovep.js magshot, тень `shado[]`). Видно, что залп заденет не только
+   цель, но и всех под линией, включая своих. */
+#tac-field td.tac-rail-preview {
+  background: rgba(255, 40, 30, 0.32) !important;
+  outline: 2px solid rgba(255, 110, 80, 0.95) !important;
+  outline-offset: -2px;
+}
+
+/* Второй шаг «Телепорта»: откуда переносим (источник) и куда можно (клетки).
+ *
+ * Заливкой одной тут не обойтись, как обходится подсветка хода (`.tac-reach`):
+ * достижимых клеток у отряда десяток, а дальность переноса считается как
+ * 10 * SE / [здоровье отряда] и у лёгкого стека накрывает ВСЮ доску. Заливка
+ * в 18%, разлитая по всем 120 клеткам, ничем не отличается от её отсутствия:
+ * сравнивать не с чем, и поле выглядит нетронутым — «выбрал отряд, а дальше
+ * ничего не происходит». Поэтому у каждой клетки свой значок: он читается сам
+ * по себе, сколько бы их ни было.
+ *
+ * Курсор у всех этих клеток — жезл (6): в оригинале прицеливание заклинанием
+ * тоже отдаёт `set_cursor(6)` (onmousemovep.js :1318 и далее, по одному
+ * случаю на заклинание), и `battleCursor.ts` повторяет это. Своего значения
+ * (`crosshair`) здесь больше нет — иначе поверх жезла рисовался бы
+ * системный прицел. */
+#tac-field td.tac-spell-source { outline: 3px dashed #ce93d8 !important; outline-offset: -2px; }
+#tac-field td.tac-spell-cell {
+  background: rgba(206,147,216,0.18) !important;
+  position: relative;
+}
+#tac-field td.tac-spell-cell::before {
+  content: '';
+  position: absolute; left: 50%; top: 50%;
+  width: 9px; height: 9px; margin: -5px 0 0 -5px;
+  transform: rotate(45deg);
+  background: rgba(206,147,216,0.55);
+  border: 1px solid rgba(255,255,255,0.75);
+  pointer-events: none;
+}
+#tac-field td.tac-spell-cell:hover { background: rgba(206,147,216,0.45) !important; }
+#tac-field td.tac-spell-cell:hover::before { background: #ce93d8; transform: rotate(45deg) scale(1.35); }
+
+/* Фантом («Создание фантома»): дубль виден насквозь. Спрайту прозрачность
+ * ставит сцена (fieldScene.setGhost) — спрайты живут на общем канвасе, до них
+ * CSS не достаёт; здесь гасится портретный фолбэк клетки, который рисуется,
+ * пока спрайт не загрузился или когда анимации у существа нет вовсе. */
+#tac-field td.tac-phantom { opacity: 0.55; }
+#tac-field td.tac-selected { outline: 4px solid #ffeb3b !important; outline-offset: -2px; box-shadow: inset 0 0 20px rgba(255,235,59,0.2); }
+
+/* Team colors — только для ПУСТЫХ клеток: так видно, где чья зона высадки. */
+/* Заливка зон и «чужих» клеток — подсказка РАССТАНОВКИ, не боя: она говорит,
+   куда можно ставить отряды. В арене её нет (`body:not(.tac-full-field)`): у
+   оригинала на доске только линии сетки, а вся краска — грунт под окном, и
+   серо-красно-синяя плита читалась как отдельный настил поверх него.
+   Гасится именно ЗАЛИВКА: подсветки боя (зона хода, прицел заклинания, огонь)
+   пишут тот же background и должны работать. */
+/* Зоны высадки БЕЗ заливки: в оригинале доска — это чистый грунт с тонкой
+   сеткой, а у нас две крайние колонки были залиты розовым и синим и читались
+   как «другая земля». Куда можно поставить отряд, показывает подсветка клетки
+   под курсором и сам отказ поставить вне зоны. */
+/* Под отрядом заливку снимаем: спрайт закрывает середину клетки, и цветной фон
+   читался как лишняя рамка вокруг существа. Сторону и так показывает цветной бейдж
+   с числом. !important — чтобы перебить и тему light, где те же правила заданы
+   отдельным блоком.
+   Свечение внутрь (box-shadow у tac-fp.tac-active/tac-spell-target) заливку не
+   гасит — оно осталось и без подложки читалось тем же «пятном» вокруг спрайта,
+   которого заливку и убирали. Снимаем и его: на клетке существа подсветки нет
+   вовсе, кто цель — видно по курсору и подсказке при наведении.
+   `.stone` — тоже клетка отряда, не только `.pl1`…`.pl6`: зоны высадки — только
+   пара колонок у края (tacDropDepth), а отряд, шагнувший в открытое поле, стоит
+   уже на «stone»-клетке (tacBuildGrid — обычная клетка ставится этим классом по
+   умолчанию). Без него свечение возвращалось на всех, кто успел сходить.*/
+#tac-field td.tac-has-unit.pl1,
+#tac-field td.tac-has-unit.pl2,
+#tac-field td.tac-has-unit.pl3,
+#tac-field td.tac-has-unit.pl4,
+#tac-field td.tac-has-unit.pl5,
+#tac-field td.tac-has-unit.pl6,
+#tac-field td.tac-has-unit.stone { background-color: transparent !important; box-shadow: none !important; }
+
+/* ...но прицел площадного заклинания эта прозрачность гасить не должна. Оба
+   правила выше — «под отрядом фон снимаем» и лиловая подсветка цели
+   (`.tac-spell-target:hover`) — специфичнее подсветки области, и заливка
+   пропадала ровно в той клетке, куда игрок метит: у «Каменных шипов» крест
+   терял середину и читался кольцом, у «Огненного шара» дыра появлялась в
+   центре квадрата. Фигуру игрок обязан видеть целиком — иначе он не понимает,
+   накрыт ли сам выбранный отряд. */
+#tac-field td.tac-has-unit.tac-area-preview,
+#tac-field td.tac-spell-target.tac-area-preview {
+  background-color: rgba(255, 138, 61, 0.30) !important;
+}
+
+/* Цвет бейджа — по владельцу отряда (оригинал: get_color → army_colors_p). !important
+   обязателен: общий селектор бейджа `#tac-field td div:not()...:not()` несёт четыре
+   :not-класса и по специфичности перебивал эти правила — все числа на поле выходили
+   белыми независимо от команды. */
+#tac-field td div.t0, #tac-numbers .tac-num.t0 { background: rgba(155,155,155,0.7) !important; }
+#tac-field td div.t1, #tac-numbers .tac-num.t1 { background: rgba(255,0,0,0.7) !important; color: white !important; }
+#tac-field td div.t2, #tac-numbers .tac-num.t2 { background: rgba(0,0,255,0.7) !important; color: white !important; }
+#tac-field td div.t3, #tac-numbers .tac-num.t3 { background: rgba(144,0,0,0.7) !important; color: white !important; }
+#tac-field td div.t4, #tac-numbers .tac-num.t4 { background: rgba(0,144,255,0.7) !important; }
+#tac-field td div.t5, #tac-numbers .tac-num.t5 { background: rgba(244,123,2,0.7) !important; color: white !important; }
+#tac-field td div.t6, #tac-numbers .tac-num.t6 { background: rgba(187,36,253,0.7) !important; color: white !important; }
+
+
+/* Ряд «кнопка — лента — кнопка». Кнопки скрыты, пока лента помещается целиком:
+   пустые стрелки по краям выглядели бы сломанным элементом. */
+.tac-init-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin-top: 8px;
+}
+/* Лента ВНУТРИ поля, а не отдельной панелью под ним: в оригинале шкала ATB лежит
+   в нижнем краю боевого поля, на том же фоне, без своей рамки. Полосу под неё
+   резервирует padding-bottom у #tac-field-wrap (и высота доски считается уже с
+   её учётом — см. CHROME_H в tacEditorMetrics), а сюда лента втягивается
+   отрицательным margin. В арене своя раскладка — там лента и так в поле. */
+/* Лента лежит в НИЖНЕМ ПОЯСЕ сцены (pole_bottom оригинала) — как в арене.
+   Втягивает её туда отрицательный margin ровно в высоту пояса. */
+body.tac-on-battle:not(.tac-full-field) .tac-init-bar {
+  height: var(--pole-bottom, 90px);
+  align-items: center;
+  gap: 4px;
+  margin-top: calc(-1 * var(--pole-bottom, 90px));
+  padding: 4px calc(var(--pole-side, 20px) + 34px);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 20;
+}
+body:not(.tac-full-field) .tac-init-bar .tac-initiative {
+  height: auto;
+  padding: 2px 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+/* Кнопки скрываются через visibility, а НЕ display: скрытие через display меняло бы
+   ширину ленты, из-за чего в неё влезала бы ещё одна фишка, кнопка снова
+   становилась бы нужной — и вид дёргался бы на границе. Место остаётся занятым. */
+/* Координаты клетки под курсором. В оригинале это белые цифры в нижнем поле,
+   между шестерёнкой настроек и шкалой ATB, — поэтому и живут первым элементом
+   того же ряда. Ширина фиксированная: числа меняются на каждом движении мыши, и
+   плавающая ширина дёргала бы всю ленту. */
+.tac-cell-coords {
+  flex: 0 0 auto;
+  align-self: center;
+  /* Ширина как у блока жизней справа, и свободное место уходит В ОТСТУПЫ обоих:
+     лента тогда стоит посередине полосы, а не жмётся к левому краю. Без этого
+     остаток ширины копился в хвосте строки, и вся лента вместе с блоком жизней
+     уезжала влево. */
+  width: 6.2em;
+  margin-right: auto;
+  padding: 0 4px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  pointer-events: none;
+  user-select: none;
+}
+/* В обычном размере ряд узкий — цифры крупнее, но в 2em: оригинал рисует их
+   ~24px (Math.max(7, 24·scaling)) в пустом нижнем поле, у нас та же строка
+   несёт ещё очередь ходов, и 11px были мельче, чем в полный рост. Цвет тот же
+   белый с обводкой: ряд лежит НА доске, а не на тёмной панели, и серое на
+   песке не читалось. */
+.tac-cell-coords { font-size: 22px; }
+body:not(.tac-full-field) .tac-cell-coords { font-size: 18px; }
+/* Здоровье / мана / выстрелы отряда под курсором — правый угол полосы, как в
+   оригинале (сердце, склянка, стрела справа от шкалы ATB). Ширина, как у
+   координат слева, ФИКСИРОВАННАЯ: содержимое меняется на каждом движении мыши,
+   и плавающая ширина дёргала бы ленту. Заодно полоса получается симметричной. */
+.tac-init-vitals {
+  flex: 0 0 auto;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  /* Ширина ЖЁСТКАЯ и с запасом на «999/999»: блок наполняется по наведению, и
+     на `min-width` лента ужималась ровно в тот момент, когда игрок наводится на
+     существо, — портреты ехали под курсором. Запас считали от шрифта 20px:
+     «999/999» + иконка 1.15em + отступы — в 6.2em уже тесно. */
+  width: 7em;
+  margin-left: auto;
+  overflow: hidden;
+  padding: 0 4px;
+  pointer-events: none;
+  user-select: none;
+}
+.tac-vital { display: flex; align-items: center; gap: 4px; line-height: 1; }
+.tac-vital img { width: 1.15em; height: 1.15em; object-fit: contain; flex: 0 0 auto; }
+.tac-vital span {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+/* Цифры растут вместе с полосой — как числа отрядов и координаты — и вместе с
+   окном: базой берём `--pole-bottom`, который JS масштабирует под размер поля
+   (а поле — под экран), плюс доля ширины экрана, чтобы рост не останавливался
+   на узком поле. Клэмп держит их в границах: в полный рост до 26px, на смартфоне
+   не мельче 14. Иконки у цифр (1.15em) следуют за шрифтом сами. */
+body.tac-full-field .tac-init-vitals {
+  font-size: clamp(14px, calc(var(--pole-bottom, 90px) * 0.26 + 0.15vw), 26px);
+}
+/* В обычном размере ряд узкий: мельче, чем в полный рост, но заметно крупнее
+   коорд-курсивной надписи 11px — белым с обводкой, как координаты. */
+body:not(.tac-full-field) .tac-init-vitals {
+  font-size: clamp(14px, calc(var(--pole-bottom, 90px) * 0.22 + 0.15vw), 22px);
+}
+.tac-init-bar .tac-init-scroll { visibility: hidden; }
+.tac-init-bar.tac-can-prev .tac-init-scroll[data-dir="prev"],
+.tac-init-bar.tac-can-next .tac-init-scroll[data-dir="next"] { visibility: visible; }
+/* Кнопки листания — узкая золотая полоса во всю высоту ленты, как в оригинале.
+   Ширина взята из самого оригинала: show_atb_next_button задаёт atb_but_width = 8
+   при высоте во всю шкалу (atb_but_height = 120*atb_scaling). Поэтому золото здесь
+   доминирует, а тёмного нет вовсе — тонкая полоска, а не плашка с рамкой.
+   Свечение на hover — дословно из боевого CSS оригинала (.atb_buttons img:hover). */
+/* Стрелки листания — картинки оригинала (`atbScale_arrow_left/right.png`,
+   8×120). Раньше треугольник рисовался сам: своей картинки под эту кнопку найти
+   не удавалось, и ширина 8px бралась из кода (`atb_but_width`). */
+.tac-init-scroll {
+  flex: 0 0 auto;
+  /* Те же доли, что и в арене: 9% ширины фишки, высота — в фишку.
+     Фишку в редакторе меряют --tac-init-w/--tac-init-h (их ставит tacFitField). */
+  align-self: center;
+  width: max(3px, calc(var(--tac-init-w, 56px) * 0.09));
+  height: var(--tac-init-h, 47px);
+  padding: 0;
+  cursor: pointer;
+  border: 0;
+  background: center / 100% 100% no-repeat;
+  font-size: 0;
+}
+.tac-init-scroll[data-dir="prev"] {
+  background-image: url('/Heroes/api/cache/i/combat/atbScale_arrow_left.png');
+}
+.tac-init-scroll[data-dir="next"] {
+  background-image: url('/Heroes/api/cache/i/combat/atbScale_arrow_right.png');
+}
+.tac-init-scroll:hover {
+  filter: brightness(1.25) drop-shadow(0 0 5px #ffe4b3);
+}
+.tac-init-scroll:active { filter: brightness(0.9); }
+.tac-initiative {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  /* Однорядная лента ФИКСИРОВАННОЙ высоты с прокруткой (как ATB-шкала оригинала):
+     с flex-wrap панель меняла высоту при каждом перестроении, и разметка ломалась.
+     Высота жёсткая — за неё лента не выходит ни при каком числе чипов; листается
+     колесом мыши (см. обработчик wheel в battle.ts) и кнопками ◀ ▶. */
+  height: 62px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  box-sizing: border-box;
+  /* Прокрутка без видимой полосы — колесом мыши, как в оригинале */
+  scrollbar-width: none;
+}
+.tac-initiative::-webkit-scrollbar {
+  display: none;
+}
+/* Фишка ленты — как в оригинале: квадрат с портретом во всю площадь, рамка по цвету
+   команды и крупное золотое число в правом нижнем углу. Имени существа и цифры
+   инициативы на фишке нет — в оригинале их тоже нет. */
+.tac-init-unit {
+  flex: 0 0 auto;
+  position: relative;
+  /* Пропорция 6:5 и размер — от клетки поля (см. tacFitField): в оригинале
+     ячейка ленты 144×120 при клетке 156.7. Фолбэк — на случай, если поле ещё не
+     обмерено. */
+  width: var(--tac-init-w, 56px);
+  height: var(--tac-init-h, 47px);
+  /* Рамка толще двух пикселей: вместе с фоном команды (ставится инлайном) она и
+     есть та цветная кайма вокруг существа, по которой в оригинале читается
+     сторона. Фон при этом ПРИГЛУШЁН (tacTeamChipStyle), а между рамкой и
+     портретом идёт тёмный волосок — в оригинале кайма двойная, яркая снаружи и
+     тёмная внутри, и без него яркая рамка сливалась с яркой заливкой. */
+  border: 3px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.65);
+}
+.tac-init-unit.tac-init-active {
+  border-color: var(--gold);
+  /* Тёмный волосок перечисляем и здесь: `box-shadow` не складывается с базовым
+     правилом, а заменяет его целиком — у ходящей фишки кайма теряла внутреннюю
+     границу и золото сливалось с портретом. */
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.65);
+}
+/* Фишка героя в ленте: ПОРТРЕТ героя вместо портрета существа, ⚔ вместо числа. */
+/* Фишка героя: фон у неё тоже командный (ставится инлайном вместе с рамкой),
+   поэтому «геройство» помечается золотым ободком внутрь, а не своей заливкой. */
+.tac-init-unit.tac-init-hero {
+  box-shadow: inset 0 0 0 2px rgba(201, 168, 76, 0.85), inset 0 0 0 3px rgba(0, 0, 0, 0.65);
+}
+/* Портрет героя лежит там же, где портреты существ (i/portraits), и рисуется
+   обычной картинкой — общий стиль .tac-init-unit img её и кадрирует. */
+.tac-init-unit.tac-init-hero .tac-init-cnt {
+  right: 1px; top: 0; bottom: auto; font-size: 11px;
+}
+.tac-init-unit img {
+  width: 100%;
+  height: 100%;
+  /* ЦЕЛИКОМ, а не подрезанный: `cover` срезал портрету макушку и подбородок —
+     пропорции фишки (6:5 по внешнему габариту) и портрета (216×180) сходятся, а
+     внутри рамки коробка уже другая. Пустое место по краям занимает фон
+     команды — в оригинале вокруг существа в ленте он и стоит. */
+  object-fit: contain;
+  display: block;
+}
+/* Число поверх портрета: жёлтое, жирное, с чёрной обводкой — так его видно на любом
+   портрете. text-shadow в четыре стороны заменяет обводку, которой в оригинале
+   занимался strokeThickness канваса. */
+.tac-init-unit .tac-init-cnt {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  color: #ffd733;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.1;
+  pointer-events: none;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 3px #000;
+}
+
+/* ===== BATTLE TEST PANEL ===== */
+.tac-test-panel {
+  margin-top: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.tac-test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  user-select: none;
+  background: rgba(201,168,76,0.05);
+}
+.tac-test-header:hover {
+  background: rgba(201,168,76,0.1);
+}
+.tac-test-creature {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: background 0.1s;
+}
+.tac-test-creature:hover {
+  background: var(--card-hover);
+}
+.tac-test-ability-item {
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 4px;
+  background: var(--bg);
+}
+.tac-test-ability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.tac-test-ability-name {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 500;
+}
+.tac-test-ability-desc {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin-top: 3px;
+  padding: 3px 5px;
+  background: var(--card);
+  border-radius: 3px;
+}
+/* Toggle switch (small) */
+.tac-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tac-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.tac-toggle .tac-toggle-slider {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: #555;
+  border-radius: 9px;
+  transition: background 0.2s;
+}
+.tac-toggle .tac-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.tac-toggle input:checked + .tac-toggle-slider {
+  background: #4caf50;
+}
+.tac-toggle input:checked + .tac-toggle-slider::before {
+  transform: translateX(14px);
+}
+.tac-toggle .tac-toggle-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.tac-toggle input:checked ~ .tac-toggle-label {
+  color: #4caf50;
+}
+
+/* Cursor-following drag ghost (replaces the native drag snapshot, which captured a chunk of
+   the field around the creature — see tacSetDragImage in js/battle.ts). */
+.tac-drag-ghost {
+  position: fixed;
+  width: 64px;
+  height: auto;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+
+/* Ranged-attack projectile streak (see tacShootProjectile in js/battle.ts). */
+/* Трасса выстрела: тонкая линия от стрелка к цели, гаснущая за время полёта.
+   Без неё выстрел читался как «чёрточка мелькнула где-то над полем» — куда и
+   откуда стреляли, видно не было. Ставится в тех же координатах обёртки, что и
+   сама стрела (грудь стрелка → грудь цели), поэтому линия проходит ровно через
+   обоих. z-index ниже стрелы: трасса — след, а не снаряд. */
+.tac-shot-line {
+  position: absolute;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(90deg,
+              rgba(255, 213, 79, 0.15), rgba(255, 213, 79, 0.85) 70%, #fff);
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 59;
+  filter: drop-shadow(0 0 3px rgba(255, 213, 79, 0.55));
+}
+
+.tac-projectile {
+  position: absolute;
+  /* Длина ставится инлайном — по длине выстрела (см. tacShootProjectile). */
+  width: 40px;
+  height: 4px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent, #ffd54f 60%, #fff);
+  border-radius: 2px;
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 60;
+  filter: drop-shadow(0 0 3px rgba(255, 213, 79, 0.8));
+}
+
+/* Стрела с недолётом (`range_penalty`): летит навесом по дуге и бьёт вполсилы.
+   Короче и тусклее прямой — «выстрел на излёте» читается ещё до цифры урона. */
+.tac-projectile-lob {
+  width: 26px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #b0a06a 60%, #e8dcae);
+  filter: drop-shadow(0 0 2px rgba(176, 160, 106, 0.7));
+}
+
+/* «ПРОМАХ» float — incorporeal dodge; rendered instead of a damage number. */
+/* Пометки без урона (статус, кража снарядов, отброс хода): та же всплывающая
+   подпись, но спокойного цвета — красный в бою значит «урон». */
+.tac-dmg-float.tac-mark {
+  color: #ffd54f;
+  font-size: 13px;
+  text-shadow: 0 0 5px rgba(0,0,0,0.95);
+}
+.tac-dmg-float.tac-miss {
+  color: #b0bec5;
+  text-shadow: 0 0 4px rgba(176, 190, 197, 0.6);
+  font-style: italic;
+}
+/* Лечение и усиления активных умений — тем же всплытием, что и урон,
+   но зелёным: цвет здесь единственное, что отличает «+30» от «−30». */
+.tac-dmg-float.tac-heal { color: #4caf50; }
+/* Название сработавшего умения над своей клеткой: активная способность
+   должна быть видна на поле, а не только строкой в логе. */
+.tac-dmg-float.tac-ability {
+  color: var(--gold, #d4af37);
+  font-size: 12px;
+}
+
+/* Thin HP bar of the stack's top creature (shown only when wounded). */
+.tac-hp-bar {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 2px;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 2px;
+  z-index: 11;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tac-hp-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.25s;
+}
+
+/* Round separator inside the ATB turn ribbon. */
+.tac-init-round {
+  flex: 0 0 auto;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-left: 1px solid var(--gold-dim, rgba(201,168,76,0.4));
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+/* Spellbook tiles (full spell list, grouped by school). */
+.tac-spell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  font-size: 12px;
+}
+.tac-spell-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+/* Массовое заклинание накрывает сторону целиком — кнопка помечена рамкой, чтобы
+   отличать её от одноимённого одиночного в соседней школе. */
+.tac-spell-btn.tac-spell-mass::after {
+  content: "▚";
+  margin-left: 2px;
+  font-size: 10px;
+  color: #ce93d8;
+}
+.tac-spell-btn.tac-spell-active {
+  border-color: #ce93d8;
+  background: rgba(206, 147, 216, 0.25);
+  box-shadow: 0 0 6px rgba(206, 147, 216, 0.5);
+}
+/* Недоступное заклинание (мана, потраченный каст, некого цеплять) остаётся
+   видимым: книга должна показывать ВСЮ школу, а не только то, что по карману. */
+.tac-spell-btn.tac-spell-off {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.tac-spell-mana {
+  font-style: normal;
+  font-size: 11px;
+  color: #7ec8ff;
+}
+
+/* Книга магии героя в бою */
+/* ── Книга магии: рисунок и раскладка оригинала ──────────────────────────
+   Ассеты настоящие, из боевого клиента (`i/combat/`): книга целиком —
+   `book_bg.png` (1370x1160, золотые уголки, синий переплёт и две ленточки-
+   закладки снизу), стрелки листания `book_btn_arrow_*.png`, закладки
+   `book_bookmark_left/right.png`, орнамент под числами
+   `book_block_amounts_divider.png`, иконки заклинаний `combat/magicbook/*.png`.
+   Пропорции и цвета перенесены из `i/combat/styles.css` оригинала:
+   блок заклинания 50% ширины, полка с отступом сверху, круглая кликабельная
+   зона, мана #0133b4, эффект #b40501, длительность #62911e. */
+.tac-hs-magic {
+  position: fixed;
+  inset: 0;
+  /* Выше кнопок поля (⚙ настроек и ⛶ — z-index 300): раскрытая книга
+     накрывает арену целиком, и шестерёнка на её странице — лишняя. Окна
+     сведений (2000+) и подсказки остаются выше книги. */
+  z-index: 320;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 8px;
+}
+.tac-hs-magic[style*="display: block"] { display: flex !important; }
+.tac-book {
+  position: relative;
+  /* Книга у́же и выше натуральной картинки (1370x1160): так страница
+     вытягивается вверх, как на развороте оригинала, и трём рядам заклинаний
+     достаётся вертикаль под крупные иконки. Фон растягивается под контейнер —
+     `background-size: 100% 95%`, тот же приём, что у `.book_bg` оригинала
+     (там контейнер, наоборот, приплюснут: 1370x1000). */
+  width: min(820px, 56vw, 62vh);
+  aspect-ratio: 1370 / 1500;
+  max-height: 94vh;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: 100% 95%;            /* как `.book_bg` оригинала */
+  font-family: 'PT Sans', sans-serif;
+}
+/* Служебная строка поверх верхнего поля книги: в оригинале её нет, но нам
+   нужно показать, чья книга, какой раздел открыт и номер страницы. */
+.tac-book-head {
+  position: absolute;
+  top: 5.5%;
+  left: 8%;
+  right: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #4a4744;
+  font-size: clamp(10px, 0.95vw, 13px);
+  font-weight: 700;
+}
+.tac-book-section { color: #6b4a1f; }
+.tac-book-pages { color: #6b6663; }
+/* Полка заклинаний: две колонки по 50% — как `.book_skills_container_Desktop`
+   вместе с `.book_skill_block_Desktop`. */
+.tac-book-skills {
+  position: absolute;
+  top: 11%;
+  left: 3.5%;
+  right: 3.5%;
+  /* Нижний край — по пергаменту, а не по сгибу: числа последнего ряда там
+     подрезались переплётом. */
+  bottom: 14%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+}
+.tac-book-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 0;
+  min-height: 0;
+}
+/* Круглая кликабельная зона с иконкой — `.spell_btn_Desktop`. */
+.tac-book-cell-btn {
+  flex: 1 1 auto;
+  height: 100%;
+  width: auto;
+  max-width: 96%;
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  /* Ни обрезки, ни радиуса: у иконок оригинала свечение выходит ЗА рунное
+     кольцо, и круглый клип срезал его ровно по краю картинки. */
+}
+/* Кольцо — ТОЛЬКО там, где картинки нет (у семи заклинаний её нет в книге
+   оригинала). Раньше оно висело на каждой кнопке и читалось тёмной рамкой
+   вокруг всех иконок — у оригинала иконка лежит на пергаменте без обводки. */
+.tac-book-cell-btn:not(:has(img)) {
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(107, 74, 31, 0.35);
+}
+.tac-book-cell-btn:hover:not(:disabled) .tac-book-cell-img {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.7));
+}
+.tac-book-cell-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  /* Общий стиль сайта красит картинки тёмной подложкой (чтобы прозрачные не
+     мигали на загрузке). Иконке книги она не нужна: у неё прозрачные поля, и
+     подложка читалась тёмным прямоугольником вокруг рунного кольца. */
+  background: none !important;
+}
+.tac-book-cell-on .tac-book-cell-img {
+  filter: drop-shadow(0 0 12px rgba(206, 147, 216, 1)) drop-shadow(0 0 22px rgba(206, 147, 216, 0.8));
+}
+/* Значок в углу блока — фаза суток фараона: ☀ днём, 🌙 ночью. Объясняет, почему
+   цена и эффект у записи не базовые (и почему выданная перком массовая форма
+   сейчас погашена). */
+.tac-book-badge {
+  position: absolute;
+  top: 0;
+  right: 6%;
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+}
+.tac-book-cell-off { filter: grayscale(100%); opacity: 0.35; }
+.tac-book-cell-off .tac-book-cell-btn { cursor: default; }
+/* Площадное отмечено сиреневым свечением, а не рамкой: обводка на пергаменте
+   оригинала выглядит инородно. */
+.tac-book-cell-area .tac-book-cell-img { filter: drop-shadow(0 0 9px rgba(206, 147, 216, 0.75)); }
+/* Подписи под иконкой — `.book_skill_block_container`. */
+.tac-book-cell-labels {
+  width: 92%;
+  margin-top: 0;
+  text-align: center;
+  line-height: 1.02;
+  flex: 0 0 auto;
+}
+.tac-book-cell-name {
+  color: #242627;
+  font-weight: 700;
+  font-size: clamp(10px, 1.15vw, 17px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Строка чисел с орнаментальным разделителем оригинала под ней. */
+.tac-book-nums {
+  display: flex;
+  gap: 6%;
+  justify-content: center;
+  align-items: baseline;
+  padding-bottom: 6px;
+  background: url('/Heroes/api/cache/i/combat/book_block_amounts_divider.png') bottom center no-repeat;
+  background-size: 78% auto;
+}
+.tac-book-num { font-style: normal; font-weight: 700; font-size: clamp(11px, 1.3vw, 19px); }
+.tac-book-num-mana { color: #0133b4; }
+.tac-book-num-eff { color: #b40501; }
+.tac-book-num-dur { color: #62911e; }
+/* Стрелки листания — `.book_arrow_left/right`: 5% ширины, по центру высоты. */
+.tac-book-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5%;
+  height: 10%;
+  max-width: 60px;
+  max-height: 90px;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 90%;
+  cursor: pointer;
+}
+.tac-book-arrow-prev { left: 1%; background-position: right center; }
+.tac-book-arrow-next { right: 1%; background-position: left center; }
+.tac-book-arrow:hover:not(:disabled) {
+  background-size: 100%;
+  filter: brightness(150%) drop-shadow(0 0 5px #ffe4b3);
+}
+/* Правила `:disabled` тут больше нет: на краю книги стрелка не гаснет, а
+   вовсе не рисуется — как `hide_button('book_prev')` в оригинале. */
+/* Ленточки-закладки снизу: слева мана, справа закрытие — `.book_bookmark_*`. */
+.tac-book-mark {
+  position: absolute;
+  bottom: 0;
+  width: 10%;
+  min-width: 96px;
+  height: 13%;
+  max-width: 190px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tac-book-mark-left { left: 25%; transform: translateX(-50%); }
+.tac-book-mark-right { right: 25%; transform: translateX(50%); cursor: pointer; }
+.tac-book-mark-right:hover { filter: brightness(125%) drop-shadow(0 0 5px #ffe4b3); }
+.tac-book-flask {
+  color: #eeeeed;
+  text-shadow: 0 0 5px #000;
+  font-weight: 700;
+  font-size: clamp(12px, 1.3vw, 20px);
+}
+/* Пояснение (режим стенда, потраченный каст) — в шапке: снизу оно налезало на
+   числа нижнего ряда, а места у книги в обрез. */
+.tac-book-note {
+  color: #6b6663;
+  font-weight: 400;
+  font-size: clamp(9px, 0.85vw, 12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40%;
+}
+.tac-book-spent { color: #b40501; }
+/* Закладки школ — полоса НАД книгой (в оригинале их нет, см. spellBookView.ts). */
+.tac-book-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 96vw;
+}
+.tac-book-tab {
+  background: linear-gradient(180deg, #2c527f, #17304f);
+  border: 1px solid rgba(201, 168, 76, 0.55);
+  border-radius: 5px;
+  color: #e8d7ac;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tac-book-tab span { display: none; }
+.tac-book-tab:hover { background: linear-gradient(180deg, #3d6ea6, #2c527f); }
+.tac-book-tab-on {
+  background: linear-gradient(180deg, #f7f2e4, #ded3ba);
+  color: #24384f;
+  font-weight: 700;
+  border-color: #c9a84c;
+}
+.tac-book-tab-on span { display: inline; }
+@media (max-width: 760px) {
+  .tac-book-cell-name { font-size: 11px; }
+  .tac-book-num { font-size: 12px; }
+  .tac-book-note { display: none; }
+}
+
+/* «Огненная стена»: клетки горят три хода — держим их видимыми всё это время. */
+#tac-field td.tac-firewall {
+  background: radial-gradient(circle, rgba(255,138,61,0.55), rgba(200,40,10,0.35)) !important;
+  box-shadow: inset 0 0 14px rgba(255, 120, 40, 0.9);
+}
+/* Объекты поля: «Калечащие капканы»/«Капканы» и грозовая туча «Призывающего
+ * бурю». Маркер ставится анимацией действия (battleAnim.tacApplyFieldMarker)
+ * или снапшотом сервера (field_objects), снимается срабатыванием/очисткой. */
+#tac-field td.tac-trap { position: relative; cursor: inherit; }
+#tac-field td.tac-trap::after { content: '🪤'; position: absolute; font-size: 14px; left: 50%; top: 50%; transform: translate(-50%,-50%); opacity: 0.85; pointer-events: none; }
+#tac-field td.tac-cloud { background: rgba(90,130,255,0.28) !important; box-shadow: inset 0 0 10px rgba(90,130,255,0.6); }
+/* «Шлейф облаков/тумана» — туман на пройденных клетках. Ставится анимацией
+ * действия mist_trail или снапшотом (kind "mist"), гаснет с рассеиванием
+ * через tacSyncFieldObjects. */
+#tac-field td.tac-mist { background: rgba(210,210,230,0.38) !important; box-shadow: inset 0 0 9px rgba(235,235,250,0.85); }
+/* «Ледяные осколки» — одноразовая ловушка 3×3. Ставится анимацией
+ * iceshards_placed или снапшотом (kind "ice"), снимается срабатыванием. */
+#tac-field td.tac-ice { background: rgba(140,200,255,0.32) !important; box-shadow: inset 0 0 10px rgba(170,220,255,0.8); }
+/* «Открытие врат Ада» — врата рисует ОРИГИНАЛЬНЫЙ портал-спрайт (объект
+   magic_spell spellname='demongate', sceneMountGate в fieldScene.ts: тот же,
+   что в клиенте игрока, showdemongate usemagicp.js:7238). Пока он на поле,
+   клетка под ним пустая и незанятая: подкрепление выходит из врат на
+   следующем ходу призывающего. У большого демона врата — 2×2, спрайт шириной
+   во весь след (usemagicp.js:7252).
+   Этот класс — ЗАПАСНОЙ вариант на случай, когда спрайт поставить нечем (нет
+   движка, оффлайн без кэша атласа): подсветка пульсирует, пока врата открыты,
+   и снимается в тот же момент, когда снапшот сообщает, что врата потрачены. */
+#tac-field td.tac-gate {
+  background: rgba(196, 54, 54, 0.30) !important;
+  box-shadow: inset 0 0 12px rgba(255, 96, 72, 0.85);
+  animation: tac-gate-pulse 1.4s ease-in-out infinite;
+}
+@keyframes tac-gate-pulse {
+  0%, 100% { box-shadow: inset 0 0 8px rgba(255, 96, 72, 0.55); }
+  50% { box-shadow: inset 0 0 16px rgba(255, 140, 96, 0.95); }
+}
+/* Метка выхода подкрепления, которая остаётся после прихода отряда. Пульсировать
+   уже нечему, поэтому след гаснет и держится ровно на месте появления: видно,
+   откуда вышли бесы, и это не путается с ещё открытыми вратами. */
+#tac-field td.tac-gate-spent {
+  background: rgba(120, 30, 30, 0.22) !important;
+  box-shadow: inset 0 0 7px rgba(150, 60, 50, 0.45);
+}
+/* Залп навесом: область 3×3, куда пришёлся выстрел. Метка временная — гаснет
+   через секунду (см. ветку `scattershot` в battleAnim): это не объект поля, как
+   туча или ловушка, а показ того, куда именно ушёл залп. Цвет стрелы, а не
+   стихии: навес — это выстрел. */
+#tac-field td.tac-scatter {
+  background: rgba(255, 213, 79, 0.22) !important;
+  box-shadow: inset 0 0 10px rgba(255, 213, 79, 0.65);
+}
+/* Заклинание без своей анимации: короткая вспышка клетки вместо объекта магии. */
+#tac-field td.tac-spell-flash {
+  animation: tac-spell-flash 0.38s ease-out;
+}
+@keyframes tac-spell-flash {
+  0% { box-shadow: inset 0 0 0 rgba(206, 147, 216, 0); }
+  40% { box-shadow: inset 0 0 26px 8px rgba(206, 147, 216, 0.85); }
+  100% { box-shadow: inset 0 0 0 rgba(206, 147, 216, 0); }
+}
+/* Земля из оригинального клиента — ПОЛОТНОМ ПОД доской, а не текстурой самой
+   доски. Раньше трава лежала на `#tac-field`: своя копия внутри рамки, скошенная
+   перспективой, обрубленная двойной рамкой и тенью по периметру. Полотно теперь
+   стелет обёртка (в арене — окно), а доска прозрачна, и земля идёт сплошняком
+   от края до края, как в оригинале.
+   Значение здесь — умолчание, пока грунт не выбран боем или игроком:
+   `tacApplyLand` переставляет переменную. */
+body { --tac-land: url('/Heroes/api/cache/i/png30/lands/land_grass3.jpg'); }
+/* Сетка клеток — как в оригинале (show_polep.js: grid с f_lalpha=50, линии
+   f_lcolor чёрные, strokeWidth ≥ 1 экранного px; по периметру ground_ramka той
+   же толщины). Сцена масштабируется scale(--arena-k), поэтому толщина
+   контр-масштабируется: у соседних клеток две рамки складываются в одну линию
+   ~1 экранного px, крайние столбцы получают внешнюю кромку той же толщины.
+   Цвет — свой у каждого грунта (`--tac-grid-line` ставит tacApplyLand из
+   f_lcolor/f_lalpha грунта): на лаве и пепле линии светлые, на траве — зелёные.
+   На раскладку рамка не влияет (table-layout: fixed — ширина клетки = --cellw). */
+#tac-field td {
+  border: calc(0.5px / var(--arena-k, 1)) solid var(--tac-grid-line, rgba(0, 0, 0, 0.5));
+}
+#tac-field td.tac-cr + td { border-left-width: calc(1px / var(--arena-k, 1)); }
+#tac-field td:last-child { border-right-width: calc(1px / var(--arena-k, 1)); }
+#tac-field tr:nth-child(2) td { border-top-width: calc(1px / var(--arena-k, 1)); }
+#tac-field tr:last-child td { border-bottom-width: calc(1px / var(--arena-k, 1)); }
+#tac-field td.tac-cr {
+  background: transparent !important;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Кнопки-иконки из оригинального клиента (90x90 png) */
+.tac-ibtn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.12s, filter 0.12s;
+  flex: 0 0 auto;
+}
+.tac-ibtn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+.tac-ibtn:hover { transform: scale(1.1); }
+.tac-ibtn:active { transform: scale(0.95); }
+.tac-ibtn:disabled { filter: grayscale(1); opacity: 0.5; cursor: default; }
+.tac-ibtn-start { width: 56px; height: 56px; }
+/* Включённый режим у кнопки-переключателя (подробный режим, автобой, Shift, руны).
+   Класс вешался давно, а стилей у него не было вовсе: нажатая кнопка выглядела
+   ровно как ненажатая, и понять, включён режим или нет, было нельзя. */
+.tac-ibtn-on { position: relative; }
+.tac-ibtn-on img { filter: drop-shadow(0 0 5px var(--gold, #c8a84c)) brightness(1.15); }
+/* Подробный режим — «зачёркнутая» кнопка: повторное нажатие его выключает, и
+   перечёркнутый значок про это и говорит (в оригинале ровно так же меняется
+   картинка info_on → info_off). */
+#tac-info-btn.tac-ibtn-on::after {
+  content: '';
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: calc(50% - 1.5px);
+  height: 3px;
+  border-radius: 2px;
+  background: #e04b4b;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.85);
+  transform: rotate(-45deg);
+  pointer-events: none;
+}
+/* В подробном режиме фишка очереди — тоже кнопка осмотра. */
+#tac-initiative .tac-init-unit { cursor: help; }
+/* Кликабельная фишка героя (хотсит): рука вместо лупы — поведение другое. */
+#tac-initiative .tac-init-unit.tac-init-hero--click { cursor: pointer; }
+
+/* Пустой бейдж количества (див есть в каждой клетке) рисовался белой «чёрточкой» на тёмном
+   поле — прячем, пока в нём нет числа. */
+#tac-field td div:not(.tac-cell-sprite):not(.tac-sprite-anim):not(.konvajs-content):not(.tac-hp-bar):empty {
+  display: none !important;
+}
+
+/* Кнопки управления боем поверх верхнего левого угла поля — как в оригинале */
+#tac-field-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* Пропускаем клики между кнопками к клеткам поля под ними */
+  pointer-events: none;
+}
+#tac-field-controls .tac-ibtn,
+#tac-field-controls #tac-mute-btn {
+  pointer-events: auto;
+}
+#tac-field-controls #tac-mute-btn {
+  cursor: pointer;
+  font-size: 16px;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
+}
+.tac-ibtn-sm { width: 38px; height: 38px; }
+/* .tac-ibtn-glyph снят: он был нужен кнопкам без картинки из оригинала (эмодзи вместо
+   png). Последние две такие — автобой и подробный режим — получили родные иконки
+   btn_autobattle_off/on.png и btn_info.png, и класс остался без пользователей. */
+
+/* Панель хода хотсита — под полем, рядом с лентой очереди */
+.tac-hotseat-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: var(--card);
+  border: 1px solid var(--gold-dim, var(--border));
+  border-radius: 8px;
+}
+.tac-hs-turn { font-size: 14px; }
+.tac-hs-spells { display: flex; gap: 6px; flex-wrap: wrap; }
+.tac-hs-actions { display: flex; gap: 4px; margin-left: auto; }
+.tac-hs-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: rgba(206,147,216,0.12);
+  border: 1px solid #ce93d8;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tac-hs-btn-on { background: rgba(206,147,216,0.4); }
+/* Шлем перед названием активируемого умения — тот же значок, что на кнопке
+   «Заклинание/Умение»: игрок узнаёт, что это умение отряда, а не заклинание. */
+.tac-hs-btn-icon { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
+/* Свиток рун гнома: те же кнопки, что у умений, но рунического цвета — руны
+   накладывает герой, а не отряд, и путать их с умениями отряда не надо. */
+.tac-hs-runes { margin-top: 4px; }
+.tac-rune-btn {
+  background: rgba(255,193,7,0.12);
+  border-color: var(--gold-dim, #b8860b);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tac-rune-btn:hover:not(:disabled) { background: rgba(255,193,7,0.28); }
+.tac-rune-off { opacity: 0.25; cursor: default; }
+.tac-rune-glyph { font-size: 15px; line-height: 1; color: var(--gold); }
+.tac-rune-note { align-self: center; font-size: 12px; color: var(--text-dim); }
+
+/* ===== Перспектива поля, как в оригинале ===== */
+/* Трапецию строит ПОРЯДНАЯ раскладка (tacLayoutRows) — и в арене, и в редакторе.
+   Общего наклона таблицы больше нет нигде: один `rotateX` на всю таблицу давал
+   ряды РАЗНОЙ высоты и слишком пологую трапецию (замер в редакторе: дальний ряд
+   в 0.93 ближнего против 0.65 у оригинала). */
+/* Существа — «билборды»: противонаклон вокруг нижней кромки, стоят вертикально на
+   наклонённой земле. НЕ preserve-3d: матрицы rotateX(16)·rotateX(-16) сокращаются и в
+   плоском режиме, а preserve-3d ломает отрисовку canvas-спрайтов (проверено).
+   Клики и drag-n-drop браузер проецирует через 3D-трансформацию сам. */
+/* Бейджи количества, всплывающий урон и полоска HP — тоже вертикально */
+#tac-field td div:not(.tac-cell-sprite):not(.tac-sprite-anim):not(.konvajs-content) {
+  transform: rotateX(-16deg);
+  transform-origin: center bottom;
+}
+/* Число отряда — СБОКУ от существа, как в оригинале (legacy/show_polep.js draw_number):
+   бокс начинается от якоря существа (низ-центр клетки/2x2-мержа = якорь спрайта на сцене)
+   и уходит по направлению взгляда — вправо у левой стороны, влево у правой; у 2x2 ещё
+   0.4 клетки наружу. Раньше число стояло по центру ПОД спрайтом и перекрывало существо.
+   Только классы t0..t6 — это сам бейдж числа; всплывающий урон/мораль/HP-бар не трогаем. */
+body.tac-unified-field #tac-field td > .t0,
+body.tac-unified-field #tac-field td > .t1,
+body.tac-unified-field #tac-field td > .t2,
+body.tac-unified-field #tac-field td > .t3,
+body.tac-unified-field #tac-field td > .t4,
+body.tac-unified-field #tac-field td > .t5,
+body.tac-unified-field #tac-field td > .t6 {
+  /* !important: общий бейдж-селектор `#tac-field td div:not()...` специфичнее (три
+     :not-класса) и иначе перебивает position/transform, оставляя число в потоке у
+     правого края (text-align:right). Абсолют от центра клетки нужен именно для 2x2. */
+  position: absolute !important;
+  bottom: 2px;
+  transform: rotateX(-16deg) !important;
+  transform-origin: center bottom;
+}
+/* Смотрит вправо (команды 1/3/5, левая сторона) — число справа от якоря */
+body.tac-unified-field #tac-field td > .tac-num-r { left: 50%; right: auto; }
+/* Смотрит влево (команды 2/4/6, правая сторона) — число слева от якоря */
+body.tac-unified-field #tac-field td > .tac-num-l { right: 50%; left: auto; }
+/* 2x2 — ещё 0.4 клетки наружу (оригинал: tx += kletka_width * view * 0.4) */
+body.tac-unified-field #tac-field td > .tac-num-r.tac-num-big { margin-left: calc(var(--cellw, 104px) * 0.4); }
+body.tac-unified-field #tac-field td > .tac-num-l.tac-num-big { margin-right: calc(var(--cellw, 104px) * 0.4); }
+
+/* ── Числа поверх объектов (оригинальный put_number_outside) ──
+   Канвас спрайтов (.tac-scene, z-index 5) лежит поверх ВСЕЙ таблицы поля — у той свой
+   контекст наложения из-за transform, поэтому число внутри клетки принципиально не может
+   оказаться над спрайтом соседнего отряда. Режим «поверх» рисует числа в отдельном слое
+   над сценой, а бейджи в клетках прячет. */
+#tac-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+#tac-numbers .tac-num {
+  position: absolute;
+  /* Сцена масштабирована (`scale(--arena-k)`), а число должно читаться при
+     любом k: шрифт и поля делятся на масштаб — на экране всегда 13px. */
+  padding: calc(1px / var(--arena-k)) calc(4px / var(--arena-k));
+  font-size: calc(13px / var(--arena-k));
+  font-weight: 700;
+  color: #000;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+  transform-origin: center bottom;
+}
+#tac-field.tac-small ~ #tac-numbers .tac-num { font-size: 10px; }
+body.tac-numbers-top #tac-field td > .t0,
+body.tac-numbers-top #tac-field td > .t1,
+body.tac-numbers-top #tac-field td > .t2,
+body.tac-numbers-top #tac-field td > .t3,
+body.tac-numbers-top #tac-field td > .t4,
+body.tac-numbers-top #tac-field td > .t5,
+body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
+
+/* Труп существа — последний кадр анимации смерти, остаётся на клетке до конца боя.
+   Не перехватывает клики и лежит под живыми отрядами. */
+.tac-corpse {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.92;
+  transform: rotateX(-16deg);
+  transform-origin: center bottom;
+}
+
+/* Панель проверки способностей: выбор армии фракции. */
+.tac-test-faction { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+/* Галочка вместо прежней кнопки: она показывает СОСТОЯНИЕ (армия на поле),
+   поэтому и выглядит как остальные переключатели панели, а не как жест. Подписи
+   нет — стоит она вплотную к списку армий, и что именно выставляется, видно по
+   самому списку; смысл на всякий случай в title. */
+.tac-test-army-on {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tac-test-army-on input { cursor: pointer; }
+
+/* ===== Узкий экран: телефон и планшет =====
+ *
+ * Арена рассчитана на широкий экран: слева отряды игрока, справа противника,
+ * поле посередине. На 375 px три колонки не помещались — центру доставалось
+ * 143 px под поле, панели налезали друг на друга, а лента инициативы уходила
+ * поверх списков. Ставим всё в столбик: поле во всю ширину сверху, списки
+ * отрядов под ним. Само поле как было прокручивается вбок (#tac-field-wrap).
+ */
+@media (max-width: 900px) {
+  /* `align-items: stretch` — обязательное дополнение к смене направления.
+     У обоих контейнеров в широкой раскладке стоит `align-items: flex-start`; в
+     СТОЛБИК это значит «ширина колонки по содержимому», и колонка переставала
+     зависеть от экрана. Лента ATB считает ширину фишки от клетки
+     (`--tac-init-w`), а клетка считается от ширины колонки — получалась
+     петля с обратной связью: чем больше отрядов, тем шире лента, тем шире
+     колонка, тем крупнее клетка, тем шире лента. На полутора десятках лучников
+     петля расходилась, колонка вырастала в разы (замер: 3120px при экране
+     630px), и доска уезжала за правый край. Вернуть её было нечем: у html/body
+     стоит `overflow-x: clip`, страница вбок не прокручивается. */
+  #tab-battle.active { flex-direction: column; align-items: stretch; }
+  .tac-layout { flex-direction: column; width: 100%; align-items: stretch; min-width: 0; }
+  .tac-sidebar { width: 100%; min-width: 0; }
+  /* max-width — предохранитель: даже если что-то внутри снова попросит ширины
+     больше экрана, колонка не поедет, а содержимое прокрутится в своих рамках
+     (у ленты ATB для этого свои кнопки ‹ ›). */
+  .tac-main { order: -1; width: 100%; min-width: 0; max-width: 100%; }
+  #tac-field-wrap { padding-left: 8px; padding-right: 8px; }
+  /* Столбик боевых кнопок на телефоне — мельче и вплотную к краю: 46px кнопки с
+     отступом 10px съедали шестую часть экрана прямо над доской. */
+  body:not(.tac-full-field) .tac-arena-controls { left: 2px; top: 14px; gap: 4px; }
+  body:not(.tac-full-field) .tac-arena-controls .tac-ibtn { width: 30px; height: 30px; }
+  /* Колонка номеров рядов и правое поле таблицы — вдвое уже: на 375px они вдвоём
+     забирали у доски 56px, шестую часть ширины. */
+  #tac-field { padding-right: 14px; }
+  #tac-field td.tac-cr { width: 14px; font-size: 10px; }
+}
+/* На телефоне наведения нет: координаты клетки и жизни отряда показывать
+   некому — оба блока наполняются только под курсором. А ширину они занимают
+   всегда: вдвоём 136px из 351, и в ленте вместо десяти ходов было видно четыре.
+   Условие по `hover`, а не по ширине: на узком окне с мышью они полезны. */
+@media (hover: none) and (max-width: 900px) {
+  body:not(.tac-full-field) .tac-cell-coords,
+  body:not(.tac-full-field) .tac-init-vitals { display: none; }
+}
+
+
+/* «Землетрясение»: поле ходит ходуном пару секунд — в оригинале заклинание
+   трясёт всю доску, а не подсвечивает отдельные клетки.
+   Трясётся ОБЁРТКА (#tac-field-wrap): в ней лежат и доска, и слой спрайтов, и
+   номера отрядов, и фигуры героев — тряси что-то одно, остальное разъедется.
+   Смещения маленькие (до 6px) и затухают: это дрожь земли, а не встряска
+   экрана, от которой укачивает. */
+@keyframes tac-quake {
+  0%   { transform: translate(0, 0); }
+  8%   { transform: translate(-6px, 3px); }
+  17%  { transform: translate(5px, -4px); }
+  26%  { transform: translate(-5px, -2px); }
+  35%  { transform: translate(4px, 4px); }
+  45%  { transform: translate(-4px, 2px); }
+  55%  { transform: translate(3px, -3px); }
+  65%  { transform: translate(-3px, -1px); }
+  75%  { transform: translate(2px, 2px); }
+  85%  { transform: translate(-2px, 1px); }
+  93%  { transform: translate(1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+/* Трясётся ОКНО арены, а не сцена: у сцены transform занят масштабом. */
+#tac-arena-viewport.tac-quake { animation: tac-quake 2s ease-in-out; }
+@media (prefers-reduced-motion: reduce) {
+  #tac-arena-viewport.tac-quake { animation: none; }
+}
+
+/* Предпросмотр очереди на наведении к кнопке «Ожидание»: лента показывает
+   порядок, который ЕЩЁ НЕ случился, поэтому приглушена целиком, а фишка
+   ожидающего отряда — наоборот, подсвечена. Без этой пары непонятно, что
+   смотришь на будущее, а не на текущую очередь. */
+.tac-initiative.tac-init-preview .tac-init-unit { opacity: 0.55; }
+.tac-initiative.tac-init-preview .tac-init-unit.tac-init-waiting {
+  opacity: 1;
+  border-color: #ffd733;
+  box-shadow: 0 0 10px rgba(255, 215, 51, 0.85);
+}

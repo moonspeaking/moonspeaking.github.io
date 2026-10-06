@@ -1,0 +1,1971 @@
+{
+  "knight": {
+    "1": {
+      "0": [
+        "peasant"
+      ],
+      "1": [
+        "conscript"
+      ],
+      "2": [
+        "brute"
+      ]
+    },
+    "2": {
+      "0": [
+        "archer"
+      ],
+      "1": [
+        "marksman"
+      ],
+      "2": [
+        "crossman"
+      ]
+    },
+    "3": {
+      "0": [
+        "footman"
+      ],
+      "1": [
+        "squire"
+      ],
+      "2": [
+        "vindicator"
+      ]
+    },
+    "4": {
+      "0": [
+        "griffon"
+      ],
+      "1": [
+        "impergriffin"
+      ],
+      "2": [
+        "battlegriffon"
+      ]
+    },
+    "5": {
+      "0": [
+        "priest"
+      ],
+      "1": [
+        "inquisitor"
+      ],
+      "2": [
+        "zealot"
+      ]
+    },
+    "6": {
+      "0": [
+        "cavalier"
+      ],
+      "1": [
+        "paladin"
+      ],
+      "2": [
+        "champion"
+      ]
+    },
+    "7": {
+      "0": [
+        "angel"
+      ],
+      "1": [
+        "archangel"
+      ],
+      "2": [
+        "seraph2"
+      ]
+    }
+  },
+  "necromance": {
+    "1": {
+      "0": [
+        "skeleton"
+      ],
+      "1": [
+        "skeletonarcher"
+      ],
+      "2": [
+        "sceletonwar"
+      ]
+    },
+    "2": {
+      "0": [
+        "zombie"
+      ],
+      "1": [
+        "plaguezombie"
+      ],
+      "2": [
+        "rotzombie"
+      ]
+    },
+    "3": {
+      "0": [
+        "ghost"
+      ],
+      "1": [
+        "spectre"
+      ],
+      "2": [
+        "poltergeist"
+      ]
+    },
+    "4": {
+      "0": [
+        "vampire"
+      ],
+      "1": [
+        "vampirelord"
+      ],
+      "2": [
+        "vampireprince"
+      ]
+    },
+    "5": {
+      "0": [
+        "lich"
+      ],
+      "1": [
+        "archlich"
+      ],
+      "2": [
+        "masterlich"
+      ]
+    },
+    "6": {
+      "0": [
+        "wight"
+      ],
+      "1": [
+        "wraith"
+      ],
+      "2": [
+        "banshee"
+      ]
+    },
+    "7": {
+      "0": [
+        "bonedragon"
+      ],
+      "1": [
+        "spectraldragon"
+      ],
+      "2": [
+        "ghostdragon"
+      ]
+    }
+  },
+  "magi": {
+    "1": {
+      "0": [
+        "gremlin"
+      ],
+      "1": [
+        "mastergremlin"
+      ],
+      "2": [
+        "saboteurgremlin"
+      ]
+    },
+    "2": {
+      "0": [
+        "stone_gargoyle"
+      ],
+      "1": [
+        "obsgargoyle"
+      ],
+      "2": [
+        "elgargoly"
+      ]
+    },
+    "3": {
+      "0": [
+        "iron_golem"
+      ],
+      "1": [
+        "steelgolem"
+      ],
+      "2": [
+        "magneticgolem"
+      ]
+    },
+    "4": {
+      "0": [
+        "mage"
+      ],
+      "1": [
+        "archmage"
+      ],
+      "2": [
+        "battlemage"
+      ]
+    },
+    "5": {
+      "0": [
+        "djinn"
+      ],
+      "1": [
+        "djinn_sultan"
+      ],
+      "2": [
+        "djinn_vizier"
+      ]
+    },
+    "6": {
+      "0": [
+        "rakshasa_rani"
+      ],
+      "1": [
+        "rakshasa_raja"
+      ],
+      "2": [
+        "rakshasa_kshatra"
+      ]
+    },
+    "7": {
+      "0": [
+        "colossus"
+      ],
+      "1": [
+        "titan"
+      ],
+      "2": [
+        "stormtitan"
+      ]
+    }
+  },
+  "elf": {
+    "1": {
+      "0": [
+        "pixel"
+      ],
+      "1": [
+        "sprite"
+      ],
+      "2": [
+        "dryad"
+      ]
+    },
+    "2": {
+      "0": [
+        "dancer"
+      ],
+      "1": [
+        "wardancer"
+      ],
+      "2": [
+        "wdancer"
+      ]
+    },
+    "3": {
+      "0": [
+        "elf"
+      ],
+      "1": [
+        "masterhunter"
+      ],
+      "2": [
+        "arcaneelf"
+      ]
+    },
+    "4": {
+      "0": [
+        "druid"
+      ],
+      "1": [
+        "druideld"
+      ],
+      "2": [
+        "ddhigh"
+      ]
+    },
+    "5": {
+      "0": [
+        "unicorn"
+      ],
+      "1": [
+        "silverunicorn"
+      ],
+      "2": [
+        "pristineunicorn"
+      ]
+    },
+    "6": {
+      "0": [
+        "treant"
+      ],
+      "1": [
+        "ancienent"
+      ],
+      "2": [
+        "savageent"
+      ]
+    },
+    "7": {
+      "0": [
+        "greendragon"
+      ],
+      "1": [
+        "emeralddragon"
+      ],
+      "2": [
+        "crystaldragon"
+      ]
+    }
+  },
+  "barbarian": {
+    "1": {
+      "0": [
+        "goblin"
+      ],
+      "1": [
+        "hobgoblin"
+      ],
+      "2": [
+        "goblinarcher"
+      ],
+      "3": [
+        "goblinmag"
+      ]
+    },
+    "2": {
+      "0": [
+        "wolfrider"
+      ],
+      "1": [
+        "wolfraider"
+      ],
+      "2": [
+        "boarrider"
+      ],
+      "3": [
+        "hyenarider"
+      ]
+    },
+    "3": {
+      "0": [
+        "orc"
+      ],
+      "1": [
+        "orcchief"
+      ],
+      "2": [
+        "orcrubak"
+      ],
+      "3": [
+        "orcshaman"
+      ]
+    },
+    "4": {
+      "0": [
+        "ogre"
+      ],
+      "1": [
+        "ogremagi"
+      ],
+      "2": [
+        "ogrebrutal"
+      ],
+      "3": [
+        "ogreshaman"
+      ]
+    },
+    "5": {
+      "0": [
+        "rocbird"
+      ],
+      "1": [
+        "thunderbird"
+      ],
+      "2": [
+        "firebird"
+      ],
+      "3": [
+        "darkbird"
+      ]
+    },
+    "6": {
+      "0": [
+        "cyclop"
+      ],
+      "1": [
+        "cyclopking"
+      ],
+      "2": [
+        "cyclopod"
+      ],
+      "3": [
+        "shamancyclop"
+      ]
+    },
+    "7": {
+      "0": [
+        "behemoth"
+      ],
+      "1": [
+        "ancientbehemoth"
+      ],
+      "2": [
+        "dbehemoth"
+      ],
+      "3": [
+        "cursedbehemoth"
+      ]
+    }
+  },
+  "telf": {
+    "1": {
+      "0": [
+        "scout"
+      ],
+      "1": [
+        "assassin"
+      ],
+      "2": [
+        "stalker"
+      ]
+    },
+    "2": {
+      "0": [
+        "maiden"
+      ],
+      "1": [
+        "fury"
+      ],
+      "2": [
+        "bloodsister"
+      ]
+    },
+    "3": {
+      "0": [
+        "minotaur"
+      ],
+      "1": [
+        "minotaurguard"
+      ],
+      "2": [
+        "taskmaster"
+      ]
+    },
+    "4": {
+      "0": [
+        "darkrider"
+      ],
+      "1": [
+        "grimrider"
+      ],
+      "2": [
+        "briskrider"
+      ]
+    },
+    "5": {
+      "0": [
+        "hydra"
+      ],
+      "1": [
+        "deephydra"
+      ],
+      "2": [
+        "foulhydra"
+      ]
+    },
+    "6": {
+      "0": [
+        "shadow_witch"
+      ],
+      "1": [
+        "matriarch"
+      ],
+      "2": [
+        "mistress"
+      ]
+    },
+    "7": {
+      "0": [
+        "shadowdragon"
+      ],
+      "1": [
+        "blackdragon"
+      ],
+      "2": [
+        "reddragon"
+      ]
+    }
+  },
+  "demon": {
+    "1": {
+      "0": [
+        "imp"
+      ],
+      "1": [
+        "familiar"
+      ],
+      "2": [
+        "vermin"
+      ]
+    },
+    "2": {
+      "0": [
+        "horneddemon"
+      ],
+      "1": [
+        "hornedoverseer"
+      ],
+      "2": [
+        "jdemon"
+      ]
+    },
+    "3": {
+      "0": [
+        "hellhound"
+      ],
+      "1": [
+        "cerberus"
+      ],
+      "2": [
+        "hotdog"
+      ]
+    },
+    "4": {
+      "0": [
+        "succubus"
+      ],
+      "1": [
+        "succubusmis"
+      ],
+      "2": [
+        "seducer"
+      ]
+    },
+    "5": {
+      "0": [
+        "hellcharger"
+      ],
+      "1": [
+        "nightmare"
+      ],
+      "2": [
+        "hellkon"
+      ]
+    },
+    "6": {
+      "0": [
+        "pitfiend"
+      ],
+      "1": [
+        "pitlord"
+      ],
+      "2": [
+        "pity"
+      ]
+    },
+    "7": {
+      "0": [
+        "devil"
+      ],
+      "1": [
+        "archdevil"
+      ],
+      "2": [
+        "archdemon"
+      ]
+    }
+  },
+  "dwarf": {
+    "1": {
+      "0": [
+        "defender"
+      ],
+      "1": [
+        "shieldguard"
+      ],
+      "2": [
+        "mountaingr"
+      ]
+    },
+    "2": {
+      "0": [
+        "spearwielder"
+      ],
+      "1": [
+        "skirmesher"
+      ],
+      "2": [
+        "harpooner"
+      ]
+    },
+    "3": {
+      "0": [
+        "bearrider"
+      ],
+      "1": [
+        "blackbearrider"
+      ],
+      "2": [
+        "whitebearrider"
+      ]
+    },
+    "4": {
+      "0": [
+        "brawler"
+      ],
+      "1": [
+        "berserker"
+      ],
+      "2": [
+        "battlerager"
+      ]
+    },
+    "5": {
+      "0": [
+        "runepriest"
+      ],
+      "1": [
+        "runepatriarch"
+      ],
+      "2": [
+        "runekeeper"
+      ]
+    },
+    "6": {
+      "0": [
+        "thane"
+      ],
+      "1": [
+        "thunderlord"
+      ],
+      "2": [
+        "flamelord"
+      ]
+    },
+    "7": {
+      "0": [
+        "firedragon"
+      ],
+      "1": [
+        "magmadragon"
+      ],
+      "2": [
+        "lavadragon"
+      ]
+    }
+  },
+  "stepbarbarian": {
+    "1": {
+      "0": [
+        "goblinus"
+      ],
+      "1": [
+        "trapper"
+      ],
+      "2": [
+        "goblinshaman"
+      ]
+    },
+    "2": {
+      "0": [
+        "fcentaur"
+      ],
+      "1": [
+        "ncentaur"
+      ],
+      "2": [
+        "mcentaur"
+      ]
+    },
+    "3": {
+      "0": [
+        "warrior"
+      ],
+      "1": [
+        "mauler"
+      ],
+      "2": [
+        "warmong"
+      ]
+    },
+    "4": {
+      "0": [
+        "shamaness"
+      ],
+      "1": [
+        "sdaughter"
+      ],
+      "2": [
+        "eadaughter"
+      ]
+    },
+    "5": {
+      "0": [
+        "slayer"
+      ],
+      "1": [
+        "executioner"
+      ],
+      "2": [
+        "chieftain"
+      ]
+    },
+    "6": {
+      "0": [
+        "wyvern"
+      ],
+      "1": [
+        "foulwyvern"
+      ],
+      "2": [
+        "poukai"
+      ]
+    },
+    "7": {
+      "0": [
+        "cyclopus"
+      ],
+      "1": [
+        "untamedcyc"
+      ],
+      "2": [
+        "bloodeyecyc"
+      ]
+    }
+  },
+  "faraon": {
+    "1": {
+      "0": [
+        "scarab",
+        "scorp"
+      ],
+      "1": [
+        "scarabup",
+        "scorpup"
+      ],
+      "2": [
+        "scarabalt",
+        "scorpalt"
+      ]
+    },
+    "2": {
+      "0": [
+        "duneraider"
+      ],
+      "1": [
+        "duneraiderup"
+      ],
+      "2": [
+        "duneraideralt"
+      ]
+    },
+    "3": {
+      "0": [
+        "shakal"
+      ],
+      "1": [
+        "shakalup"
+      ],
+      "2": [
+        "shakalalt"
+      ]
+    },
+    "4": {
+      "0": [
+        "dromad"
+      ],
+      "1": [
+        "dromadup"
+      ],
+      "2": [
+        "dromadalt"
+      ]
+    },
+    "5": {
+      "0": [
+        "priestmoon"
+      ],
+      "1": [
+        "priestsun"
+      ],
+      "2": [
+        "zhricaalt"
+      ]
+    },
+    "6": {
+      "0": [
+        "slon"
+      ],
+      "1": [
+        "slonup"
+      ],
+      "2": [
+        "slonalt"
+      ]
+    },
+    "7": {
+      "0": [
+        "anubis"
+      ],
+      "1": [
+        "anubisup"
+      ],
+      "2": [
+        "anubisalt"
+      ]
+    }
+  },
+  "winter": {
+    "1": {
+      "0": [
+        "iceel"
+      ],
+      "1": [
+        "iceelup"
+      ]
+    },
+    "2": {
+      "0": [
+        "chuvak",
+        "snowarcher"
+      ],
+      "1": [
+        "chuvakup",
+        "snowarcherup"
+      ]
+    },
+    "3": {
+      "0": [
+        "snowwolf"
+      ],
+      "1": [
+        "snowwolfup"
+      ]
+    },
+    "5": {
+      "0": [
+        "icequeen",
+        "snowowl"
+      ],
+      "1": [
+        "icequeenup",
+        "snowowlup"
+      ]
+    },
+    "7": {
+      "0": [
+        "iceddragon"
+      ],
+      "1": [
+        "iceddragonup"
+      ]
+    }
+  },
+  "amfibies": {
+    "1": {
+      "0": [
+        "sharkguard"
+      ],
+      "1": [
+        "wanizame"
+      ]
+    },
+    "2": {
+      "0": [
+        "kappa"
+      ],
+      "1": [
+        "kappashoya"
+      ]
+    },
+    "3": {
+      "0": [
+        "coralp"
+      ],
+      "1": [
+        "pearlp"
+      ]
+    },
+    "4": {
+      "0": [
+        "springspirit"
+      ],
+      "1": [
+        "mizukami"
+      ]
+    },
+    "5": {
+      "0": [
+        "kenshi"
+      ],
+      "1": [
+        "kensei"
+      ]
+    },
+    "6": {
+      "0": [
+        "snowmaiden"
+      ],
+      "1": [
+        "yukionna"
+      ]
+    },
+    "7": {
+      "0": [
+        "kirin"
+      ],
+      "1": [
+        "sacredkirin"
+      ]
+    }
+  },
+  "inferno": {
+    "1": {
+      "0": [
+        "maniac"
+      ],
+      "1": [
+        "demented"
+      ]
+    },
+    "2": {
+      "0": [
+        "hellhound6"
+      ],
+      "1": [
+        "cerber"
+      ]
+    },
+    "3": {
+      "0": [
+        "succubus6"
+      ],
+      "1": [
+        "lilim"
+      ]
+    },
+    "4": {
+      "0": [
+        "tormentor"
+      ],
+      "1": [
+        "lacerator"
+      ]
+    },
+    "5": {
+      "0": [
+        "breeder"
+      ],
+      "1": [
+        "mbreeder"
+      ]
+    },
+    "6": {
+      "0": [
+        "juggernaut"
+      ],
+      "1": [
+        "ravager"
+      ]
+    },
+    "7": {
+      "0": [
+        "pitfiend6"
+      ],
+      "1": [
+        "pitlord6"
+      ]
+    }
+  },
+  "necrotime": {
+    "1": {
+      "0": [
+        "skeleton6"
+      ],
+      "1": [
+        "skeletons6"
+      ]
+    },
+    "3": {
+      "0": [
+        "ghoul",
+        "ghost6"
+      ],
+      "1": [
+        "ravenousghoul",
+        "spectre6"
+      ]
+    },
+    "5": {
+      "0": [
+        "lich6"
+      ]
+    },
+    "6": {
+      "0": [
+        "vampire6"
+      ],
+      "1": [
+        "vampirelord6"
+      ]
+    },
+    "7": {
+      "0": [
+        "fatespinner",
+        "fatespinner-spider"
+      ]
+    }
+  },
+  "rebellious_tribes": {
+    "1": {
+      "0": [
+        "goblin6"
+      ],
+      "1": [
+        "goblinhunter6"
+      ]
+    },
+    "2": {
+      "0": [
+        "mauler6"
+      ],
+      "1": [
+        "crusher6"
+      ]
+    },
+    "3": {
+      "0": [
+        "harpy6"
+      ],
+      "1": [
+        "fury6"
+      ]
+    },
+    "4": {
+      "0": [
+        "dreamwalker6"
+      ],
+      "1": [
+        "dreamreaver6"
+      ]
+    },
+    "5": {
+      "0": [
+        "jaguar6"
+      ],
+      "1": [
+        "panther6"
+      ]
+    },
+    "6": {
+      "0": [
+        "centaur6"
+      ],
+      "1": [
+        "mcentaur6"
+      ]
+    },
+    "7": {
+      "0": [
+        "cyclop6"
+      ],
+      "1": [
+        "ecyclop6"
+      ]
+    }
+  },
+  "knightsun": {
+    "1": {
+      "0": [
+        "sentinel"
+      ],
+      "1": [
+        "praetorian"
+      ]
+    },
+    "2": {
+      "0": [
+        "sister"
+      ],
+      "1": [
+        "vestal"
+      ]
+    },
+    "3": {
+      "0": [
+        "cman"
+      ],
+      "1": [
+        "marks"
+      ]
+    },
+    "4": {
+      "0": [
+        "griffin"
+      ],
+      "1": [
+        "igriffin"
+      ]
+    },
+    "5": {
+      "0": [
+        "sunrider"
+      ],
+      "1": [
+        "suncrusader"
+      ]
+    },
+    "6": {
+      "0": [
+        "radiantglory"
+      ],
+      "1": [
+        "blazingglory"
+      ]
+    },
+    "7": {
+      "0": [
+        "celestial"
+      ],
+      "1": [
+        "seraph"
+      ]
+    }
+  },
+  "necr": {
+    "1": {
+      "0": [
+        "necrodog"
+      ],
+      "1": [
+        "necrodogup"
+      ]
+    },
+    "2": {
+      "0": [
+        "blackarcher"
+      ],
+      "1": [
+        "deadarcher"
+      ]
+    },
+    "3": {
+      "0": [
+        "blackfootman"
+      ],
+      "1": [
+        "deadfootman"
+      ]
+    },
+    "4": {
+      "0": [
+        "blackmage",
+        "necromancer"
+      ],
+      "1": [
+        "deadmage"
+      ]
+    },
+    "5": {
+      "0": [
+        "blackptic"
+      ],
+      "1": [
+        "deadptic"
+      ]
+    },
+    "6": {
+      "0": [
+        "blackknight"
+      ],
+      "1": [
+        "deadknight"
+      ]
+    },
+    "7": {
+      "0": [
+        "dgolem"
+      ],
+      "1": [
+        "dgolemup"
+      ]
+    }
+  },
+  "angels": {
+    "5": {
+      "0": [
+        "valkyrie"
+      ]
+    },
+    "6": {
+      "0": [
+        "gatekeeper"
+      ]
+    }
+  },
+  "pirates": {
+    "0": {
+      "0": [
+        "spearthrower"
+      ]
+    },
+    "1": {
+      "0": [
+        "apirate"
+      ],
+      "1": [
+        "bpirate"
+      ],
+      "2": [
+        "negro"
+      ]
+    },
+    "2": {
+      "0": [
+        "piratka"
+      ],
+      "1": [
+        "piratkaup"
+      ]
+    },
+    "3": {
+      "0": [
+        "ppirate"
+      ],
+      "1": [
+        "ppirateup"
+      ]
+    },
+    "4": {
+      "0": [
+        "shootpirate",
+        "ocean",
+        "bokopor"
+      ],
+      "1": [
+        "shootpirateup",
+        "assida"
+      ]
+    },
+    "5": {
+      "0": [
+        "fatpirate",
+        "priestess"
+      ],
+      "1": [
+        "fatpirateup",
+        "priestessup"
+      ]
+    },
+    "6": {
+      "0": [
+        "reptiloid",
+        "gnompirate"
+      ],
+      "1": [
+        "reptiloidup"
+      ]
+    },
+    "7": {
+      "0": [
+        "piratemonster"
+      ],
+      "1": [
+        "piratemonsterup"
+      ]
+    }
+  },
+  "deadpirates": {
+    "1": {
+      "0": [
+        "skeletonpirate",
+        "cpirate"
+      ],
+      "1": [
+        "skeletonpirateup"
+      ]
+    },
+    "2": {
+      "0": [
+        "gpiratka",
+        "drowned"
+      ],
+      "1": [
+        "gpiratkaup"
+      ]
+    },
+    "5": {
+      "0": [
+        "pushkar"
+      ],
+      "1": [
+        "pushkarup"
+      ]
+    },
+    "6": {
+      "0": [
+        "zpirate"
+      ],
+      "1": [
+        "zpirateup"
+      ]
+    },
+    "7": {
+      "0": [
+        "dleviathan"
+      ],
+      "1": [
+        "dleviathanup"
+      ]
+    }
+  },
+  "robbers": {
+    "1": {
+      "0": [
+        "outlaw",
+        "brigand",
+        "banditka",
+        "robber",
+        "gnomon",
+        "bobbit",
+        "maroder",
+        "blud"
+      ],
+      "1": [
+        "outlawup",
+        "brigandup",
+        "banditkaup",
+        "robberup"
+      ]
+    },
+    "2": {
+      "0": [
+        "charmer",
+        "tombraider",
+        "traitor",
+        "poacher"
+      ],
+      "1": [
+        "charmerup",
+        "tombraiderup"
+      ]
+    },
+    "3": {
+      "0": [
+        "deserter",
+        "highwayman"
+      ],
+      "1": [
+        "deserterup"
+      ]
+    },
+    "4": {
+      "0": [
+        "nomad",
+        "nomadbow",
+        "vulture",
+        "exile",
+        "monk"
+      ],
+      "1": [
+        "nomadup"
+      ]
+    },
+    "5": {
+      "0": [
+        "tengu",
+        "krokodil",
+        "cbal",
+        "varan",
+        "zasad",
+        "krokodilmag"
+      ],
+      "1": [
+        "tenguup",
+        "krokodilup"
+      ]
+    },
+    "6": {
+      "0": [
+        "giant",
+        "giantarch",
+        "ambal"
+      ]
+    }
+  },
+  "gnolls": {
+    "1": {
+      "0": [
+        "gnoll",
+        "gnollum",
+        "gnollka",
+        "gnollsh"
+      ],
+      "1": [
+        "gnollup",
+        "gnollumup"
+      ]
+    },
+    "3": {
+      "0": [
+        "gnollboss"
+      ]
+    }
+  },
+  "dragons": {
+    "3": {
+      "0": [
+        "mikrodragon"
+      ]
+    },
+    "4": {
+      "0": [
+        "minidragon"
+      ]
+    },
+    "7": {
+      "0": [
+        "faeriedragon",
+        "golddragon"
+      ]
+    },
+    "8": {
+      "0": [
+        "rustdragon"
+      ]
+    },
+    "9": {
+      "0": [
+        "azuredragon"
+      ]
+    }
+  },
+  "dwarvingenear": {
+    "1": {
+      "0": [
+        "mechdron"
+      ]
+    },
+    "2": {
+      "0": [
+        "mechspider"
+      ],
+      "1": [
+        "mechspiderup"
+      ]
+    },
+    "3": {
+      "0": [
+        "mechanic"
+      ]
+    },
+    "4": {
+      "0": [
+        "mechguard"
+      ],
+      "1": [
+        "mechguardup"
+      ]
+    },
+    "5": {
+      "0": [
+        "alchemist"
+      ],
+      "1": [
+        "alchemistup"
+      ]
+    },
+    "6": {
+      "0": [
+        "mechtank"
+      ],
+      "1": [
+        "mechtankup"
+      ]
+    },
+    "7": {
+      "0": [
+        "mechgolem"
+      ]
+    }
+  },
+  "demonic": {
+    "1": {
+      "0": [
+        "demoniac"
+      ]
+    },
+    "2": {
+      "0": [
+        "gogachi"
+      ],
+      "1": [
+        "megogachi"
+      ]
+    },
+    "3": {
+      "0": [
+        "reanimator",
+        "piroman"
+      ],
+      "1": [
+        "reanimatorup"
+      ]
+    },
+    "5": {
+      "0": [
+        "adeptus"
+      ]
+    },
+    "6": {
+      "0": [
+        "efreeti",
+        "rapukk"
+      ],
+      "1": [
+        "efreetisultan",
+        "zhryak"
+      ]
+    },
+    "7": {
+      "0": [
+        "drakonid"
+      ]
+    }
+  },
+  "grib": {
+    "2": {
+      "0": [
+        "gribok",
+        "grib"
+      ]
+    },
+    "3": {
+      "0": [
+        "boletus",
+        "fungus"
+      ]
+    },
+    "5": {
+      "0": [
+        "mushroom"
+      ]
+    }
+  },
+  "lizards": {
+    "1": {
+      "0": [
+        "serpentfly"
+      ],
+      "1": [
+        "dragonfly"
+      ]
+    },
+    "2": {
+      "0": [
+        "gekkon",
+        "smalllizard"
+      ],
+      "1": [
+        "gekkonup"
+      ]
+    },
+    "3": {
+      "0": [
+        "ptero"
+      ],
+      "1": [
+        "pteroup"
+      ]
+    },
+    "4": {
+      "0": [
+        "lizard",
+        "basilisk",
+        "yascher"
+      ],
+      "1": [
+        "redlizard",
+        "basiliskup",
+        "yascherup"
+      ]
+    }
+  },
+  "forest_dwellers": {
+    "2": {
+      "0": [
+        "leprekon",
+        "klop"
+      ]
+    },
+    "3": {
+      "0": [
+        "boar",
+        "bear"
+      ],
+      "1": [
+        "ancientpig"
+      ],
+      "2": [
+        "battlepig"
+      ]
+    },
+    "4": {
+      "0": [
+        "swolf",
+        "whitetiger",
+        "ant",
+        "zerg"
+      ]
+    },
+    "5": {
+      "0": [
+        "plant",
+        "forestspirit",
+        "horse",
+        "deertaur",
+        "kobra"
+      ],
+      "1": [
+        "hungerplant"
+      ]
+    },
+    "6": {
+      "0": [
+        "elephant",
+        "shaman",
+        "buffalo"
+      ]
+    }
+  },
+  "beach_dwellers": {
+    "1": {
+      "0": [
+        "shell"
+      ]
+    },
+    "5": {
+      "0": [
+        "krab",
+        "shellmonster",
+        "krevetko"
+      ],
+      "1": [
+        "krabup"
+      ]
+    }
+  },
+  "dungeons": {
+    "1": {
+      "0": [
+        "troglodyte",
+        "spider"
+      ],
+      "1": [
+        "troglodyteup",
+        "spiderpois"
+      ]
+    },
+    "2": {
+      "0": [
+        "harpy"
+      ],
+      "1": [
+        "harpyhag"
+      ]
+    },
+    "3": {
+      "0": [
+        "beholder"
+      ],
+      "1": [
+        "evileye"
+      ],
+      "2": [
+        "darkeye"
+      ]
+    },
+    "4": {
+      "0": [
+        "medusa",
+        "kamneed",
+        "bigspider"
+      ],
+      "1": [
+        "medusaup",
+        "kamnegryz"
+      ]
+    },
+    "6": {
+      "0": [
+        "manticore",
+        "troll"
+      ],
+      "1": [
+        "manticoreup",
+        "blacktroll"
+      ]
+    }
+  },
+  "ocean_dwellers": {
+    "4": {
+      "0": [
+        "siren"
+      ],
+      "1": [
+        "upsiren"
+      ]
+    },
+    "5": {
+      "0": [
+        "seamonster"
+      ],
+      "1": [
+        "upseamonster"
+      ]
+    },
+    "7": {
+      "0": [
+        "leviathan"
+      ],
+      "1": [
+        "upleviathan"
+      ]
+    }
+  },
+  "sprite": {
+    "3": {
+      "0": [
+        "pegasus"
+      ],
+      "1": [
+        "spegasus"
+      ]
+    },
+    "4": {
+      "0": [
+        "satyr"
+      ]
+    }
+  },
+  "imperial_army": {
+    "2": {
+      "0": [
+        "acrossbowman"
+      ]
+    },
+    "3": {
+      "0": [
+        "pikeman",
+        "crusader"
+      ]
+    },
+    "4": {
+      "0": [
+        "warden"
+      ]
+    },
+    "5": {
+      "0": [
+        "smaster"
+      ]
+    }
+  },
+  "elementals": {
+    "2": {
+      "0": [
+        "kammon",
+        "shad"
+      ]
+    },
+    "3": {
+      "0": [
+        "burbuly"
+      ],
+      "1": [
+        "predator"
+      ]
+    },
+    "4": {
+      "0": [
+        "water",
+        "air",
+        "fire",
+        "earth"
+      ]
+    },
+    "5": {
+      "0": [
+        "icedemon"
+      ],
+      "1": [
+        "icedemonup"
+      ]
+    },
+    "6": {
+      "0": [
+        "magicel",
+        "stoneman"
+      ],
+      "1": [
+        "stonemanup"
+      ]
+    },
+    "8": {
+      "0": [
+        "phoenix"
+      ]
+    }
+  },
+  "merc": {
+    "2": {
+      "0": [
+        "mercarcher"
+      ]
+    },
+    "3": {
+      "0": [
+        "mercfootman"
+      ]
+    },
+    "4": {
+      "0": [
+        "mercwizard"
+      ]
+    },
+    "7": {
+      "0": [
+        "vsad_unit"
+      ]
+    }
+  },
+  "thief": {
+    "4": {
+      "0": [
+        "thiefmage",
+        "thiefwarrior",
+        "thiefarcher",
+        "vorovka"
+      ]
+    }
+  },
+  "farmers": {
+    "1": {
+      "0": [
+        "lumberman",
+        "peasantw",
+        "strashidlo",
+        "hobbit"
+      ]
+    }
+  },
+  "hellowyin": {
+    "0": {
+      "0": [
+        "pumkinhead"
+      ]
+    },
+    "2": {
+      "0": [
+        "gop"
+      ]
+    },
+    "3": {
+      "0": [
+        "yaga"
+      ]
+    },
+    "4": {
+      "0": [
+        "scream",
+        "freddy"
+      ]
+    },
+    "5": {
+      "0": [
+        "bonehydra",
+        "smert"
+      ]
+    },
+    "6": {
+      "0": [
+        "pumkinhead2"
+      ]
+    },
+    "7": {
+      "0": [
+        "frankenstein"
+      ]
+    }
+  },
+  "icearmy": {
+    "1": {
+      "0": [
+        "iceel",
+        "flake"
+      ],
+      "1": [
+        "iceelup"
+      ]
+    },
+    "2": {
+      "0": [
+        "chuvak",
+        "snowarcher",
+        "iceelb"
+      ],
+      "1": [
+        "chuvakup",
+        "snowarcherup"
+      ]
+    },
+    "3": {
+      "0": [
+        "snowwolf"
+      ],
+      "1": [
+        "snowwolfup"
+      ]
+    },
+    "4": {
+      "0": [
+        "wendigo"
+      ],
+      "1": [
+        "wendigoup"
+      ]
+    },
+    "5": {
+      "0": [
+        "icequeen",
+        "snowowl",
+        "wbear"
+      ],
+      "1": [
+        "icequeenup",
+        "snowowlup"
+      ]
+    },
+    "6": {
+      "0": [
+        "yeti",
+        "snegovik"
+      ],
+      "1": [
+        "yetiup"
+      ]
+    },
+    "7": {
+      "0": [
+        "iceddragon",
+        "snowmonster"
+      ],
+      "1": [
+        "iceddragonup"
+      ]
+    },
+    "8": {
+      "0": [
+        "grinchshad"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нет соединения — HeroesWM</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    .offline-box {
+      background: #16213e;
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      border: 1px solid #0f3460;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    p { color: #a0a0b0; margin: 0.5rem 0; }
+    .icon { font-size: 3rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="offline-box">
+    <div class="icon">📡</div>
+    <h1>Нет соединения</h1>
+    <p>Вы офлайн. Некоторые разделы могут быть недоступны.</p>
+    <p>Попробуйте позже или проверьте подключение к сети.</p>
+  </div>
+</body>
+</html>

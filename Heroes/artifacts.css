@@ -1,0 +1,721 @@
+/* Артефакты, сеты и примерочная.
+ *
+ * Подключается после base.css. Селекторы не пересекаются с остальными листами.
+ */
+
+
+/* Artifact Grid */
+.artifact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.artifact-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  transition: all 0.2s;
+}
+.artifact-card:hover {
+  background: var(--card-hover);
+  border-color: var(--gold-dim);
+}
+.artifact-card .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
+.artifact-card .sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.artifact-card .mods {
+  font-size:14px;
+  color: var(--text);
+}
+.artifact-card .mods span {
+  display: inline-block;
+  margin-right: 8px;
+}
+.artifact-card .specials {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--accent);
+}
+.artifact-icon-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: var(--card-bg);
+}
+.set-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.set-card:hover {
+  background: var(--card-hover);
+  border-color: var(--gold-dim);
+  transform: translateY(-1px);
+}
+.set-card .set-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
+.set-card .set-count {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.set-card .set-icons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.set-card .set-icons img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 3px;
+  background: var(--bg);
+}
+#set-detail { padding: 4px 0; }
+#set-detail .back-link {
+  display: inline-block;
+  color: var(--gold);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+#set-detail .back-link:hover { text-decoration: underline; }
+#set-detail .sd-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+#set-detail .sd-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+#set-detail .sd-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+#set-detail .sd-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+#set-detail .sd-item:hover {
+  background: var(--card-hover);
+  border-color: var(--gold-dim);
+}
+#set-detail .sd-item img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+#set-detail .sd-item .sdi-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 1px;
+}
+#set-detail .sd-item .sdi-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+#set-detail .sd-item .sdi-mods {
+  font-size: 12px;
+  color: var(--text);
+}
+#set-detail .sd-item .sdi-mods span {
+  display: inline-block;
+  margin-right: 6px;
+}
+.artifact-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #000;
+  flex-shrink: 0;
+}
+
+/* ===== Artifact Modal ===== */
+#artifact-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+#artifact-modal .modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  max-width: 520px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+#artifact-modal .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-dim);
+  line-height: 1;
+  z-index: 1;
+}
+#artifact-modal .close-btn:hover { color: var(--text); }
+#artifact-modal .modal-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+#artifact-modal .modal-header img.art-big {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--card-bg);
+}
+#artifact-modal .modal-header img.art-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+#artifact-modal .modal-header .info { flex: 1; }
+#artifact-modal .modal-header .name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+}
+#artifact-modal .modal-header .sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-top: 2px;
+}
+#artifact-modal .meta-row {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+#artifact-modal .meta-row span { white-space: nowrap; }
+#artifact-modal .meta-row .label { color: var(--text-dim); }
+#artifact-modal .meta-row .val { color: var(--text); font-weight: 600; }
+#artifact-modal .mods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  margin-bottom: 12px;
+}
+#artifact-modal .mod-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+#artifact-modal .mod-row .label { color: var(--text-dim); flex: 1; }
+#artifact-modal .mod-row .value { font-weight: 600; color: var(--green); }
+#artifact-modal .specials {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+#artifact-modal .specials .tag {
+  display: inline-block;
+  background: rgba(107,92,231,0.15);
+  border: 1px solid rgba(107,92,231,0.25);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  font-size: 12px;
+  color: var(--text);
+}
+#artifact-modal .desc {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--panel);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Fitting Room */
+.fitting-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fitting-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  align-items: center;
+}
+.fitting-controls label {
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fitting-controls select {
+  padding: 2px 4px;
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+}
+.fitting-controls .ctrl-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.fitting-layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.fitting-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.fitting-guild {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 11px;
+}
+.fitting-guild table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fitting-guild td {
+  padding: 1px 4px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.fitting-guild td label { font-size: 10px; color: var(--text-dim); }
+.fitting-guild select { font-size: 10px; padding: 1px 2px; width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); }
+.fitting-guild .guild-label { font-size: 10px; color: var(--gold); font-weight: 600; }
+.fitting-guild .guild-check { display: flex; align-items: center; gap: 4px; font-size: 10px; padding: 1px 0; }
+.fitting-guild .guild-check input { margin: 0; }
+/* Doll board geometry is copied from the original dressroom: a fixed 230x200
+   bitmap with 50x50 slots on a 4x3 grid (x 0/60/120/180, y 0/73/146).
+   Keep these values in sync with DOLL_W / DOLL_H / SLOT_DOLL in fitting.ts. */
+.fitting-doll-wrap {
+  position: relative;
+  width: 230px;
+  height: 200px;
+  background-size: 230px 200px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.fitting-doll-slot {
+  position: absolute;
+  box-sizing: border-box;
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.35);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 44px 44px;
+  transition: all 0.15s;
+  z-index: 2;
+}
+.fitting-doll-clear {
+  position: absolute;
+  box-sizing: border-box;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+.fitting-doll-clear:hover { opacity: 1; }
+.fitting-doll-clear img { width: 35px; height: 35px; border: 0; }
+.fitting-doll-slot:hover {
+  border-color: var(--gold-dim);
+  background: rgba(0,0,0,0.5);
+}
+.fitting-doll-slot.equipped {
+  border-color: var(--gold-dim);
+  background: rgba(0,0,0,0.45);
+}
+.fitting-doll-slot img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.fitting-doll-slot .doll-empty {
+  font-size: 16px;
+  color: var(--text-dim);
+  opacity: 0.4;
+}
+.fitting-doll-slot .doll-remove {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(200,0,0,0.7);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  cursor: pointer;
+  display: none;
+  z-index: 3;
+}
+.fitting-doll-slot:hover .doll-remove {
+  display: block;
+}
+.fitting-doll-gems {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1px;
+  z-index: 3;
+}
+.fitting-doll-gems .gem {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  font-size: 5px;
+  line-height: 10px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(0,0,0,0.5);
+  color: var(--text-dim);
+  transition: all 0.1s;
+}
+.fitting-doll-gems .gem.active {
+  border-color: var(--gold);
+}
+.fitting-doll-gems .gem[data-g="g"].active { background: rgba(220,40,40,0.6); color: #ff6b6b; }
+.fitting-doll-gems .gem[data-g="o"].active { background: rgba(40,160,220,0.6); color: #4fc3f7; }
+.fitting-doll-gems .gem[data-g="s"].active { background: rgba(40,60,220,0.6); color: #7986cb; }
+.fitting-doll-gems .gem[data-g="p"].active { background: rgba(220,180,40,0.6); color: #ffd54f; }
+.fitting-doll-gems .gem[data-g="r"].active { background: rgba(180,40,180,0.6); color: #ce93d8; }
+.fitting-doll-gems .gem[data-g="m"].active { background: rgba(40,200,160,0.6); color: #4db6ac; }
+.fitting-center {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.fitting-browser {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  width: 290px;
+}
+.fitting-browser .br-cats {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.fitting-browser .br-cats .cat {
+  padding: 2px 6px;
+  font-size: 9px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  background: var(--bg);
+  color: var(--text-dim);
+  transition: all 0.1s;
+}
+.fitting-browser .br-cats .cat:hover { border-color: var(--gold-dim); color: var(--text); }
+.fitting-browser .br-cats .cat.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
+.fitting-browser .br-search { margin-bottom: 4px; }
+.fitting-browser .br-search input { width: 100%; padding: 3px 6px; font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); }
+.fitting-browser .br-search input:focus { outline: none; border-color: var(--gold); }
+.fitting-browser .br-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-height: 360px;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+.fitting-browser .br-item {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.1s;
+}
+.fitting-browser .br-item:hover {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 4px rgba(201,168,76,0.3);
+}
+.fitting-browser .br-item.equipped {
+  border-color: var(--gold);
+  box-shadow: 0 0 4px rgba(201,168,76,0.4);
+}
+.fitting-browser .br-item img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+.fitting-browser .br-item .br-hint {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 9px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.fitting-browser .br-item:hover .br-hint {
+  display: block;
+}
+.fitting-browser .no-items {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11px;
+  width: 100%;
+}
+.fitting-effects {
+  flex: 1;
+  min-width: 260px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.fitting-effects h3 {
+  color: var(--gold);
+  font-size: 12px;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.fitting-effects table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.fitting-effects td {
+  padding: 1px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.fitting-effects td.ef-label {
+  color: var(--text-dim);
+  text-align: left;
+}
+.fitting-effects td.ef-val {
+  text-align: center;
+  font-weight: 600;
+}
+.fitting-effects td.ef-val.pos { color: #4caf50; }
+.fitting-effects td.ef-val.neg { color: #ff6b6b; }
+.fitting-effects .ef-section {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.fitting-effects .ef-section h4 {
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.fitting-builds {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.fitting-builds input {
+  padding: 3px 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 11px;
+  width: 130px;
+}
+.fitting-builds input:focus { outline: none; border-color: var(--gold); }
+.fitting-builds select {
+  padding: 3px 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+}
+.fitting-builds select:focus { outline: none; border-color: var(--gold); }
+.fitting-builds button {
+  padding: 3px 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.15s;
+}
+.fitting-builds button:hover {
+  background: var(--card-hover);
+  border-color: var(--gold-dim);
+}
+.fitting-builds button.danger:hover {
+  background: rgba(255,60,60,0.2);
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.fitting-server-builds {
+  border-top: 1px solid var(--border,rgba(255,255,255,0.1));
+  padding-top: 8px;
+}
+
+/* ===== SETS TAB ===== */
+.set-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.set-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.15);
+}
+.set-card .set-name {
+  color: #4caf50;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.set-card .set-count {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.set-card .set-desc {
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.set-card .set-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.set-card .set-icons img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+/* ===== SET DETAIL ===== */
+#set-detail {
+  padding: 16px;
+}
+
+
+/* Примерочная на узком экране: кукла и браузер артефактов встают в столбик.
+   Правило жило в base.css и не работало — .fitting-* объявлены здесь, ниже по
+   порядку подключения. */
+@media (max-width: 860px) {
+  .fitting-layout { flex-direction: column; }
+  .fitting-browser { width: 100%; }
+  .fitting-browser .br-grid { max-height: 200px; }
+}
