@@ -135,7 +135,7 @@ function staticApiResponse(rel, search) {
   if (!candidates.length) {
     // Бой, реплеи, сохранение сборок — всё, что считает Python. На статике
     // такого нет и быть не может: честный 404 вместо молчаливого зависания.
-    return Promise.resolve(jsonResponse({ error: 'not available on the static site' }, 404));
+    return Promise.resolve(jsonResponse({ error: 'Недоступно в статической версии сайта' }, 404));
   }
   return firstExisting(candidates).then(function(resp) {
     return resp || jsonResponse({ error: 'not found' }, 404);
