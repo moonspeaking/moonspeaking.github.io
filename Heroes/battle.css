@@ -1652,6 +1652,19 @@ body.tac-no-ring #tac-field td.tac-ring-foe::before { display: none; }
   outline-offset: -2px;
 }
 
+/* Клетки площадного УДАРА под курсором — крест «Перекрестной атаки», конусы
+   дыханий и прочие зоны из `zone_forecasts[].cells`. Табличек над задетыми
+   мало: игрок обязан видеть ФОРМУ до клика, иначе непонятно, откуда придёт
+   урон и кого ещё накроет. Жёлтая семья — та же, что у площадных заклинаний
+   (`tac-area-preview`), но холоднее по тону: под клетками чаще стоят враги,
+   которых надо отличать от своих. Правило для занятой клетки обязательно:
+   общий снимок фона под отрядом гасит заливку (см. `.tac-has-unit` ниже). */
+#tac-field td.tac-zone-preview {
+  background: rgba(255, 213, 79, 0.40) !important;
+  outline: 2px solid rgba(255, 193, 7, 0.9) !important;
+  outline-offset: -1px;
+}
+
 /* Второй шаг «Телепорта»: откуда переносим (источник) и куда можно (клетки).
  *
  * Заливкой одной тут не обойтись, как обходится подсветка хода (`.tac-reach`):
@@ -1732,6 +1745,14 @@ body.tac-no-ring #tac-field td.tac-ring-foe::before { display: none; }
 #tac-field td.tac-has-unit.tac-area-preview,
 #tac-field td.tac-spell-target.tac-area-preview {
   background-color: rgba(255, 138, 61, 0.30) !important;
+}
+
+/* То же исключение для зоны УДАРА: крест «Перекрестной атаки» рисуется и по
+   клеткам, где стоят отряды (иначе форма читается как дырчатое кольцо), а
+   правило `.tac-has-unit.pl1…pl6` выше специфичнее и гасит любую заливку.
+   Правило обязано стоять ПОСЛЕ него — иначе победит прозрачность. */
+#tac-field td.tac-has-unit.tac-zone-preview {
+  background-color: rgba(255, 213, 79, 0.28) !important;
 }
 
 /* Цвет бейджа — по владельцу отряда (оригинал: get_color → army_colors_p). !important
