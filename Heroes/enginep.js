@@ -2361,6 +2361,7 @@ function set_statix(statix2) {
                   if (anim[this.anim][doing][1][0][3][a]["bGFill"][0] == "radial") {
                     this.arrow_line1.closed = true;
                     Make_lineStyle(this.arrow_line1, { closed: true, fill: anim[this.anim][doing][1][0][3][a]["bGFill"][1][0] });
+                    closed = true;
                   }
                   ;
                 }

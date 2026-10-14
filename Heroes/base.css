@@ -129,6 +129,8 @@ a:hover { text-decoration: underline; }
   font-size:14px;
   margin-left: auto;
 }
+.header .subtitle .app-version { margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--border);
+  color: var(--gold-dim); font-size: 0.9em; white-space: nowrap; }
 
 /* Tabs */
 .menu-btn {
@@ -640,17 +642,17 @@ img[onerror] { color: transparent; }
   padding: 16px;
 }
 .sd-header {
-  color: #4caf50;
+  color: var(--gold);
   font-size: 22px;
   font-weight: 700;
   margin: 12px 0 8px;
 }
 .sd-desc {
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   margin-bottom: 10px;
-  padding: 8px 12px;
+  padding: 12px 16px;
   background: var(--panel);
   border-radius: 6px;
 }
@@ -661,126 +663,77 @@ img[onerror] { color: transparent; }
 }
 
 .sd-main-table {
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
   margin-bottom: 20px;
 }
 .sd-left {
-  flex: 1;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  font-size: 13px;
-  min-width: 280px;
-}
-.sd-left strong {
-  color: var(--gold);
-  font-size: 14px;
-}
-.sd-right {
-  flex: 0 0 340px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  font-size: 13px;
-}
-.sd-bonus-header {
-  color: var(--gold);
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-.sd-bonus-tier {
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
-}
-.sd-bonus-tier:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-.sd-bonus-label {
-  color: var(--text-dim);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.sd-bonus-row {
+  padding: 20px 24px;
+  border-right: 1px solid var(--border);
+  font-size: 15px;
   display: flex;
-  align-items: center;
-  margin: 3px 0;
-  line-height: 1.5;
-}
-.sd-bonus-row b {
-  color: #4caf50;
-}
-
-.sd-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  margin: 2px 0;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.sd-item:hover {
-  background: var(--panel);
-}
-.sd-item img {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  background: var(--bg);
-  flex-shrink: 0;
-}
-.sdi-info {
-  flex: 1;
-  min-width: 0;
-}
-.sdi-name {
-  color: var(--text);
-  font-weight: 500;
-  font-size: 13px;
-}
-.sdi-sub {
-  color: var(--text-dim);
-  font-size: 11px;
-  margin-top: 1px;
-}
-.sdi-mods {
-  font-size: 11px;
-  margin-top: 2px;
-  display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 4px;
-}
-.sdi-mods span {
-  color: var(--text-dim);
-}
-
-.sd-icons-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 12px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
   justify-content: center;
 }
-.sd-icons-grid img {
-  width: 44px;
-  height: 44px;
-  border-radius: 4px;
-  background: var(--bg);
-  transition: transform 0.15s;
+.sd-link {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 }
-.sd-icons-grid img:hover {
-  transform: scale(1.15);
+.sd-link:hover { color: var(--text); }
+.sd-right {
+  padding: 20px 24px;
+  font-size: 15px;
+}
+.sd-bonus-header {
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.sd-bonus-tier { margin-bottom: 14px; }
+.sd-bonus-label { font-weight: 700; margin-bottom: 4px; }
+.sd-stats { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.sd-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: var(--text);
+}
+.sd-stat img { width: 24px; height: 24px; }
+.sd-effect { color: var(--text); line-height: 1.5; }
+.sd-rule { display: flex; align-items: center; gap: 6px; line-height: 1.6; }
+.sd-rule img { width: 24px; height: 24px; }
+.sd-rule b { color: var(--text); }
+.sd-icons-grid {
+  display: grid;
+  gap: 8px;
+  justify-content: center;
+  grid-column: 1 / -1;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.sd-icons-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  /* Прозрачный фон: тайл с заливкой при наведении (scale) выпирал светлым прямоугольником
+     за контур вещи. Теперь подсвечивается только рамка. */
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.sd-icons-grid img:hover { border-color: var(--gold); }
+.sd-doll-wide { display: flex; justify-content: center; }
+.sd-doll-wide img { width: 100px; max-width: 100%; }
+@media (max-width: 700px) {
+  .sd-main-table { grid-template-columns: 1fr; }
+  .sd-left { border-right: none; border-bottom: 1px solid var(--border); }
 }
 
 .back-link {
