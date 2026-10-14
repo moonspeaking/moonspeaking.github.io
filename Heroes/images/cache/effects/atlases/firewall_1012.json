@@ -1,0 +1,16 @@
+{
+    "id": "firewall",
+    "name": "Firewall cast",
+    "image": "firewall.png",
+    "frameWidth": 185,
+    "frameHeight": 315,
+    "cols": 8,
+    "rows": 6,
+    "frames": 48,
+    "fps": 24,
+    "drawWidth": 185,
+    "drawHeight": 315,
+    "anchorX": 93.635618992442,
+    "anchorY": 277.79024941332,
+    "blend": "normal"
+}

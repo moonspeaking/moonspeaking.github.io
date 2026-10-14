@@ -13,9 +13,6 @@
 [data-theme="light"] .faction-card .faction-desc {
   background: rgba(0,0,0,0.04);
 }
-[data-theme="light"] .magic-icon {
-  background: rgba(0,0,0,0.03);
-}
 [data-theme="light"] .magic-level-title {
   background: #e6e4e0;
 }
@@ -131,10 +128,16 @@
   display: grid;
   /* Число колонок ставит factions.ts переменной --faction-cols: их от одной до
      четырёх, зависит от фракции. */
-  grid-template-columns: repeat(var(--faction-cols, 1), minmax(0, 420px));
+  /* Колонка не уже 280 px — это минимальная ширина карточки существа (~275): уже, и текст
+     характеристик вылезает за её рамку (4 колонки у варваров в окне ~900 px). Если
+     колонки не помещаются, лист прокручивается вбок, а не ломает карточки. */
+  grid-template-columns: repeat(var(--faction-cols, 1), minmax(280px, 420px));
   gap: 12px;
   align-items: start;
-  justify-content: center;
+  justify-content: safe center;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 10px;
 }
 .castle-anim {
   margin: 0 0 14px;
@@ -533,8 +536,10 @@
   flex-shrink: 0;
   border-radius: 10px;
   object-fit: contain;
-  background: rgba(0,0,0,0.04);
 }
+/* Без серой подложки, как у иконок артефактов; селектор с запасом по весу — иначе его
+   перебивает заливка img[loading="lazy"] из base.css. */
+.magic-card img.magic-icon { background: transparent; }
 .magic-card-body {
   flex: 1;
   min-width: 0;
@@ -893,12 +898,12 @@
 .magic-anim-stage { pointer-events: none }
 
 .magic-level-grid { margin-top:12px }
-.magic-level-row { display:flex;align-items:center;gap:16px;padding:10px 12px;background:var(--panel);border-radius:6px;margin-bottom:8px }
-.magic-level-row .lvl-label { font-weight:600;color:var(--gold);min-width:86px;font-size:13px }
-.magic-level-row .lvl-mana { color:var(--text-dim);font-size:12px;min-width:60px }
-.magic-level-row .lvl-dmg { font-size:13px;color:var(--text);flex:1 }
-/* Уровень, на котором заклинания ещё нет: строка остаётся, но приглушена. */
-.magic-level-row .lvl-none { color:var(--text-dim) }
+.magic-level-row { display:grid;grid-template-columns:120px auto 1fr;align-items:center;column-gap:0;padding:10px 12px;background:var(--panel);border-radius:6px;margin-bottom:8px }
+/* Колонки заданы сеткой, а не min-width: «Искусная магия» шире «Основ», и значения разных
+   школ съезжали. Колонка маны `auto`: нет маны — нет и пропуска, значение всё равно в одном столбце. */
+.magic-level-row .lvl-label { grid-column:1;font-weight:600;color:var(--gold);font-size:13px }
+.magic-level-row .lvl-mana { grid-column:2;color:var(--text-dim);font-size:12px;margin-right:16px }
+.magic-level-row .lvl-dmg { grid-column:3;font-size:13px;color:var(--text) }
 
 /* Faction Classes Section */
 .faction-classes-section {
@@ -1458,7 +1463,7 @@
 
 @media (max-width: 900px) {
   .faction-layout {
-    grid-template-columns: repeat(var(--faction-cols, 1), minmax(260px, 1fr));
+    grid-template-columns: repeat(var(--faction-cols, 1), minmax(280px, 1fr));
     justify-content: start;
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -1636,3 +1641,11 @@
 .stats-matrix th.col { height: auto; padding: 6px 4px; vertical-align: middle; }
 .stats-matrix th.col .sc-ico { margin: 0 auto; display: block; width: 22px; height: 22px; }
 .stats-matrix th.col.total { font-size: 11px; }
+
+/* Значок школы в строке с маной в окне заклинания. */
+.school-badge { display:inline-flex;align-items:center;gap:5px }
+.school-badge-icon { width:18px;height:18px;object-fit:contain;flex-shrink:0 }
+
+/* Формула клича («Урон = количество существ…»): строка на всю ширину, значок — в размер текста. */
+.magic-level-row.magic-formula { display:block;font-size:13px;line-height:1.6 }
+.magic-formula .formula-icon { width:18px;height:18px;vertical-align:-4px;margin-right:2px }
