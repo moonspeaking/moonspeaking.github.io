@@ -16,17 +16,17 @@
 <link rel="icon" href="/Heroes/icons/icon-192.svg" sizes="192x192">
 <link rel="apple-touch-icon" href="/Heroes/icons/icon-192.svg">
 <link rel="stylesheet" href="/Heroes/base.css?v=f3b39156">
-<link rel="stylesheet" href="/Heroes/catalog.css?v=ba14391e">
-<link rel="stylesheet" href="/Heroes/artifacts.css?v=92c0b024">
-<link rel="stylesheet" href="/Heroes/battle.css?v=e2a0d1b1">
+<link rel="stylesheet" href="/Heroes/catalog.css?v=6f8f48a1">
+<link rel="stylesheet" href="/Heroes/artifacts.css?v=c74e98f2">
+<link rel="stylesheet" href="/Heroes/battle.css?v=7fbdebc0">
 <script>if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light')}</script>
-<script src="/Heroes/sw-register.js?v=57e53731"></script>
+<script src="/Heroes/sw-register.js?v=2c3d6ed9"></script>
 </head>
 <body>
 
 <div class="header">
   <h1>⚔ Heroes∞</h1>
-  <span class="subtitle">Database & Reference <span class="app-version" id="app-version">V 0.5.38 от 15 октября 00:35</span></span>
+  <span class="subtitle">Database & Reference <span class="app-version" id="app-version">V 0.5.102 от 16 октября 02:16</span></span>
   <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Переключить тему">🌙</button>
   <button id="menu-toggle" class="menu-btn" onclick="toggleMenu()" title="Меню">☰</button>
 </div>
@@ -89,7 +89,7 @@
       <select id="level-filter" onchange="filterArtifacts()">
         <option value="">Все уровни</option>
       </select>
-      <button type="button" class="hwm-btn art-fitting-btn" onclick="navigateTo('/fitting')"
+      <button type="button" class="hwm-btn art-fitting-btn" onclick="navigateTo('/dressroom')"
               title="Примерочная: собрать комплект на герое и посмотреть суммарные бонусы">🎒 Примерочная</button>
       <span class="count" id="artifact-count">0 артефактов</span>
     </div>
@@ -329,7 +329,36 @@
              title="Герой: класс, параметры, артефакты">
           <span id="tac-hero-toggle" class="tac-hero-tile-caret">▸</span>
         </div>
+        <!-- «+» — второй герой справа (класс и артефакты берутся у Героя 2 Примерочной).
+             Список отрядов ставит эту плитку сразу за плиткой героя (battlePalette). -->
+        <div class="tac-hero-tile tac-hero2-tile" id="tac-hero2-tile" onclick="tacHero2Click(event)"
+             title="Добавить второго героя справа">+</div>
+        <!-- Второй герой (справа): раскрывается кликом по его плитке; класс и артефакты — те же, что у
+             Героя 2 Примерочной, навыки — второй набор колеса навыков. -->
+        <div id="tac-hero2-body" style="display:none;padding:8px;font-size:12px">
+          <div style="font-weight:600;color:var(--gold);margin-bottom:6px">Второй герой (справа)</div>
+          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Имя</span><input type="text" id="tac-hero2-name" value="Сандро" maxlength="24" class="tac-filter" style="flex:2;margin:0" oninput="tacHeroNameChange()"></label>
+          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Класс</span>
+            <select id="tac-hero2-class" onchange="tacHero2ClassChange()" class="tac-filter" style="flex:2;margin:0"></select></label>
+          <div style="margin:6px 0;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px" id="tac-hero2-faction-ability"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Атака</span><input type="number" id="tac-hero2-atk" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Защита</span><input type="number" id="tac-hero2-def" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Иниц. %</span><input type="number" id="tac-hero2-ini" value="0" min="0" max="100" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Сила магии</span><input type="number" id="tac-hero2-sp" value="0" min="0" max="50" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Удача</span><input type="number" id="tac-hero2-luck" value="0" min="-5" max="5" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Мораль</span><input type="number" id="tac-hero2-morale" value="0" min="-3" max="5" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Макс. мана</span><input type="number" id="tac-hero2-mana" value="10" min="0" max="100" class="tac-hero-input"></label>
+            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Ур. фракции</span><input type="number" id="tac-hero2-flvl" value="1" min="1" max="10" class="tac-hero-input"></label>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">Артефакты <span id="tac-hero2-arts-count"></span>
+            — <a href="#" onclick="tacHero2OpenDressroom();return false" style="color:var(--gold)">Примерочная</a></div>
+          <div style="margin-top:4px;font-size:11px;color:var(--text-dim)">Навыки <span id="tac-hero2-perks-count"></span>
+            — <a href="#" onclick="tacHero2OpenSkills();return false" style="color:var(--gold)">Колёса навыков</a></div>
+          <div id="tac-hero2-perks-note" style="margin-top:2px;font-size:10px;color:var(--text-dim)"></div>
+        </div>
         <div id="tac-hero-body" style="display:none;padding:8px;font-size:12px">
+          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Имя</span><input type="text" id="tac-hero-name" value="Вэрсон" maxlength="24" class="tac-filter" style="flex:2;margin:0" oninput="tacHeroNameChange()"></label>
           <div id="tac-hero-class-skills" style="display:none;margin-bottom:6px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--gold)"></div>
           <div style="margin:6px 0;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px" id="tac-hero-faction-ability"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">
@@ -579,7 +608,7 @@
           <!-- Свиток рун гнома: раскрывается кнопкой, руна ложится на активный отряд. -->
           <span id="tac-hs-runes" class="tac-hs-spells tac-hs-runes" style="display:none"></span>
           <span class="tac-hs-actions" id="tac-hs-actions">
-            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-runes-btn" style="display:none" onclick="tacHsToggleRunes()" title="Рунная магия (R)"><span class="tac-rune-glyph">ᚱ</span></button>
+            <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-runes-btn" style="display:none" onclick="tacHsToggleRunes()" title="Рунная магия (R)"><img src="/Heroes/img/combat/btn_scroll.png" alt="Руны"></button>
             <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-magic-btn" style="display:none" onclick="tacHsToggleHeroBook()" title="Книга магии героя (B): появляется в ход героя — у него своя шкала ATB. Esc — отмена."><img id="tac-hs-magic-img" src="/Heroes/img/combat/btn_book_off.png" alt="Книга магии"></button>
             <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-unitbook-btn" style="display:none" onclick="tacHsToggleUnitBook()" title="Книга магии отряда: свои заклинания существа. Каст тратит ход отряда."><img id="tac-hs-unitbook-img" src="/Heroes/img/combat/btn_book_off.png" alt="Книга магии отряда"></button>
             <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-book" style="display:none" onclick="tacHsToggleBook()" title="Заклинание/Умение — применить заклинание героя или активируемое умение отряда. Повторное нажатие отменяет выбор."><img id="tac-hs-book-img" src="/Heroes/img/combat/btn_skills_off.png" alt="Заклинание/Умение"></button>
@@ -649,6 +678,12 @@
   <!-- Skill Wheels -->
   <div class="tab-content" id="tab-skillwheels">
     <div id="skillwheel-controls">
+      <!-- Чей набор собираем: в бою два героя, у каждого свой набор навыков. -->
+      <div class="sw-control-group" id="sw-slot-group">
+        <label>Набор для:</label>
+        <button type="button" id="sw-slot-0" class="sw-slot-btn active" onclick="swSetHeroSlot(0)">Героя 1</button>
+        <button type="button" id="sw-slot-1" class="sw-slot-btn" onclick="swSetHeroSlot(1)">Героя 2</button>
+      </div>
       <div class="sw-control-group">
         <label for="sw-faction">Фракция:</label>
         <select id="sw-faction" onchange="swOnFactionChange()"></select>
@@ -799,7 +834,7 @@ try {
 </script>
 <script src="/Heroes/anim_effects.js?v=2a7ddebb"></script>
 <script src="/Heroes/show_info.js?v=f086f57d"></script>
-<script type="module" src="/Heroes/dist/bundle.js?v=57e53731"></script>
+<script type="module" src="/Heroes/dist/bundle.js?v=2c3d6ed9"></script>
 
 </body>
 </html>

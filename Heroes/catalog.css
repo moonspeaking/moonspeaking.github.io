@@ -192,6 +192,29 @@
   padding: 20px;
   margin-bottom: 16px;
 }
+.faction-card-body { display: flex; align-items: flex-start; gap: 20px; }
+.faction-card-main { flex: 1; min-width: 0; }
+.faction-hero-dolls {
+  flex: 0 0 auto;
+  width: 320px;
+  max-width: 38%;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  gap: 4px;
+}
+.faction-hero-doll {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* PNG куклы прозрачный: глобальная белая подложка картинок здесь не нужна. */
+  background: transparent;
+  border: none;
+}
+@media (max-width: 700px) {
+  .faction-card-body { flex-direction: column-reverse; align-items: center; }
+  .faction-hero-dolls { max-width: 70%; flex-direction: row; }
+}
 .faction-card h3 {
   font-size: 18px;
   color: var(--gold);
@@ -1649,3 +1672,30 @@
 /* Формула клича («Урон = количество существ…»): строка на всю ширину, значок — в размер текста. */
 .magic-level-row.magic-formula { display:block;font-size:13px;line-height:1.6 }
 .magic-formula .formula-icon { width:18px;height:18px;vertical-align:-4px;margin-right:2px }
+
+/* Переключатель «Набор для: Героя 1 / Героя 2» на вкладке колёс навыков. */
+.sw-slot-btn { padding: 4px 12px; font-size: 12px; cursor: pointer; color: var(--text-dim); background: var(--bg); border: 1px solid var(--border); border-radius: 14px; }
+.sw-slot-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.sw-slot-btn.active { color: var(--gold); border-color: var(--gold); background: rgba(201,168,76,.12); }
+
+/* Увеличенная кукла героя (клик по кукле на вкладке «Фракции»). */
+.faction-hero-doll { cursor: zoom-in; }
+.doll-zoom {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: rgba(0, 0, 0, 0); cursor: zoom-out;
+  transition: background 0.25s ease;
+}
+.doll-zoom img {
+  max-width: 92vw; max-height: 82vh; width: auto; height: auto;
+  opacity: 0; transform: scale(0.85);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  background: transparent; border: none;
+}
+.doll-zoom-cap { color: #fff; font-size: 16px; opacity: 0; transition: opacity 0.25s ease; text-shadow: 0 1px 3px #000; }
+.doll-zoom-on { background: rgba(0, 0, 0, 0.78); }
+.doll-zoom-on img { opacity: 1; transform: scale(1); }
+.doll-zoom-on .doll-zoom-cap { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .doll-zoom, .doll-zoom img, .doll-zoom-cap { transition: none; }
+}

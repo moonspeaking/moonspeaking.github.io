@@ -348,6 +348,14 @@
   padding: 8px;
   font-size: 11px;
 }
+/* Доска куклы и панель гильдии бок о бок: панель — вертикальный столбец «параметр —
+   список» справа от куклы, а не горизонтальная лента над ней. */
+.fitting-doll-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.fitting-guild { flex: 1 1 auto; min-width: 96px; }
 .fitting-guild table {
   width: 100%;
   border-collapse: collapse;
@@ -357,6 +365,7 @@
   text-align: center;
   border: 1px solid var(--border);
 }
+.fitting-guild td.fg-lab { width: 1%; white-space: nowrap; text-align: left; }
 .fitting-guild td label { font-size: 10px; color: var(--text-dim); }
 .fitting-guild select { font-size: 10px; padding: 1px 2px; width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); }
 .fitting-guild .guild-label { font-size: 10px; color: var(--gold); font-weight: 600; }
@@ -725,3 +734,232 @@
   .fitting-browser { width: 100%; }
   .fitting-browser .br-grid { max-height: 200px; }
 }
+
+/* ===== Крафт: панель под куклой и значки модификаторов (гильдия оружейников) ===== */
+.fitting-craft {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 10px;
+  max-width: 280px;
+}
+.fitting-craft .craft-title { color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+.fitting-craft .craft-note { color: var(--text-dim); padding: 4px 0; }
+.fitting-craft .craft-import { display: flex; gap: 4px; margin-bottom: 6px; }
+.fitting-craft .craft-import input { flex: 1; min-width: 0; font-size: 10px; padding: 2px 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); }
+.fitting-craft button { font-size: 10px; padding: 2px 6px; cursor: pointer; }
+.fitting-craft .craft-slot { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+.fitting-craft .craft-slot select { flex: 1; min-width: 0; font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); }
+.fitting-craft .craft-cat { color: var(--text-dim); white-space: nowrap; }
+.fitting-craft .craft-mods { width: 100%; border-collapse: collapse; }
+.fitting-craft .craft-mods td { padding: 1px 3px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.fitting-craft .craft-code { color: var(--gold); font-weight: 700; width: 14px; }
+.fitting-craft .craft-label { color: var(--text-dim); }
+.fitting-craft .craft-mods select { font-size: 10px; width: 88px; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); }
+.fitting-craft .craft-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; color: var(--text-dim); }
+.fitting-doll-slot .doll-mods { position: absolute; right: 1px; bottom: 1px; display: flex; flex-direction: row-reverse; pointer-events: none; }
+.fitting-doll-slot .doll-mods img { width: 12px; height: 12px; margin-left: -4px; object-fit: contain; }
+
+/* ===== Примерочная: два героя (экран по образцу оригинальной примерочной) =====
+   Слева и справа — герои зеркально: фракция и БУ сверху, кукла, поиск и «Надеть
+   комплект» снизу. По центру — числа обоих героев рядом и кнопка копирования.
+   Ниже — браузер (артефакты / готовые комплекты / сборки) и подробные параметры. */
+.fitting-wrap { --ds: 1.35; gap: 12px; }
+.fit-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.fit-hero {
+  justify-self: center;
+  padding: 10px 12px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: default;
+  transition: border-color .15s, box-shadow .15s;
+}
+.fit-hero.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-dim, rgba(201,168,76,.5)), 0 4px 18px rgba(0,0,0,.18); }
+.fit-hero-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.fit-hero-top label { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+.fit-hero-top select, .fit-hero-tools select, .fit-hero-tools input {
+  padding: 3px 6px; font-size: 12px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; color: var(--text); min-width: 0;
+}
+.fit-hero-tag { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: .3px; }
+.fit-doll-box { width: calc(230px * var(--ds)); height: calc(200px * var(--ds)); }
+.fit-doll-box .fitting-doll-wrap { transform: scale(var(--ds)); transform-origin: 0 0; }
+.fit-hero-tools { display: flex; gap: 6px; margin-top: 8px; }
+.fit-hero-tools input { flex: 1 1 40%; }
+.fit-hero-tools select { flex: 1 1 60%; }
+.fit-center { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 6px; min-width: 150px; }
+.fit-copy {
+  width: 44px; height: 44px; font-size: 20px; line-height: 1; cursor: pointer;
+  background: var(--card); color: var(--gold); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .15s, background .15s;
+}
+.fit-copy:hover { border-color: var(--gold); background: rgba(201,168,76,.12); }
+.fit-vs { border-collapse: separate; border-spacing: 0 3px; }
+.fit-vs td { padding: 3px 8px; }
+.fit-vs .vs-val { text-align: center; font-size: 18px; font-weight: 700; min-width: 34px; color: var(--text); }
+.fit-vs .vs-val.lead { color: #4caf50; }
+.fit-vs .vs-lab { text-align: center; line-height: 1.1; }
+.fit-vs .vs-lab span { font-size: 20px; display: block; }
+.fit-vs .vs-lab small { font-size: 9px; color: var(--text-dim); }
+.fit-both { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.fit-main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 12px; align-items: start; }
+.fit-main .fitting-browser { width: auto; min-width: 0; }
+.fit-main .fitting-browser .br-grid { max-height: 460px; gap: 4px; }
+.fit-main .fitting-browser .br-item { width: 54px; height: 54px; }
+.fit-main .fitting-browser .br-item img { width: 52px; height: 52px; }
+.fit-main .fitting-effects { min-width: 0; }
+.fitting-effects .ef-head { font-size: 10px; color: var(--gold); padding: 6px 0 2px; }
+.fitting-effects .ef-line { font-size: 10px; padding: 1px 0; }
+.br-modes { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.br-mode { padding: 4px 10px; font-size: 11px; cursor: pointer; background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); border-radius: 14px; }
+.br-mode:hover { border-color: var(--gold-dim); color: var(--text); }
+.br-mode.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,.12); }
+.br-target { margin-left: auto; font-size: 10px; color: var(--text-dim); }
+.set-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; max-height: 520px; overflow-y: auto; padding-right: 2px; }
+.set-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+.set-card:hover { border-color: var(--gold-dim); }
+.set-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 12px; }
+.set-card-head span { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+.set-card-icons { display: flex; flex-wrap: wrap; gap: 2px; }
+.set-card-icons img { width: 30px; height: 30px; object-fit: contain; }
+.set-card-bonus { font-size: 10px; color: var(--text-dim); }
+.set-card-btn { margin-top: auto; padding: 4px 8px; font-size: 11px; cursor: pointer; color: var(--gold); background: transparent; border: 1px solid var(--gold-dim, var(--border)); border-radius: 6px; }
+.set-card-btn:hover { background: rgba(201,168,76,.14); }
+.build-save { display: flex; gap: 6px; margin-bottom: 8px; }
+.build-save input { flex: 1; padding: 4px 8px; font-size: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); }
+.build-save button { padding: 4px 10px; font-size: 11px; cursor: pointer; }
+.build-title { font-size: 10px; color: var(--gold); margin: 8px 0 4px; font-weight: 600; }
+.build-list { display: flex; flex-direction: column; gap: 3px; }
+.build-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.build-name { flex: 1; cursor: pointer; }
+.build-name:hover { color: var(--gold); }
+.build-date { font-size: 10px; color: var(--text-dim); }
+.build-del { border: 0; background: transparent; color: var(--text-dim); cursor: pointer; font-size: 14px; }
+.build-del:hover { color: #ff6b6b; }
+@media (max-width: 900px) {
+  .fitting-wrap { --ds: 1.1; }
+  .fit-stage { grid-template-columns: 1fr; }
+  .fit-center { order: 2; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .fit-vs { display: block; }
+  .fit-main { grid-template-columns: 1fr; }
+}
+
+/* ===== Кукла как в оригинале: светло-серые ячейки позади, герой спереди ===== */
+.fit-doll-box .fitting-doll-wrap { background: transparent; border: 0; border-radius: 0; }
+.fit-doll-box .fitting-doll-slot {
+  z-index: auto;                       /* без своего контекста: иконка предмета выше фигуры */
+  background-color: #dcdcdc;
+  border: 1px solid #b9b9b9;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.7);
+  background-size: 44px 44px;
+}
+.fit-doll-box .fitting-doll-slot:hover { background-color: #e8e8e8; border-color: var(--gold); }
+.fit-doll-box .fitting-doll-slot.equipped { background-color: #e4e4e4; border-color: var(--gold-dim, #b9a45a); }
+.fitting-doll-figure {
+  position: absolute; left: 0; top: 0; width: 230px; height: 200px;
+  object-fit: contain; pointer-events: none; z-index: 2;
+}
+.fit-doll-box .fitting-doll-slot > img { position: relative; z-index: 3; }
+.fit-doll-box .fitting-doll-slot .doll-mods { z-index: 3; }
+.fit-doll-box .fitting-doll-slot .doll-remove { z-index: 4; }
+.fit-doll-box .fitting-doll-clear { z-index: 4; }
+.fit-vs .vs-lab .vs-ico { width: 30px; height: 30px; display: block; margin: 0 auto 1px; object-fit: contain; }
+.fit-vs .vs-lab .vs-ico { width: 30px; height: 30px; display: block; margin: 0 auto 1px; object-fit: contain; }
+
+/* ===== Эффекты — под каждым героем (параметры — в центре) ===== */
+.fit-hero-fx { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 11px; max-width: calc(230px * var(--ds)); }
+.fit-hero-fx .fx-title { color: #6a5acd; font-weight: 700; font-size: 11px; margin-bottom: 4px; }
+.fit-hero-fx .fx-row { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; color: var(--text-dim); }
+.fit-hero-fx .fx-row b { font-weight: 700; }
+.fit-hero-fx .fx-row b.pos { color: #4caf50; }
+.fit-hero-fx .fx-row b.neg { color: #ff6b6b; }
+.fit-hero-fx .fx-flag { padding: 1px 0; color: var(--text); }
+.fit-hero-fx .fx-set { margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-size: 10px; color: var(--text-dim); }
+.fit-main .fit-side { min-width: 0; }
+.fit-main .fit-side .fitting-craft { margin-top: 0; }
+
+/* ===== Поиск комплектов под героем, параметры выше, крафт — вкладка ===== */
+.fit-q-wrap { position: relative; flex: 1 1 40%; min-width: 0; }
+.fit-q-wrap input { width: 100%; box-sizing: border-box; }
+.fit-suggest {
+  position: absolute; left: 0; top: calc(100% + 2px); z-index: 30; min-width: 260px;
+  background: var(--card); border: 1px solid var(--gold-dim, var(--border)); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28); padding: 4px; max-height: 320px; overflow-y: auto;
+}
+.fit-suggest .sg-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.fit-suggest .sg-item:hover { background: rgba(201,168,76,.16); }
+.fit-suggest .sg-item img { width: 26px; height: 26px; object-fit: contain; }
+.fit-suggest .sg-item b { flex: 1; font-weight: 600; }
+.fit-suggest .sg-item span, .fit-suggest .sg-empty { font-size: 10px; color: var(--text-dim); }
+.fit-suggest .sg-empty { padding: 6px 8px; }
+.fit-center { padding-top: 0; }
+.fit-center-tools { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 6px; }
+.fit-main { grid-template-columns: minmax(0, 1fr); }
+.fit-main .fitting-craft { max-width: 520px; }
+.build-del.armed { width: auto; padding: 1px 8px; font-size: 11px; color: #fff; background: #d9534f; border-radius: 10px; }
+
+/* ===== Надетый предмет — залитая бежевая ячейка с крестиком «снять», как в оригинале ===== */
+.fit-doll-box .fitting-doll-slot.equipped {
+  background: linear-gradient(160deg, #f1e0b4 0%, #e3cd98 55%, #d8bd80 100%);
+  border-color: #a9a9a9;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), inset 0 -6px 10px rgba(120,84,20,.18);
+}
+.fit-doll-box .fitting-doll-slot.equipped:hover { filter: brightness(1.05); border-color: var(--gold); }
+.fit-doll-box .fitting-doll-slot .doll-remove {
+  display: block;                       /* всегда виден, не только при наведении */
+  top: 1px; left: 3px; right: auto;
+  width: auto; height: auto; border-radius: 0; background: transparent;
+  color: #2a2a2a; font-size: 15px; font-weight: 800; line-height: 1; font-family: Arial, sans-serif;
+  text-shadow: 0 0 2px rgba(255,255,255,.8);
+}
+.fit-doll-box .fitting-doll-slot .doll-remove:hover { color: #b3261e; }
+
+/* Слой предметов поверх фигуры: иконка, значки крафта и «X» снять. Клики проходят в ячейку под ним. */
+.fit-doll-box .fitting-doll-item {
+  position: absolute; width: 50px; height: 50px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3; pointer-events: none;
+}
+.fit-doll-box .fitting-doll-item .di-icon { width: 48px; height: 48px; object-fit: contain; }
+.fit-doll-box .fitting-doll-item .doll-mods { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 1px; }
+.fit-doll-box .fitting-doll-item .doll-mods img { width: 14px; height: 14px; }
+.fit-doll-box .fitting-doll-item .doll-remove { pointer-events: auto; cursor: pointer; z-index: 4; position: absolute; }
+
+/* Заливка принадлежит предмету, а не ячейке под фигурой: у иконок прозрачный фон, и без неё
+   сквозь шлем, броню и сапоги просвечивал герой. Слой предмета непрозрачный и перекрывает фигуру. */
+.fit-doll-box .fitting-doll-item {
+  background: linear-gradient(160deg, #f1e0b4 0%, #e3cd98 55%, #d8bd80 100%);
+  border: 1px solid #a9a9a9; border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), inset 0 -6px 10px rgba(120,84,20,.18);
+}
+.fit-doll-box .fitting-doll-item .doll-remove {
+  top: 1px; left: 3px; right: auto; width: auto; height: auto; border-radius: 0; background: transparent;
+  display: block; color: #2a2a2a; font-size: 15px; font-weight: 800; line-height: 1; font-family: Arial, sans-serif;
+  text-shadow: 0 0 2px rgba(255,255,255,.8);
+}
+.fit-doll-box .fitting-doll-item .doll-remove:hover { color: #b3261e; }
+
+/* Наведение на пустую ячейку: базовое `.fitting-doll-slot:hover { background: … }` — шортхенд,
+   он сбрасывал позицию/размер/повтор заглушки, и она уезжала в угол и повторялась полосками справа и
+   снизу. Заглушка остаётся по центру в 44px. */
+.fit-doll-box .fitting-doll-slot:hover {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 44px 44px;
+}
+
+/* Крестик «снять» — только при наведении на надетый предмет. Слой предмета сам ловит наведение
+   (клики он отдаёт той же логике, что и ячейка), а «X» без наведения скрыт и не кликается. */
+.fit-doll-box .fitting-doll-item { pointer-events: auto; cursor: pointer; transition: filter .12s, border-color .12s; }
+.fit-doll-box .fitting-doll-item:hover { filter: brightness(1.06); border-color: var(--gold); }
+.fit-doll-box .fitting-doll-item .doll-remove { opacity: 0; pointer-events: none; transition: opacity .12s; }
+.fit-doll-box .fitting-doll-item:hover .doll-remove { opacity: 1; pointer-events: auto; }

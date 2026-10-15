@@ -141,12 +141,21 @@
   justify-content: center;
   font-size: 30px;
   line-height: 1;
-  color: var(--gold);
+  color: var(--text-dim);
 }
 .tac-hero-tile:hover { border-color: var(--gold); }
 /* В сетке по фракциям колонки размечены по тирам — плитка героя туда не
    вписывается и занимает свою строку целиком. */
-.tac-unit-grid .tac-hero-tile { grid-column: 1 / -1; }
+/* В сетке по фракциям плитка героя занимает всю первую строку (иначе первое существо
+   встаёт в пустую середину ряда), но по ширине равна карточке отряда — одной колонке.
+   «+» (второй герой) ложится поверх свободной части строки, в 3-ю колонку. */
+.tac-unit-grid .tac-hero-tile {
+  grid-column: 1 / -1;
+  justify-self: start;
+  width: calc((100% - (var(--tac-cols, 3) - 1) * 4px) / var(--tac-cols, 3));
+  height: 62px;
+}
+.tac-unit-grid .tac-hero2-tile { grid-column: 3; justify-self: stretch; width: auto; }
 /* В общей сетке плитка героя — квадрат в свой столбец, как плитки отрядов. */
 .tac-unit-list:not(.tac-unit-grid) .tac-hero-tile { width: auto; height: auto; aspect-ratio: 1; }
 .tac-hero-tile img {
@@ -160,11 +169,7 @@
 /* Уголок раскрытия — в углу плитки, а не отдельной строкой. */
 .tac-hero-tile-caret {
   position: absolute;
-  right: 2px;
-  bottom: 0;
-  font-size: 11px;
-  color: var(--text-dim);
-  pointer-events: none;
+  display: none;
 }
 /* Шапки «👤 Герой» больше нет — вместо неё плитка в палитре (.tac-hero-tile). */
 .tac-hero-input {
@@ -215,8 +220,10 @@ body:not(.tac-on-battle) .tac-fs-btn { display: none; }
    нижнем. Fixed, потому что .tac-main в арене не обёртка доски. */
 body.tac-full-field .tac-fs-btn {
   position: fixed;
-  right: calc(var(--arena-x) + var(--pole-side, 20px) + 4px);
-  top: calc(var(--arena-y) + (var(--pole-top, 88px) - 32px) / 2);
+  /* Угол ЭКРАНА, а не пояса сцены: при letterbox (--arena-y/--arena-x) кнопка
+     съезжала от верхнего правого угла вниз и вбок. Зеркально — столбик слева. */
+  right: 10px;
+  top: 10px;
 }
 
 /* Настройки боя — кнопка с оригинальной иконкой в НИЖНЕМ ЛЕВОМ углу, как в бою
@@ -290,13 +297,19 @@ body:not(.tac-full-field) .tac-battle-settings-btn { position: absolute; }
    она внутри боевого поля, а у нас лежала в нижнем поле рядом со шкалой ATB и
    читалась как часть шкалы. Обе величины ставит tacFitField по формулам
    оригинала (pole_left / pole_bottom). */
+/* Заголовок «Отряды» — под самой полосой вкладок: окно арены поднято на 30px
+   (margin-top выше), а палитра оставалась на отступах страницы и теряла место. */
+body.tac-on-battle:not(.tac-full-field) .tac-sidebar { margin-top: -18px; }
 body.tac-on-battle .tac-battle-settings-btn {
   /* Шестерёнка стоит СБОКУ от шкалы ATB, в самом углу нижнего поля, и заметно
      мельче кнопок боя — так она в оригинале. Над шкалой она загораживала нижний
      ряд доски, а размером спорила с круглыми кнопками слева. В арене к поясам
      прибавляется letterbox-смещение сцены (в редакторе оно 0). */
-  left: calc(var(--arena-x) + var(--pole-side, 20px) + 4px);
-  bottom: calc(var(--arena-y) + (var(--pole-bottom, 90px) - 22px) / 2);
+  /* Угол ОКНА боя, а не пояса сцены: при letterbox (--arena-y) пояс уезжает от
+     края окна, и шестерёнка висела посреди поля, а не в нижнем левом углу. В
+     редакторе отсчёт — от окна арены (position: absolute), в арене — от экрана. */
+  left: 8px;
+  bottom: 8px;
   width: 22px;
   height: 22px;
 }
@@ -849,8 +862,9 @@ body.tac-on-battle #tac-field {
 }
 body.tac-full-field .tac-arena-controls {
   position: fixed;
-  left: calc(var(--arena-x) + 10px);
-  top: calc(var(--arena-y) + 18px);
+  /* Верхний левый угол экрана, без letterbox-смещения сцены. */
+  left: 10px;
+  top: 10px;
 }
 /* В редакторе круглые кнопки боя — того же калибра, что остальные кнопки
    поля (⛶ 32px, ⚙ 30px): 46/56px рядом с уменьшенной сценой выглядели
@@ -1056,21 +1070,10 @@ body:not(.tac-full-field) #tac-arena-viewport {
   background: rgba(20, 18, 14, 0.85);
   padding: 3px;
 }
-.tac-hero-figure-name {
-  font-size: 9px;
-  line-height: 1.1;
-  color: var(--text-dim);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px #000, 0 0 3px #000;
-}
 .tac-hero-figure--ready img {
   filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.95))
           drop-shadow(0 0 12px rgba(201, 168, 76, 0.6));
 }
-.tac-hero-figure--ready .tac-hero-figure-name { color: var(--gold); }
 /* Живой спрайт героя нарисован на общем канвасе поля — кукла под ним прячется,
    а сама фигура остаётся: она ловит клик, держит подпись и свечение шкалы. */
 .tac-hero-figure--live img { visibility: hidden; }
@@ -1226,10 +1229,9 @@ body:not(.tac-full-field) #tac-arena-viewport {
   background: transparent !important;
   padding: 0;
 }
-#tac-field.tac-small td {
-  width: calc(var(--cellw) * 0.68);
-  height: calc(var(--cellh) * 0.68);
-}
+/* Размеры клеток поля 18×18 — как у остальных полей: их задаёт логическая сцена
+   (`--cellw`/`--rowh` из tacLayoutArena). Прежнее правило «×0.68» из времён
+   редактора без сцены перебивало высоту ряда и сплющивало доску до 64%. */
 #tac-field.tac-small td.tac-cr {
   width: 20px;
   height: 16px;
@@ -1260,8 +1262,9 @@ body:not(.tac-full-field) #tac-arena-viewport {
   z-index: 10;
 }
 #tac-field.tac-small td div {
-  font-size: 10px;
-  max-width: 35px;
+  /* Сцена масштабирована: бейдж держит экранные 10px, как число ниже. */
+  font-size: calc(10px / var(--arena-k));
+  max-width: 70px;
 }
 #tac-field td.tac-over:not(.tac-cr) { border: 2px solid var(--gold) !important; background: rgba(200,168,76,0.15) !important; }
 /* След 2x2 не помещается (край поля или занятые клетки). Раньше отказ был молчаливым:
@@ -2724,16 +2727,21 @@ body { --tac-land: url('/Heroes/api/cache/i/png30/lands/land_grass3.jpg'); }
 /* Свиток рун гнома: те же кнопки, что у умений, но рунического цвета — руны
    накладывает герой, а не отряд, и путать их с умениями отряда не надо. */
 .tac-hs-runes { margin-top: 4px; }
+/* Классический свиток рун оригинала (.RuneClassicBlock): золотой круг, внутри картинка руны. */
 .tac-rune-btn {
-  background: rgba(255,193,7,0.12);
-  border-color: var(--gold-dim, #b8860b);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  position: relative;
+  width: 44px; height: 44px; padding: 0; border: none; border-radius: 50%;
+  background: url('/Heroes/api/cache/i/combat/btn_goldcircle_empty.png') center/contain no-repeat;
+  cursor: pointer;
 }
-.tac-rune-btn:hover:not(:disabled) { background: rgba(255,193,7,0.28); }
+.tac-rune-btn img {
+  position: absolute; left: 50%; top: 50%; width: 75%; height: auto;
+  transform: translate(-50%, -50%); pointer-events: none;
+}
+.tac-rune-btn:hover:not(:disabled) {
+  filter: brightness(1.25) drop-shadow(0 0 13px #ffe4b3);
+}
 .tac-rune-off { opacity: 0.25; cursor: default; }
-.tac-rune-glyph { font-size: 15px; line-height: 1; color: var(--gold); }
 .tac-rune-note { align-self: center; font-size: 12px; color: var(--text-dim); }
 
 /* ===== Перспектива поля, как в оригинале ===== */
@@ -2805,7 +2813,7 @@ body.tac-unified-field #tac-field td > .tac-num-l.tac-num-big { margin-right: ca
   border-radius: 2px;
   transform-origin: center bottom;
 }
-#tac-field.tac-small ~ #tac-numbers .tac-num { font-size: 10px; }
+#tac-field.tac-small ~ #tac-numbers .tac-num { font-size: calc(10px / var(--arena-k)); }
 body.tac-numbers-top #tac-field td > .t0,
 body.tac-numbers-top #tac-field td > .t1,
 body.tac-numbers-top #tac-field td > .t2,
@@ -2929,3 +2937,37 @@ body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
   border-color: #ffd733;
   box-shadow: 0 0 10px rgba(255, 215, 51, 0.85);
 }
+
+/* Плитка героя и плитка «+» (второй герой справа) — в одном ряду. */
+/* Первая строка палитры: [герой] [пусто] [«+»] — как раньше, существа начинаются со второй строки,
+   центр остаётся пустым. Плитки ставятся явно; первое существо в списке цепляется за 1-ю колонку и
+   потому уходит на следующую строку. В сетке по фракциям плитка героя тянется на всю строку, а «+»
+   ложится поверх её свободной части, в 3-ю колонку. */
+.tac-unit-list .tac-hero-tile { grid-row: 1; }
+.tac-unit-list .tac-hero2-tile { grid-row: 1; grid-column: 3; }
+.tac-unit-list:not(.tac-unit-grid) .tac-hero-tile { grid-column: 1; }
+.tac-unit-list:not(.tac-unit-grid) .tac-hero2-tile { grid-column: 3; }
+.tac-unit-list:not(.tac-unit-grid) > li:first-of-type { grid-column: 1; }
+.tac-hero2-tile {
+  font-size: 34px;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+.tac-hero2-tile:hover { color: var(--gold); border-color: var(--gold-dim); }
+.tac-hero2-tile.on { font-size: 30px; color: var(--gold); }
+.tac-hero2-tile img { width: 100%; max-width: 56px; aspect-ratio: 1; object-fit: contain; display: block; }
+.tac-hero2-del {
+  position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; line-height: 16px;
+  text-align: center; font-size: 14px; border-radius: 50%;
+  background: rgba(200, 40, 40, .85); color: #fff; opacity: 0; transition: opacity .12s; cursor: pointer;
+}
+.tac-hero2-tile.on:hover .tac-hero2-del { opacity: 1; }
+
+/* Карточка героя (battleHeroCard.ts): одна колонка строк, значок класса и звезда уровня в заголовке. */
+.tac-hero-card { min-width: 260px; }
+.tac-hero-card-rows { display: flex; flex-direction: column; gap: 6px; padding: 4px 6px; }
+.tac-hero-card-rows .tac-info-row { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.tac-hero-card-rows .tac-info-row img { width: 26px; height: 26px; object-fit: contain; }
+.tac-hero-card-rows .tac-info-row > span:nth-child(2) { flex: 1; }
+.tac-hero-card-icon { width: 22px; height: 22px; vertical-align: -5px; margin-right: 8px; object-fit: contain; }
+.tac-hero-card-star { color: var(--gold, #b8963a); font-weight: 700; margin-left: 8px; }
