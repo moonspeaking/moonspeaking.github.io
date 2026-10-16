@@ -2876,7 +2876,9 @@ body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
      стоит `overflow-x: clip`, страница вбок не прокручивается. */
   #tab-battle.active { flex-direction: column; align-items: stretch; }
   .tac-layout { flex-direction: column; width: 100%; align-items: stretch; min-width: 0; }
-  .tac-sidebar { width: 100%; min-width: 0; }
+  /* Палитра стоит ПОД полем: отрицательный margin-top широкой раскладки (-18px, поднимает её
+     к полосе вкладок) здесь наезжал на нижнюю кромку арены и закрывал «Отряды» и шестерёнку. */
+  body.tac-on-battle:not(.tac-full-field) .tac-sidebar { width: 100%; min-width: 0; margin-top: 0; }
   /* max-width — предохранитель: даже если что-то внутри снова попросит ширины
      больше экрана, колонка не поедет, а содержимое прокрутится в своих рамках
      (у ленты ATB для этого свои кнопки ‹ ›). */
@@ -2971,3 +2973,28 @@ body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
 .tac-hero-card-rows .tac-info-row > span:nth-child(2) { flex: 1; }
 .tac-hero-card-icon { width: 22px; height: 22px; vertical-align: -5px; margin-right: 8px; object-fit: contain; }
 .tac-hero-card-star { color: var(--gold, #b8963a); font-weight: 700; margin-left: 8px; }
+
+/* ===== Панель героя в палитре боя: имя, способность класса, параметры с иконками ===== */
+.tac-hero-body { padding: 10px 8px 8px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
+.tac-hero-title { font-weight: 700; color: var(--gold); letter-spacing: .2px; }
+.tac-hero-namerow { display: flex; align-items: center; gap: 8px; margin: 0; }
+.tac-hero-namerow > span { color: var(--text-dim); flex: 0 0 44px; }
+.tac-hero-name {
+  flex: 1; min-width: 0; padding: 5px 8px; font-size: 13px; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+}
+.tac-hero-name:focus { outline: none; border-color: var(--gold); }
+.tac-hero-ability { padding: 6px 8px; background: var(--card); border: 1px solid var(--border); border-radius: 5px; font-size: 11px; line-height: 1.35; }
+.tac-hero-ability:empty { display: none; }
+.tac-hero-ability-skills { color: var(--gold); }
+.tac-hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+.tac-hero-stat { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.tac-hero-stat > span:not(.tac-hs-ico) { flex: 1; min-width: 0; color: var(--text-dim); font-size: 11px; line-height: 1.15; }
+.tac-hs-ico { width: 16px; height: 16px; flex: 0 0 16px; object-fit: contain; }
+.tac-hs-ico-flvl { display: inline-flex; align-items: center; justify-content: center; color: var(--gold); font-size: 14px; }
+.tac-hero-stats .tac-hero-input { width: 36px; flex: 0 0 36px; padding: 3px 1px; font-size: 12px; box-sizing: border-box; }
+.tac-hero-derived { font-size: 11px; color: var(--text-dim); padding-top: 6px; border-top: 1px dashed var(--border); }
+.tac-hero-derived b { color: var(--gold); }
+.tac-hero-links { font-size: 11px; color: var(--text-dim); }
+.tac-hero-links a { color: var(--gold); }
+.tac-hero-note { font-size: 10px; color: var(--text-dim); }

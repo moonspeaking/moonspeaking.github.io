@@ -829,7 +829,8 @@
 .set-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 12px; }
 .set-card-head span { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
 .set-card-icons { display: flex; flex-wrap: wrap; gap: 2px; }
-.set-card-icons img { width: 30px; height: 30px; object-fit: contain; }
+.set-card-icons img { width: 30px; height: 30px; object-fit: contain;  }
+
 .set-card-bonus { font-size: 10px; color: var(--text-dim); }
 .set-card-btn { margin-top: auto; padding: 4px 8px; font-size: 11px; cursor: pointer; color: var(--gold); background: transparent; border: 1px solid var(--gold-dim, var(--border)); border-radius: 6px; }
 .set-card-btn:hover { background: rgba(201,168,76,.14); }
@@ -963,3 +964,41 @@
 .fit-doll-box .fitting-doll-item:hover { filter: brightness(1.06); border-color: var(--gold); }
 .fit-doll-box .fitting-doll-item .doll-remove { opacity: 0; pointer-events: none; transition: opacity .12s; }
 .fit-doll-box .fitting-doll-item:hover .doll-remove { opacity: 1; pointer-events: auto; }
+
+.br-setchip { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+.br-setchip a { color: var(--gold); cursor: pointer; margin-left: 8px; text-decoration: underline; }
+
+/* Всплывающее окно артефакта (web/js/artTip.ts) */
+.art-tip {
+  position: fixed; z-index: 3000; max-width: 300px; pointer-events: none;
+  background: var(--card); color: var(--text); border: 1px solid var(--gold-dim, var(--border));
+  border-radius: 6px; padding: 10px 12px; font-size: 14px; line-height: 1.45;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.art-tip-name { font-weight: 700; color: var(--gold); font-size: 15px; margin-bottom: 4px; }
+.art-tip-sep { margin-top: 6px; color: var(--text-dim); }
+.art-tip-mod { display: flex; align-items: center; gap: 6px; }
+.art-tip-mod img { width: 20px; height: 20px; }
+.art-tip-lv { color: var(--gold); }
+
+/* Артефакт выше уровня героя: надеть нельзя */
+.br-item.br-locked { opacity: 0.35; filter: grayscale(0.8); cursor: not-allowed; }
+
+/* Очки параметров героя (Примерочная) */
+.fit-points { font-size: 12px; color: var(--text-dim); margin: 6px 0 2px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.fit-points b { color: var(--gold); }
+.fit-reset { font-size: 12px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--text); cursor: pointer; }
+.fit-reset:hover { border-color: var(--gold-dim); }
+.vs-alloc { width: 20px; height: 20px; line-height: 16px; padding: 0; margin: 0 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--gold); font-size: 14px; cursor: pointer; }
+.vs-alloc:hover { border-color: var(--gold); }
+
+/* Блок кнопок «+/−» фиксированной ширины: числа параметров не прыгают при распределении очков. */
+.vs-val { white-space: nowrap; }
+.vs-ctl { display: inline-block; width: 50px; text-align: center; vertical-align: middle; }
+.vs-ctl-l { text-align: right; }
+.vs-ctl-r { text-align: left; }
+.vs-num { display: inline-block; min-width: 28px; text-align: center; }
+.vs-alloc { margin: 0 2px; }
+
+.fit-hero-name { margin-left: auto; width: 110px; font-size: 12px; font-weight: 700; color: var(--gold); text-align: right; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 6px; }
+.fit-hero-name:hover, .fit-hero-name:focus { border-color: var(--border); background: var(--bg); outline: none; }

@@ -17,16 +17,16 @@
 <link rel="apple-touch-icon" href="/Heroes/icons/icon-192.svg">
 <link rel="stylesheet" href="/Heroes/base.css?v=f3b39156">
 <link rel="stylesheet" href="/Heroes/catalog.css?v=b04b553f">
-<link rel="stylesheet" href="/Heroes/artifacts.css?v=c74e98f2">
-<link rel="stylesheet" href="/Heroes/battle.css?v=7fbdebc0">
+<link rel="stylesheet" href="/Heroes/artifacts.css?v=b9b943e9">
+<link rel="stylesheet" href="/Heroes/battle.css?v=6c5b34f6">
 <script>if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light')}</script>
-<script src="/Heroes/sw-register.js?v=9bd5b320"></script>
+<script src="/Heroes/sw-register.js?v=2c0a3c60"></script>
 </head>
 <body>
 
 <div class="header">
   <h1>⚔ Heroes∞</h1>
-  <span class="subtitle">Database & Reference <span class="app-version" id="app-version">V 0.6.8 от 16 октября 14:19</span></span>
+  <span class="subtitle">Database & Reference <span class="app-version" id="app-version">V 0.6.45 от 16 октября 17:03</span></span>
   <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Переключить тему">🌙</button>
   <button id="menu-toggle" class="menu-btn" onclick="toggleMenu()" title="Меню">☰</button>
 </div>
@@ -335,41 +335,40 @@
              title="Добавить второго героя справа">+</div>
         <!-- Второй герой (справа): раскрывается кликом по его плитке; класс и артефакты — те же, что у
              Героя 2 Примерочной, навыки — второй набор колеса навыков. -->
-        <div id="tac-hero2-body" style="display:none;padding:8px;font-size:12px">
-          <div style="font-weight:600;color:var(--gold);margin-bottom:6px">Второй герой (справа)</div>
-          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Имя</span><input type="text" id="tac-hero2-name" value="Сандро" maxlength="24" class="tac-filter" style="flex:2;margin:0" oninput="tacHeroNameChange()"></label>
-          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Класс</span>
-            <select id="tac-hero2-class" onchange="tacHero2ClassChange()" class="tac-filter" style="flex:2;margin:0"></select></label>
-          <div style="margin:6px 0;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px" id="tac-hero2-faction-ability"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Атака</span><input type="number" id="tac-hero2-atk" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Защита</span><input type="number" id="tac-hero2-def" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Иниц. %</span><input type="number" id="tac-hero2-ini" value="0" min="0" max="100" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Сила магии</span><input type="number" id="tac-hero2-sp" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Удача</span><input type="number" id="tac-hero2-luck" value="0" min="-5" max="5" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Мораль</span><input type="number" id="tac-hero2-morale" value="0" min="-3" max="5" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Макс. мана</span><input type="number" id="tac-hero2-mana" value="10" min="0" max="100" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Ур. фракции</span><input type="number" id="tac-hero2-flvl" value="1" min="1" max="10" class="tac-hero-input"></label>
+        <div id="tac-hero2-body" class="tac-hero-body" style="display:none">
+          <div class="tac-hero-title">Второй герой (справа)</div>
+          <label class="tac-hero-namerow"><span>Имя</span><input type="text" id="tac-hero2-name" value="Сандро" maxlength="24" class="tac-hero-name" oninput="tacHeroNameChange(1)"></label>
+          <label class="tac-hero-namerow"><span>Класс</span><select id="tac-hero2-class" onchange="tacHero2ClassChange()" class="tac-hero-name"></select></label>
+          <div class="tac-hero-ability" id="tac-hero2-faction-ability"></div>
+          <div class="tac-hero-stats">
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_attack.png" alt=""><span>Атака</span><input type="number" id="tac-hero2-atk" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'atk')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_defense.png" alt=""><span>Защита</span><input type="number" id="tac-hero2-def" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'def')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_magicpower.png" alt=""><span>Сила магии</span><input type="number" id="tac-hero2-sp" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'sp')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_knowledge.png" alt=""><span>Знания</span><input type="number" id="tac-hero2-know" value="1" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'know')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_fortune.png" alt=""><span>Удача</span><input type="number" id="tac-hero2-luck" value="0" min="-5" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'luck')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_morale.png" alt=""><span>Мораль</span><input type="number" id="tac-hero2-morale" value="0" min="-3" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'morale')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_initiative.png" alt=""><span>Иниц. %</span><input type="number" id="tac-hero2-ini" value="0" min="0" max="100" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'ini')\"></label>
+            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero2-flvl" value="1" min="1" max="14" class="tac-hero-input"></label>
           </div>
-          <div style="margin-top:8px;font-size:11px;color:var(--text-dim)">Артефакты <span id="tac-hero2-arts-count"></span>
-            — <a href="#" onclick="tacHero2OpenDressroom();return false" style="color:var(--gold)">Примерочная</a></div>
-          <div style="margin-top:4px;font-size:11px;color:var(--text-dim)">Навыки <span id="tac-hero2-perks-count"></span>
-            — <a href="#" onclick="tacHero2OpenSkills();return false" style="color:var(--gold)">Колёса навыков</a></div>
-          <div id="tac-hero2-perks-note" style="margin-top:2px;font-size:10px;color:var(--text-dim)"></div>
+          <div class="tac-hero-links">Артефакты <span id="tac-hero2-arts-count"></span>
+            — <a href="#" onclick="tacHero2OpenDressroom();return false">Примерочная</a></div>
+          <div class="tac-hero-links">Навыки <span id="tac-hero2-perks-count"></span>
+            — <a href="#" onclick="tacHero2OpenSkills();return false">Колёса навыков</a></div>
+          <div id="tac-hero2-perks-note" class="tac-hero-note"></div>
         </div>
-        <div id="tac-hero-body" style="display:none;padding:8px;font-size:12px">
-          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="color:var(--text-dim);flex:1">Имя</span><input type="text" id="tac-hero-name" value="Вэрсон" maxlength="24" class="tac-filter" style="flex:2;margin:0" oninput="tacHeroNameChange()"></label>
-          <div id="tac-hero-class-skills" style="display:none;margin-bottom:6px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--gold)"></div>
-          <div style="margin:6px 0;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px" id="tac-hero-faction-ability"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Атака</span><input type="number" id="tac-hero-atk" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Защита</span><input type="number" id="tac-hero-def" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Иниц. %</span><input type="number" id="tac-hero-ini" value="0" min="0" max="100" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Сила магии</span><input type="number" id="tac-hero-sp" value="0" min="0" max="50" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Удача</span><input type="number" id="tac-hero-luck" value="0" min="-5" max="5" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Мораль</span><input type="number" id="tac-hero-morale" value="0" min="-3" max="5" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Макс. мана</span><input type="number" id="tac-hero-mana" value="10" min="0" max="100" class="tac-hero-input"></label>
-            <label style="display:flex;align-items:center;gap:4px"><span style="color:var(--text-dim);flex:1">Ур. фракции</span><input type="number" id="tac-hero-flvl" value="1" min="1" max="10" class="tac-hero-input"></label>
+        <div id="tac-hero-body" class="tac-hero-body" style="display:none">
+          <label class="tac-hero-namerow"><span>Имя</span><input type="text" id="tac-hero-name" value="Вэрсон" maxlength="24" class="tac-hero-name" oninput="tacHeroNameChange(0)"></label>
+          <div id="tac-hero-class-skills" class="tac-hero-ability tac-hero-ability-skills" style="display:none"></div>
+          <div class="tac-hero-ability" id="tac-hero-faction-ability"></div>
+          <div class="tac-hero-stats">
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_attack.png" alt=""><span>Атака</span><input type="number" id="tac-hero-atk" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'atk')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_defense.png" alt=""><span>Защита</span><input type="number" id="tac-hero-def" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'def')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_magicpower.png" alt=""><span>Сила магии</span><input type="number" id="tac-hero-sp" value="0" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'sp')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_knowledge.png" alt=""><span>Знания</span><input type="number" id="tac-hero-know" value="1" min="0" max="50" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'know')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_fortune.png" alt=""><span>Удача</span><input type="number" id="tac-hero-luck" value="0" min="-5" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'luck')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_morale.png" alt=""><span>Мораль</span><input type="number" id="tac-hero-morale" value="0" min="-3" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'morale')\"></label>
+            <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_initiative.png" alt=""><span>Иниц. %</span><input type="number" id="tac-hero-ini" value="0" min="0" max="100" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'ini')\"></label>
+            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero-flvl" value="1" min="1" max="14" class="tac-hero-input"></label>
           </div>
         </div>
       </div>
@@ -834,7 +833,7 @@ try {
 </script>
 <script src="/Heroes/anim_effects.js?v=2a7ddebb"></script>
 <script src="/Heroes/show_info.js?v=f086f57d"></script>
-<script type="module" src="/Heroes/dist/bundle.js?v=9bd5b320"></script>
+<script type="module" src="/Heroes/dist/bundle.js?v=2c0a3c60"></script>
 
 </body>
 </html>
