@@ -201,7 +201,15 @@
   display: flex;
   flex-direction: column;
   align-self: center;
-  gap: 4px;
+  gap: 50px;
+}
+/* Столбик игровых фракций поднят (как нейтральные куклы), чтобы центр кукол был у середины карточки. */
+.faction-hero-dolls:not(.faction-neutral-dolls) { transform: translateY(-5%); }
+.faction-neutral-dolls { width: 200px; max-width: 30%; }
+.faction-neutral-dolls .faction-hero-doll {
+  aspect-ratio: 1; object-fit: contain;
+  /* Фигура стоит в нижней части квадратного холста — поднимаем, чтобы выглядела по центру карточки. */
+  transform: translateY(-14%);
 }
 .faction-hero-doll {
   width: 100%;
