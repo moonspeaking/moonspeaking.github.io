@@ -20,13 +20,13 @@
 <link rel="stylesheet" href="/Heroes/artifacts.css?v=a1549388">
 <link rel="stylesheet" href="/Heroes/battle.css?v=db269b40">
 <script>if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light')}</script>
-<script src="/Heroes/sw-register.js?v=b344dcaa"></script>
+<script src="/Heroes/sw-register.js?v=b9ff9815"></script>
 </head>
 <body>
 
 <div class="header">
   <h1 class="logo" role="link" tabindex="0" title="К списку существ" onclick="navigateTo('/units')" onkeydown="if(event.key==='Enter')navigateTo('/units')">⚔ Heroes∞</h1>
-  <span class="subtitle"><span class="app-version" id="app-version">V 0.7.19 от 20 октября 20:43</span></span>
+  <span class="subtitle"><span class="app-version" id="app-version">V 0.7.21 от 20 октября 21:05</span></span>
   <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Переключить тему">🌙</button>
   <button id="menu-toggle" class="menu-btn" onclick="toggleMenu()" title="Меню">☰</button>
 </div>
@@ -148,7 +148,7 @@
       </p>
       <div style="display:flex;gap:10px;justify-content:center">
         <input id="replay-warid" type="text" placeholder="ID или ссылка: daily.heroeswm.ru/mt61/war/id/1644923289" oninput="handleReplayInput()" onkeydown="if(event.key==='Enter') startReplay()" style="flex:1;max-width:400px;padding:10px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:16px;font-family:monospace">
-        <button onclick="startReplay()" style="padding:10px 24px;border-radius:6px;border:none;background:linear-gradient(135deg,#c9a84c,#a8872a);color:#000;font-weight:700;font-size:16px;cursor:pointer">⚔ Смотреть</button>
+        <button id="replay-start" onclick="startReplay()" style="padding:10px 24px;border-radius:6px;border:none;background:linear-gradient(135deg,#c9a84c,#a8872a);color:#000;font-weight:700;font-size:16px;cursor:pointer">⚔ Смотреть</button>
       </div>
       <div id="replay-error" style="color:#ff6b6b;margin-top:12px;font-size:14px;display:none"></div>
       <div id="replay-card-modal" onclick="if(event.target===this) closeReplayCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.68);z-index:1200;justify-content:center;align-items:center;padding:20px">
@@ -603,6 +603,9 @@
           <!-- Прямая атака героя в его окне: кнопка лишь взводит прицел, сервер
                считает цели и валидирует удар (state_view.hero_attack_offer). -->
           <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-hero-attack" style="display:none" onclick="tacHsArmHeroAttack()" title="Атака героя: удар без заклинания (полный ход)">🗡</button>
+          <!-- Удары школы бойцов героя-варвара: после удара цель отбрасывается на 0.2 шкалы, круговой бьёт и соседей (50%). -->
+          <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-hero-heavy" style="display:none" onclick="tacHsArmHeroAttack('heavy')" title="Тяжёлый удар: цель отбрасывается на 0.2 по шкале инициативы (полный ход)">🔨</button>
+          <button class="tac-ibtn tac-ibtn-sm" id="tac-hs-hero-round" style="display:none" onclick="tacHsArmHeroAttack('round')" title="Круговой удар: соседи цели в квадрате 3×3 получают 50% урона (полный ход)">🌀</button>
           <span id="tac-hs-spells" class="tac-hs-spells" style="display:none"></span>
           <!-- Свиток рун гнома: раскрывается кнопкой, руна ложится на активный отряд. -->
           <span id="tac-hs-runes" class="tac-hs-spells tac-hs-runes" style="display:none"></span>
@@ -832,7 +835,7 @@ try {
 </script>
 <script src="/Heroes/anim_effects.js?v=2a7ddebb"></script>
 <script src="/Heroes/show_info.js?v=f086f57d"></script>
-<script type="module" src="/Heroes/dist/bundle.js?v=b344dcaa"></script>
+<script type="module" src="/Heroes/dist/bundle.js?v=b9ff9815"></script>
 
 </body>
 </html>
