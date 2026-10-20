@@ -15,18 +15,18 @@
 <meta name="color-scheme" content="dark light">
 <link rel="icon" href="/Heroes/icons/icon-192.svg" sizes="192x192">
 <link rel="apple-touch-icon" href="/Heroes/icons/icon-192.svg">
-<link rel="stylesheet" href="/Heroes/base.css?v=f3b39156">
-<link rel="stylesheet" href="/Heroes/catalog.css?v=8d90aabf">
-<link rel="stylesheet" href="/Heroes/artifacts.css?v=b9b943e9">
-<link rel="stylesheet" href="/Heroes/battle.css?v=6c5b34f6">
+<link rel="stylesheet" href="/Heroes/base.css?v=a5964515">
+<link rel="stylesheet" href="/Heroes/catalog.css?v=16620410">
+<link rel="stylesheet" href="/Heroes/artifacts.css?v=a1549388">
+<link rel="stylesheet" href="/Heroes/battle.css?v=db269b40">
 <script>if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light')}</script>
-<script src="/Heroes/sw-register.js?v=f5ce8b85"></script>
+<script src="/Heroes/sw-register.js?v=15ef1826"></script>
 </head>
 <body>
 
 <div class="header">
-  <h1>⚔ Heroes∞</h1>
-  <span class="subtitle">Database & Reference <span class="app-version" id="app-version">V 0.6.46 от 16 октября 17:17</span></span>
+  <h1 class="logo" role="link" tabindex="0" title="К списку существ" onclick="navigateTo('/units')" onkeydown="if(event.key==='Enter')navigateTo('/units')">⚔ Heroes∞</h1>
+  <span class="subtitle"><span class="app-version" id="app-version">V 0.7.13 от 20 октября 02:45</span></span>
   <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Переключить тему">🌙</button>
   <button id="menu-toggle" class="menu-btn" onclick="toggleMenu()" title="Меню">☰</button>
 </div>
@@ -348,7 +348,7 @@
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_fortune.png" alt=""><span>Удача</span><input type="number" id="tac-hero2-luck" value="0" min="-5" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'luck')\"></label>
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_morale.png" alt=""><span>Мораль</span><input type="number" id="tac-hero2-morale" value="0" min="-3" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'morale')\"></label>
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_initiative.png" alt=""><span>Иниц. %</span><input type="number" id="tac-hero2-ini" value="0" min="0" max="100" class="tac-hero-input" oninput=\"tacHeroStatInput(1,'ini')\"></label>
-            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero2-flvl" value="1" min="1" max="14" class="tac-hero-input"></label>
+            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero2-flvl" value="10" min="1" max="14" class="tac-hero-input"></label>
           </div>
           <div class="tac-hero-links">Артефакты <span id="tac-hero2-arts-count"></span>
             — <a href="#" onclick="tacHero2OpenDressroom();return false">Примерочная</a></div>
@@ -368,7 +368,7 @@
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_fortune.png" alt=""><span>Удача</span><input type="number" id="tac-hero-luck" value="0" min="-5" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'luck')\"></label>
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_morale.png" alt=""><span>Мораль</span><input type="number" id="tac-hero-morale" value="0" min="-3" max="5" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'morale')\"></label>
             <label class="tac-hero-stat"><img class="tac-hs-ico" src="/Heroes/api/img?url=https://dcdn.heroeswm.ru/i/icons/attr_initiative.png" alt=""><span>Иниц. %</span><input type="number" id="tac-hero-ini" value="0" min="0" max="100" class="tac-hero-input" oninput=\"tacHeroStatInput(0,'ini')\"></label>
-            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero-flvl" value="1" min="1" max="14" class="tac-hero-input"></label>
+            <label class="tac-hero-stat"><span class="tac-hs-ico tac-hs-ico-flvl">★</span><span>Ур. фракции</span><input type="number" id="tac-hero-flvl" value="10" min="1" max="14" class="tac-hero-input"></label>
           </div>
         </div>
       </div>
@@ -693,7 +693,6 @@
       </div>
     </div>
     <div id="skillwheel-error" style="display:none;padding:20px;color:var(--text-dim);text-align:center"></div>
-    <div id="skillwheel-title"></div>
     <div id="skillwheel-layout">
       <div id="skillwheel-side"><div id="sw-build"></div></div>
       <div id="skillwheel-visual"></div>
@@ -833,7 +832,7 @@ try {
 </script>
 <script src="/Heroes/anim_effects.js?v=2a7ddebb"></script>
 <script src="/Heroes/show_info.js?v=f086f57d"></script>
-<script type="module" src="/Heroes/dist/bundle.js?v=f5ce8b85"></script>
+<script type="module" src="/Heroes/dist/bundle.js?v=15ef1826"></script>
 
 </body>
 </html>

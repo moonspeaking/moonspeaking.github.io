@@ -2542,9 +2542,6 @@ body:not(.tac-full-field) .tac-init-vitals {
  * действия mist_trail или снапшотом (kind "mist"), гаснет с рассеиванием
  * через tacSyncFieldObjects. */
 #tac-field td.tac-mist { background: rgba(210,210,230,0.38) !important; box-shadow: inset 0 0 9px rgba(235,235,250,0.85); }
-/* «Ледяные осколки» — одноразовая ловушка 3×3. Ставится анимацией
- * iceshards_placed или снапшотом (kind "ice"), снимается срабатыванием. */
-#tac-field td.tac-ice { background: rgba(140,200,255,0.32) !important; box-shadow: inset 0 0 10px rgba(170,220,255,0.8); }
 /* «Открытие врат Ада» — врата рисует ОРИГИНАЛЬНЫЙ портал-спрайт (объект
    magic_spell spellname='demongate', sceneMountGate в fieldScene.ts: тот же,
    что в клиенте игрока, showdemongate usemagicp.js:7238). Пока он на поле,
@@ -2967,6 +2964,9 @@ body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
 
 /* Карточка героя (battleHeroCard.ts): одна колонка строк, значок класса и звезда уровня в заголовке. */
 .tac-hero-card { min-width: 260px; }
+/* Кнопки карточки героя — раздельные, с зазором, как в оригинале (у карточки отряда это .tac-info-card). */
+.tac-hero-card .tac-info-actions { display: flex; gap: 12px; justify-content: center; padding: 8px 10px 4px; }
+.tac-hero-card .tac-info-actions .hwm-btn { flex: 1 1 0; min-width: 0; padding: 9px 12px; }
 .tac-hero-card-rows { display: flex; flex-direction: column; gap: 6px; padding: 4px 6px; }
 .tac-hero-card-rows .tac-info-row { display: flex; align-items: center; gap: 10px; font-size: 15px; }
 .tac-hero-card-rows .tac-info-row img { width: 26px; height: 26px; object-fit: contain; }
@@ -2998,3 +2998,62 @@ body.tac-numbers-top #tac-field td > .t6 { display: none !important; }
 .tac-hero-links { font-size: 11px; color: var(--text-dim); }
 .tac-hero-links a { color: var(--gold); }
 .tac-hero-note { font-size: 10px; color: var(--text-dim); }
+
+/* Карточка героя: экраны «Подробнее» (кукла) и «Эффекты» — шире экрана характеристик. */
+.tac-hero-card--wide { width: 392px; max-width: calc(100vw - 16px); }
+.bhc-doll-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; padding: 4px 2px; }
+.bhc-col { display: flex; flex-direction: column; gap: 6px; width: 58px; flex: none; }
+.bhc-stat { display: flex; align-items: center; gap: 4px; height: 26px; font-size: 15px; }
+.bhc-stat img, .bhc-orb { width: 24px; height: 24px; object-fit: contain; flex: none; text-align: center; line-height: 24px; font-size: 17px; }
+.bhc-stat b { flex: 1; text-align: right; font-weight: 600; }
+.bhc-stat.own b { font-weight: 800; }
+.bhc-col-r { margin-left: 2px; }
+.bhc-doll { flex: none; }
+.bhc-army { display: flex; gap: 3px; margin-top: 4px; padding-top: 2px; }
+.bhc-unit { position: relative; flex: 1 1 0; min-width: 0; aspect-ratio: 1; border: 1px solid #5b4a22; background: #e8d8a8; overflow: hidden; }
+.bhc-unit.empty { background: rgba(0,0,0,.08); border-color: rgba(0,0,0,.2); }
+.bhc-unit img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bhc-unit span { position: absolute; right: 2px; bottom: 0; font-weight: 800; font-size: 15px; color: #ffe08a;
+  text-shadow: -1px 0 #3a2a0a, 1px 0 #3a2a0a, 0 -1px #3a2a0a, 0 1px #3a2a0a, 1px 1px #3a2a0a, -1px -1px #3a2a0a; }
+.bhc-perks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 4px 2px 8px; }
+.bhc-perk { width: 44px; height: 44px; border: 2px solid #5b4a22; background: linear-gradient(160deg, #ffe58a, #f0c55a); box-sizing: border-box; padding: 2px; }
+.bhc-perk img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.bhc-eff { width: 100%; border-collapse: collapse; margin: 2px 0 6px; }
+.bhc-eff th { font-size: 17px; font-weight: 800; text-align: center; padding: 2px 6px; }
+.bhc-eff th:first-child, .bhc-eff td.t { text-align: left; }
+.bhc-eff td { padding: 3px 6px; text-align: center; font-size: 15px; color: #4b5a1c; }
+
+/* «Подробнее»: кукла крупнее, чтобы её высота совпала с колонками параметров (в оригинале они
+   одной высоты, пустого места под героем нет); числа — по центру своих колонок. */
+.tac-hero-card--wide { width: 480px; }
+.bhc-doll { --ds: 1.4; }
+.bhc-doll-row { align-items: stretch; gap: 4px; }
+.bhc-col { width: 66px; gap: 0; }
+.bhc-stat { height: 28px; gap: 2px; font-size: 19px; }
+.bhc-stat img, .bhc-orb { width: 26px; height: 26px; line-height: 26px; font-size: 19px; }
+.bhc-stat b { flex: 1; text-align: center; font-weight: 600; }
+.bhc-stat.own b { font-weight: 800; }
+
+/* Значки навыков уже нарисованы с золотой рамкой — своей рамки и подложки не добавляем. */
+.bhc-perk { border: none; background: none; padding: 0; width: 48px; height: 48px; }
+
+/* Пропорции оригинала (окно ~840×850 px при кукле ×2,09): всё считается от одного масштаба --k.
+   При --k = .5 карточка 420 px, кукла 240×208, параметры в колонках — ровно по высоте куклы. */
+.tac-hero-card--wide { --k: .5; width: calc(840px * var(--k)); max-width: calc(100vw - 16px); padding: calc(20px * var(--k)) calc(24px * var(--k)); }
+.tac-hero-card--wide .tac-info-title { font-size: calc(36px * var(--k)); }
+.bhc-doll { --ds: calc(2.087 * var(--k, .5)); }
+.bhc-doll-row { gap: calc(8px * var(--k)); padding: 0; }
+.bhc-col { width: calc(130px * var(--k)); }
+.bhc-col-r { width: calc(110px * var(--k)); margin-left: 0; }
+.bhc-stat { height: calc(41.7px * var(--k)); gap: calc(6px * var(--k)); font-size: calc(28px * var(--k)); }
+.bhc-stat img, .bhc-orb { width: calc(36px * var(--k)); height: calc(36px * var(--k)); line-height: calc(36px * var(--k)); font-size: calc(30px * var(--k)); }
+.bhc-army { gap: calc(4px * var(--k)); margin-top: calc(12px * var(--k)); }
+.bhc-unit { aspect-ratio: 100 / 85; }
+.bhc-unit span { font-size: calc(42px * var(--k)); }
+.tac-hero-card--wide .tac-info-actions { gap: calc(24px * var(--k)); padding-top: calc(16px * var(--k)); }
+.tac-hero-card--wide .tac-info-actions .hwm-btn { font-size: calc(40px * var(--k)); padding: calc(22px * var(--k)) 0; border-radius: calc(10px * var(--k)); }
+.bhc-perk { width: calc(96px * var(--k)); height: calc(96px * var(--k)); }
+.tac-hero-card--wide .hwm-sep { margin: calc(16px * var(--k)) auto; }
+/* Число существ — по центру портрета внизу, крупно, золотом с тёмной обводкой (как в оригинале). */
+.bhc-unit span { left: 0; right: 0; bottom: calc(2px * var(--k)); text-align: center; font-size: calc(50px * var(--k)); line-height: 1; font-weight: 900;
+  text-shadow: -1px -1px 0 #3a2a0a, 1px -1px 0 #3a2a0a, -1px 1px 0 #3a2a0a, 1px 1px 0 #3a2a0a, 0 2px 1px #3a2a0a, 0 -1px 0 #3a2a0a; }

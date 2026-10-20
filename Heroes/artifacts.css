@@ -501,17 +501,17 @@
 }
 .fitting-browser .br-cats {
   display: flex;
-  gap: 2px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 4px;
-  padding-bottom: 4px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
 .fitting-browser .br-cats .cat {
-  padding: 2px 6px;
-  font-size: 9px;
+  padding: 8px 16px;
+  font-size: 14px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
   background: var(--bg);
   color: var(--text-dim);
@@ -519,8 +519,13 @@
 }
 .fitting-browser .br-cats .cat:hover { border-color: var(--gold-dim); color: var(--text); }
 .fitting-browser .br-cats .cat.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
-.fitting-browser .br-search { margin-bottom: 4px; }
-.fitting-browser .br-search input { width: 100%; padding: 3px 6px; font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); }
+.fitting-browser .br-search { margin-bottom: 10px; display: flex; gap: 8px; }
+.fitting-browser .br-search input { flex: 1; min-width: 0; padding: 8px 12px; font-size: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
+.fitting-browser .br-search select { flex: none; padding: 8px 36px 8px 12px; font-size: 14px; background-color: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; }
+.fitting-browser .br-search select:focus { outline: none; border-color: var(--gold); }
 .fitting-browser .br-search input:focus { outline: none; border-color: var(--gold); }
 .fitting-browser .br-grid {
   display: flex;

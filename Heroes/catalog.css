@@ -99,14 +99,15 @@
 .creature-card .stats .stat .label { color: var(--text-dim); flex: 1; }
 .creature-card .stats .stat .value { color: var(--text); font-weight: 500; }
 .creature-card .tags {
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
 }
 .creature-card .tag {
   font-size: 11px;
-  padding: 2px 8px;
+  line-height: 1.25;
+  padding: 1px 6px;
   border-radius: 4px;
   background: rgba(201,168,76,0.12);
   color: var(--gold-dim);
@@ -140,14 +141,17 @@
   padding-bottom: 10px;
 }
 .castle-anim {
-  margin: 0 0 14px;
+  margin: 0 auto 14px;
+  max-width: 900px;
+  overflow: hidden;
+  border-radius: 8px;
 }
+/* В самом ролике по краям запечена светлая рамка в 3–4 px (из 1920): видео чуть
+   увеличено, а обёртка обрезает края, и рамки не видно. */
 .castle-video {
   display: block;
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  border-radius: 8px;
+  transform: scale(1.012);
 }
 .faction-col-empty {
   padding: 0;
@@ -178,6 +182,8 @@
 
 /* Faction Cards */
 .faction-section { margin-bottom: 32px; }
+/* Вкладка «Фракции» не растягивается на весь экран: карточки остаются читаемой ширины. */
+#tab-factions { max-width: 1100px; margin-left: auto; margin-right: auto; }
 .faction-section h2 {
   font-size: 18px;
   color: var(--gold);
@@ -220,7 +226,8 @@
   border: none;
 }
 @media (max-width: 700px) {
-  .faction-card-body { flex-direction: column-reverse; align-items: center; }
+  .faction-card-body { flex-direction: column-reverse; align-items: stretch; }
+  .faction-hero-dolls { align-self: center; }
   .faction-hero-dolls { max-width: 70%; flex-direction: row; }
 }
 .faction-card h3 {
@@ -961,12 +968,16 @@
   gap: 10px;
   margin-bottom: 10px;
 }
+/* Значок класса — картинка 30×30: растянутая до 40 px она мылится. Родной размер без
+   сглаживания (на ретине ровно 2 пикселя экрана на пиксель картинки); отступы держат прежние 40 px. */
 .faction-class-icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  box-sizing: content-box;
   border-radius: 6px;
   object-fit: contain;
-  border: 1px solid var(--border);
+  image-rendering: pixelated;
 }
 .faction-class-name {
   font-weight: 600;
@@ -980,21 +991,31 @@
 .faction-class-skill::before {
   content: '✦ ';
 }
+/* Описание умения класса оформлено как описание фракции в списке (`.faction-card
+   .faction-desc`): тот же фон, золотая полоса слева и размер 14px — иначе при том же
+   цвете текст на серой плашке и мельче выглядел бледнее. */
 .faction-skill-wheel {
   display: flex;
   gap: 12px;
   align-items: flex-start;
   margin-top: 10px;
-  padding: 10px;
-  background: var(--panel);
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
   border-radius: 6px;
+  border-left: 2px solid var(--gold-dim);
 }
+[data-theme="light"] .faction-skill-wheel { background: rgba(0,0,0,0.04); }
 .faction-skill-desc {
   flex: 1;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.5;
   color: var(--text-dim);
 }
+/* Списки из справочника: маркеры не должны налезать на золотую полосу слева. */
+.faction-skill-desc ul, .faction-skill-desc ol { margin: 6px 0; padding-left: 22px; }
+.faction-skill-desc li { margin: 2px 0; }
+.faction-skill-desc img { max-width: 100%; height: auto; vertical-align: middle; margin: 0 2px;
+  background: none; min-width: 0; min-height: 0; }   /* base.css красит lazy-картинки в цвет карточки: у значков с прозрачностью это белая рамка */
 .faction-skill-desc .skill-name {
   color: var(--gold);
   font-weight: 600;
@@ -1026,7 +1047,7 @@
   background: var(--panel);
 }
 #skillwheel-visual {
-  padding: 16px 20px 24px;
+  padding: 0 20px 16px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1038,14 +1059,11 @@
   height: auto;
   max-width: 720px;
   aspect-ratio: 1 / 1;
+  /* В viewBox вокруг диска свободное поле — чуть поднимаем колесо к панели выбора. */
+  margin-top: -18px;
 }
-#skillwheel-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gold);
-  padding: 12px 0 0;
-}
+/* Вкладки вынесены из .content, и он остаётся пустой рамкой: её отступы лишь сдвигают страницу вниз. */
+.content:not(:has(> .tab-content.active)) { padding: 0; }
 #skillwheel-detail {
   border-left: 1px solid var(--border);
   padding: 20px;
@@ -1453,6 +1471,79 @@
 }
 .impl-check-state { margin-left: auto; font-size: 11px; color: var(--text-dim); }
 
+/* Панель над отчётом: отметка и кнопка поиска боёв в один ряд. Отметка не
+   растягивается на всю ширину — ей хватает половины, остальное занимает кнопка. */
+.impl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.impl-toolbar .impl-check {
+  flex: 0 1 50%;
+  max-width: 50%;
+  min-width: 260px;
+  margin-bottom: 0;
+}
+.impl-battles-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  min-height: 40px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(200, 160, 60, .16), rgba(200, 160, 60, .06));
+  color: var(--gold);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s, transform .1s;
+}
+.impl-battles-btn:hover { background: rgba(200, 160, 60, .22); box-shadow: 0 0 0 3px rgba(200, 160, 60, .12); }
+.impl-battles-btn:active { transform: translateY(1px); }
+.impl-battles-btn:disabled { opacity: .6; cursor: progress; }
+.impl-battles-btn.is-open { background: rgba(200, 160, 60, .24); }
+.impl-battles-btn .ibb-ico { font-size: 15px; }
+
+/* Результаты поиска: не растягиваются — свой скролл после ~360px. */
+.impl-battles {
+  margin: -4px 0 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(200, 160, 60, .04);
+}
+.impl-battles[hidden] { display: none; }
+.ib-status { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+.ib-warn { color: #e26060; }
+.ib-head { font-size: 13px; color: var(--text); margin-bottom: 10px; }
+.ib-head b { color: var(--gold); }
+.ib-codes { margin-left: 8px; padding: 1px 8px; border-radius: 10px; border: 1px solid var(--border);
+  font-size: 11px; color: var(--text-dim); font-family: ui-monospace, monospace; }
+.ib-list { max-height: 360px; overflow-y: auto; display: grid; gap: 8px; padding-right: 4px; }
+.ib-card { border: 1px solid var(--border); border-radius: 6px; background: var(--card); padding: 8px 10px; }
+.ib-card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.ib-id { font-family: ui-monospace, monospace; font-weight: 600; color: var(--gold); }
+.ib-meta { font-size: 12px; color: var(--text-dim); }
+.ib-links { margin-left: auto; display: flex; gap: 12px; font-size: 12px; }
+.ib-links a { color: var(--gold); text-decoration: none; }
+.ib-links a:hover { text-decoration: underline; }
+.ib-uses { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; color: var(--text); }
+.ib-uses li { padding: 2px 0; }
+.ib-turn { display: inline-block; min-width: 46px; margin-right: 6px; color: var(--text-dim); }
+.ib-arrow { color: var(--text-dim); }
+.ib-eff { margin-left: 8px; padding: 0 6px; border-radius: 8px; font-weight: 600; }
+.ib-eff.pos { background: rgba(120, 190, 120, .18); color: #6fbf6f; }
+.ib-eff.neg { background: rgba(226, 96, 96, .16); color: #e26060; }
+.ib-more { color: var(--text-dim); }
+@media (max-width: 640px) {
+  .impl-toolbar .impl-check { flex-basis: 100%; max-width: 100%; }
+  .impl-battles-btn { flex: 1 1 100%; justify-content: center; }
+}
+
 /* Кнопка Примерочной в строке поиска артефактов: раздел и примерочная — про
    одно и то же, и прыгать за ней в шапку незачем. */
 .search-bar .art-fitting-btn { padding: 6px 12px; font-size: 13px; white-space: nowrap; }
@@ -1504,9 +1595,9 @@
 }
 
 /* ===== Статистика (web/js/stats.ts, stats_harvest.ts, stats_charts.ts) ===== */
-.stats-root { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; max-width: 1280px; margin: 0 auto; }
+.stats-root { display: flex; flex-direction: column; gap: 16px; padding: 0 20px 40px; box-sizing: border-box; max-width: 1280px; margin: 0 auto; }
 .stats-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 5;
-  background: var(--bg); padding: 8px 0; border-bottom: 1px solid var(--border); }
+  background: var(--bg); padding: 24px 0 8px; }
 .stats-tabs::-webkit-scrollbar { display: none; }
 .stats-tabs button, .stats-pills button { flex: none; background: var(--card); color: var(--text-dim); border: 1px solid var(--border);
   border-radius: 999px; padding: 7px 16px; font: inherit; font-size: 13px; cursor: pointer; transition: background .15s, color .15s; }
@@ -1707,3 +1798,239 @@
 @media (prefers-reduced-motion: reduce) {
   .doll-zoom, .doll-zoom img, .doll-zoom-cap { transition: none; }
 }
+
+/* «Реализация в коде» и «Чем покрыта тестами» — справочные разделы, по
+   умолчанию свёрнуты. */
+.impl-fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.impl-fold > summary::-webkit-details-marker { display: none; }
+.impl-fold > summary::before {
+  content: '▸';
+  font-size: 10px;
+  color: var(--text-dim);
+  transition: transform .15s;
+}
+.impl-fold[open] > summary::before { transform: rotate(90deg); }
+.impl-fold > summary:hover { color: var(--gold); }
+
+/* Сводка способности: как срабатывает — кого затрагивает — что делает. */
+.sum { margin: 4px 0 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.sum-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center;
+  padding: 11px 14px; border-top: 1px solid var(--border); }
+.sum-row:first-child { border-top: none; }
+.sum-lab { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-dim); }
+.sum-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sum-chip { font-size: 12px; padding: 2px 10px; border-radius: 11px; border: 1px solid var(--border);
+  color: var(--text-dim); }
+.sum-chip-passive { background: rgba(80, 140, 220, .14); border-color: rgba(80, 140, 220, .45); color: var(--text); }
+.sum-chip-active { background: rgba(200, 160, 60, .18); border-color: rgba(200, 160, 60, .6); color: var(--gold); font-weight: 600; }
+.sum-reach { display: grid; gap: 8px; }
+.sum-who { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.sum-grid { display: grid; grid-template-columns: repeat(5, 9px); gap: 2px; flex: none; }
+.sum-grid i { width: 9px; height: 9px; border-radius: 2px; background: rgba(128, 128, 128, .12);
+  border: 1px solid var(--border); }
+.sum-grid i.me { background: var(--text); border-color: var(--text); }
+.sum-grid i.on { background: var(--gold); border-color: var(--gold); }
+.sum-grid i.all { background: rgba(200, 160, 60, .22); border-color: rgba(200, 160, 60, .45); }
+.sum-grid.sum-ally i.on { background: #5fb36a; border-color: #5fb36a; }
+.sum-grid.sum-enemy i.on { background: #d85a5a; border-color: #d85a5a; }
+.sum-grid.sum-enemy i.all { background: rgba(216, 90, 90, .2); border-color: rgba(216, 90, 90, .45); }
+.sum-fx-list { display: grid; gap: 7px; }
+.sum-fx { font-size: 14px; line-height: 1.5; }
+.sum-val { display: inline-block; padding: 0 8px; margin-right: 8px; border-radius: 6px; font-weight: 600;
+  background: rgba(128, 128, 128, .15); }
+.sum-val.sum-pos { background: rgba(95, 179, 106, .2); color: #3f8f4a; }
+.sum-val.sum-neg { background: rgba(216, 90, 90, .18); color: #c04444; }
+.sum-conds { font-size: 12px; color: var(--text-dim); margin-left: 6px; }
+.sum-raw { font-size: 11px; color: var(--text-dim); margin-left: 6px; }
+.sum-muted, .sum-field { color: var(--text-dim); font-size: 13px; }
+.sum-warn { color: #c04444; }
+@media (max-width: 640px) { .sum-row { grid-template-columns: 1fr; gap: 6px; } }
+
+/* «В нашем бою» под умением класса на странице фракции. */
+.faction-class-engine { display: none; }
+.faction-class-item.fce-open .faction-class-engine:not(:empty) { display: block; }
+.fce-hint { display: block; margin-top: 8px; text-align: left; padding: 0; border: none; background: none; font: inherit;
+  font-size: 12px; color: var(--gold); cursor: pointer; }
+.fce-hint:hover { text-decoration: underline; }
+.fce-hint:focus-visible { outline: 1px solid var(--gold); outline-offset: 2px; }
+.fce-arrow { display: inline-block; transition: transform .15s; }
+.faction-class-item.fce-open .fce-arrow { transform: rotate(90deg); }
+.faction-class-engine { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+  background: rgba(128, 128, 128, .06); }
+.fce-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.fce-lab { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-dim); }
+.fce-chip { font-size: 12px; padding: 1px 9px; border-radius: 10px; border: 1px solid var(--border); }
+.fce-in_battle { background: rgba(95, 179, 106, .2); border-color: rgba(95, 179, 106, .55); color: #3f8f4a; }
+.fce-partial { background: rgba(200, 160, 60, .2); border-color: rgba(200, 160, 60, .6); color: var(--gold); }
+.fce-out_of_battle { background: rgba(128, 128, 128, .15); color: var(--text-dim); }
+.fce-sum { font-size: 14px; line-height: 1.5; color: var(--text-dim); }
+.fce-refs { margin-top: 8px; font-size: 12px; color: var(--text-dim); }
+.fce-refs summary { cursor: pointer; }
+.fce-refs ul { margin: 6px 0 0; padding-left: 18px; }
+.fce-file { font-family: ui-monospace, monospace; }
+
+/* Мини-артефакты мага: слева перечень, справа конструктор. */
+.mini-art { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; margin-top: 12px; }
+.mini-art:empty { display: none; }
+@media (max-width: 860px) { .mini-art { grid-template-columns: 1fr; } }
+.mini-left, .mini-right { padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: rgba(128,128,128,.06); }
+.mini-title { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
+.mini-title-2 { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.mini-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.mini-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 14px; text-align: center;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.mini-table th, .mini-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
+.mini-table tr:last-child th, .mini-table tr:last-child td { border-bottom: none; }
+.mini-table thead th { background: rgba(128,128,128,.12); }
+.mini-table tbody th { font-weight: 600; background: rgba(128,128,128,.08); }
+.mini-table tbody tr.mini-cur td, .mini-table tbody tr.mini-cur th { background: rgba(200,160,60,.24); font-weight: 700; }
+.mini-ico { width: 22px; height: 22px; vertical-align: middle; flex: none; }
+.mini-rules { margin: 10px 0 0; padding-left: 18px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+.mini-ctx { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin: 8px 0 12px; }
+.mini-chip { padding: 3px 10px; border-radius: 14px; background: rgba(128,128,128,.12); font-size: 13px; color: var(--text-dim); }
+.mini-chip b { color: var(--text); }
+.mini-chip-cap { background: rgba(200,160,60,.2); color: var(--gold); }
+.mini-chip-cap b { color: var(--gold); }
+.mini-ctx-note { flex-basis: 100%; font-size: 12px; color: var(--text-dim); }
+.mini-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 8px; }
+.mini-card { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text);
+  font: inherit; font-size: 13px; cursor: pointer; text-align: left; transition: border-color .15s, box-shadow .15s, transform .1s; }
+.mini-card:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
+.mini-card.on { border-color: var(--gold); background: rgba(200,160,60,.18); box-shadow: 0 0 0 2px rgba(200,160,60,.25); }
+.mini-card:disabled { opacity: .4; cursor: not-allowed; }
+.mini-card-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-card b { color: #3f8f4a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mini-preview { margin: 12px 0 10px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 10px;
+  min-height: 24px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.mini-prev-lab { font-size: 12px; color: var(--text-dim); }
+.mini-eff { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 4px; border-radius: 14px;
+  background: rgba(128,128,128,.12); font-size: 13px; }
+.mini-eff b { color: #3f8f4a; font-variant-numeric: tabular-nums; }
+.mini-build { padding: 7px 22px; border: 1px solid var(--gold); border-radius: 10px; cursor: pointer;
+  background: rgba(200,160,60,.2); color: var(--gold); font: inherit; font-size: 14px; font-weight: 600; transition: background .15s; }
+.mini-build:hover:not(:disabled) { background: rgba(200,160,60,.34); }
+.mini-build:disabled { opacity: .45; cursor: not-allowed; }
+.mini-count { margin-left: 6px; padding: 0 8px; border-radius: 10px; background: rgba(128,128,128,.18);
+  font-size: 12px; color: var(--text-dim); }
+.mini-count:empty { display: none; }
+.mini-list { display: grid; gap: 8px; margin-top: 8px; }
+.mini-empty { font-size: 13px; color: var(--text-dim); }
+.mini-item { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: space-between; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.mini-item-fx { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.mini-lvl { font-size: 11px; color: var(--text-dim); margin-left: 4px; }
+.mini-item-act { display: flex; gap: 8px; align-items: center; }
+.mini-item-act select { padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+  color: var(--text); font: inherit; font-size: 13px; max-width: 170px; }
+.mini-del { padding: 4px 10px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--text-dim);
+  font: inherit; font-size: 13px; cursor: pointer; }
+.mini-del:hover { border-color: #d85a5a; color: #d85a5a; }
+
+/* Переключатель героя в конструкторе мини-артефактов. */
+.mini-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.mini-heroes { display: inline-flex; padding: 2px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.mini-hero { display: grid; gap: 0; padding: 4px 12px; border: none; border-radius: 8px; background: none;
+  color: var(--text-dim); font: inherit; font-size: 13px; cursor: pointer; text-align: center; transition: background .15s; }
+.mini-hero:hover { color: var(--text); }
+.mini-hero.on { background: rgba(200,160,60,.24); color: var(--gold); font-weight: 600; }
+.mini-hero-name { font-size: 11px; font-weight: 400; color: var(--text-dim); max-width: 110px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+.mini-hero-name:empty { display: none; }
+
+/* Выбор заклятых врагов эльфа: один блок, список в два столбца, только значки классов. */
+.fav-enemy { display: block; }
+.fav-card { padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: rgba(128,128,128,.06); }
+.fav-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; margin-top: 4px; }
+@media (max-width: 760px) { .fav-rows { grid-template-columns: 1fr; } }
+.fav-row { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; align-items: center;
+  padding: 3px 8px 3px 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--card);
+  transition: border-color .15s, background .15s; }
+.fav-row:hover { border-color: var(--gold); }
+.fav-row.set { border-color: rgba(200,160,60,.6); background: rgba(200,160,60,.1); }
+.fav-ico { width: 30px; height: 30px; padding: 5px; box-sizing: content-box; image-rendering: pixelated; object-fit: contain; }
+.fav-row select { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+  color: var(--text); font: inherit; font-size: 14px; }
+
+/* Призыв укротителя: слева существа по школам, справа калькулятор. */
+.sm-table td, .sm-table th { vertical-align: middle; }
+.sm-unit { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 8px; align-items: center;
+  width: 100%; padding: 4px 8px 4px 4px; border: 1px solid transparent; border-radius: 10px; background: none; color: var(--text);
+  font: inherit; text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
+.sm-unit:hover { border-color: var(--gold); }
+.sm-unit.on { border-color: var(--gold); background: rgba(200,160,60,.18); }
+.sm-ico { grid-row: 1 / 3; width: 40px; height: 40px; object-fit: contain; border-radius: 8px; }
+.sm-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+.sm-req { font-size: 11px; color: var(--text-dim); }
+.sm-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin: 10px 0 14px; }
+.sm-form label { display: grid; gap: 4px; font-size: 12px; color: var(--text-dim); }
+.sm-form label:first-child { grid-column: 1 / -1; }
+.sm-form select, .sm-form input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+  color: var(--text); font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; }
+.sm-result { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--card); min-height: 64px; }
+.sm-big { width: 64px; height: 64px; object-fit: contain; border-radius: 10px; flex: none; }
+.sm-num { font-size: 34px; font-weight: 700; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.sm-cap { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.sm-none { font-size: 14px; color: var(--text-dim); }
+.sm-seq-title { margin: 14px 0 6px; font-size: 12px; color: var(--text-dim); }
+.sm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sm-lv { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+.summon-calc { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.sm-unit { grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto; padding: 3px 6px 3px 3px; }
+.sm-ico { grid-row: auto; width: 32px; height: 32px; }
+.sm-name { font-size: 12px; overflow-wrap: anywhere; }
+/* Портреты призыва — тот же размер и рамка, что в карточках существ (.portrait, 64 px). */
+.sm-unit { grid-template-columns: 1fr; justify-items: center; gap: 4px; padding: 6px 4px; text-align: center; }
+.sm-ico, .sm-big { width: 64px; height: 64px; border-radius: 6px; border: 1px solid var(--border);
+  object-fit: contain; background: rgba(0,0,0,0.3); }
+[data-theme="light"] .sm-ico, [data-theme="light"] .sm-big { background: rgba(0,0,0,0.05); }
+/* Без рамок: портреты чистые, выбранная пара — только цветом названия. */
+.sm-ico, .sm-big { border: none; background: none; border-radius: 0; }
+[data-theme="light"] .sm-ico, [data-theme="light"] .sm-big { background: none; }
+.sm-unit, .sm-unit:hover, .sm-unit.on { border: none; background: none; }
+.sm-unit.on .sm-name { color: var(--gold); }
+.sm-unit:hover .sm-name { color: var(--gold); }
+.sm-unit.on .sm-ico { filter: drop-shadow(0 0 4px rgba(200,160,60,.7)); }
+/* Портреты разной прозрачности выглядели разными по размеру — кладём каждый на одинаковую мягкую плитку. */
+.sm-ico, .sm-big { background: rgba(128,128,128,.16); border-radius: 10px; padding: 2px; box-sizing: border-box; }
+[data-theme="light"] .sm-ico, [data-theme="light"] .sm-big { background: rgba(128,128,128,.16); }
+/* Портреты — без плитки (откат). */
+.sm-ico, .sm-big, [data-theme="light"] .sm-ico, [data-theme="light"] .sm-big { background: none; border-radius: 0; padding: 0; }
+/* Колонки одной высоты: правая растягивается, результат занимает свободное место, цепочка призывов — внизу. */
+.summon-calc { align-items: stretch; }
+.summon-calc .mini-left, .summon-calc .mini-right { display: flex; flex-direction: column; }
+.summon-calc .mini-right .sm-result { flex: 1; min-height: 120px; }
+.summon-calc .mini-right .sm-seq { margin-top: 14px; }
+.summon-calc .mini-left .mini-rules { margin-top: 14px; }
+.summon-calc .sm-seq-title { margin-top: 0; }
+.summon-calc .mini-right .sm-result { justify-content: center; gap: 20px; }
+.summon-calc .sm-num { font-size: 56px; }
+
+/* Таблицы из справочника в описании умения класса (скелеты некроманта, руны гнома…):
+   тот же вид, что у .mini-table — скруглённая рамка, мягкие шапки, цифры без «лесенки». */
+.faction-skill-desc table {
+  display: block; width: max-content; max-width: 100%; overflow-x: auto;
+  border-collapse: separate; border-spacing: 0;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: none !important; margin: 12px 0 4px;
+  font-size: 14px; text-align: center; font-variant-numeric: tabular-nums;
+}
+.faction-skill-desc table td, .faction-skill-desc table th {
+  border: none; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 5px 10px; background: none !important; color: var(--text);
+}
+.faction-skill-desc table tr > :last-child { border-right: none; }
+.faction-skill-desc table tr:last-child > * { border-bottom: none; }
+.faction-skill-desc table tr:first-child > *, .faction-skill-desc table tr.TableName > * {
+  background: rgba(128,128,128,.12) !important; color: var(--text-dim); font-weight: 600; }
+.faction-skill-desc table tr > :first-child { background: rgba(128,128,128,.08) !important; color: var(--text-dim);
+  font-weight: 600; text-align: left; white-space: nowrap; }
+

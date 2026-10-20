@@ -116,6 +116,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
 }
 .header h1 {
   font-size: 22px;
@@ -124,13 +125,17 @@ a:hover { text-decoration: underline; }
   letter-spacing: 3px;
   font-weight: 700;
 }
+.header h1.logo { cursor: pointer; }
+.header h1.logo:hover { color: var(--gold-bright, var(--gold)); filter: brightness(1.15); }
+/* Версия — по центру шапки, независимо от ширины названия и кнопок. */
 .header .subtitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   color: var(--text-dim);
-  font-size:14px;
-  margin-left: auto;
+  font-size: 14px;
 }
-.header .subtitle .app-version { margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--border);
-  color: var(--gold-dim); font-size: 0.9em; white-space: nowrap; }
+.header .subtitle .app-version { color: var(--gold-dim); font-size: 0.9em; white-space: nowrap; }
 
 /* Tabs */
 .menu-btn {
@@ -198,8 +203,14 @@ a:hover { text-decoration: underline; }
 }
 .search-bar input:focus { outline: none; border-color: var(--gold); }
 .search-bar select {
-  padding: 10px 14px;
-  background: var(--card);
+  /* Своя стрелка вместо системной: у системной нет отступа от правого края. */
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 10px 40px 10px 14px;
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
@@ -462,9 +473,7 @@ a:hover { text-decoration: underline; }
   .tabs.open { max-height: 500px; }
   .tab { padding: 10px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
   .tab.active { border-bottom-color: var(--gold); }
-  /* Подпись «Database & Reference» на телефоне ломалась на три строки и
-     отжимала название вместе с кнопками к краям — на узком экране от неё
-     толку нет. */
+  /* Версия по центру на телефоне перекрывала бы название и кнопки — прячем. */
   .header .subtitle { display: none; }
   .header { padding: 12px 14px; gap: 10px; }
   .header h1 { margin-right: auto; }
